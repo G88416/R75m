@@ -3,115 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto PRNG Analyzer</title>
+    <title>Advanced PRNG & Lotto Analyzer Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4a148c;
-            --secondary: #7b1fa2;
-            --dark: #12005e;
-            --light: #f3e5f5;
-            --accent: #e1bee7;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --danger: #f44336;
+            --primary: #5c6bc0;
+            --primary-dark: #3949ab;
+            --primary-light: #7986cb;
+            --secondary: #26a69a;
+            --dark: #2c3e50;
+            --light: #f5f7fa;
+            --accent: #7e57c2;
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ef5350;
+            --info: #42a5f5;
+            --text-primary: #263238;
+            --text-secondary: #546e7a;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--dark);
-            background-color: var(--light);
+
+        [data-theme="dark"] {
+            --primary: #7986cb;
+            --primary-dark: #5c6bc0;
+            --primary-light: #9fa8da;
+            --secondary: #26a69a;
+            --dark: #cfd8dc;
+            --light: #37474f;
+            --accent: #9575cd;
+            --success: #81c784;
+            --warning: #ffb74d;
+            --danger: #e57373;
+            --info: #64b5f6;
+            --text-primary: #eceff1;
+            --text-secondary: #b0bec5;
+            --bg-color: #263238;
+            --card-bg: #37474f;
+            --border-color: #455a64;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             color: white;
             padding: 2rem 0;
             text-align: center;
             border-radius: 0 0 10px 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
+            position: relative;
         }
-        
+
         h1 {
             margin: 0;
             font-size: 2.5rem;
+            font-weight: 500;
         }
-        
+
         .subtitle {
             font-size: 1.2rem;
             opacity: 0.9;
+            margin-top: 0.5rem;
+            font-weight: 300;
         }
-        
+
         .card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
             margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
-        
+
         .card h2 {
-            color: var(--secondary);
+            color: var(--primary);
             margin-top: 0;
             border-bottom: 2px solid var(--accent);
             padding-bottom: 0.5rem;
+            font-weight: 500;
         }
-        
+
         .tabs {
             display: flex;
             margin-bottom: 1rem;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--border-color);
             flex-wrap: wrap;
+            gap: 5px;
         }
-        
+
         .tab {
             padding: 0.75rem 1.5rem;
             cursor: pointer;
-            background: #eee;
-            border: none;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
             border-radius: 5px 5px 0 0;
-            margin-right: 5px;
-            margin-bottom: 5px;
             transition: all 0.3s;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
-        
+
+        .tab:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
         .tab.active {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
         }
-        
+
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
-        
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .tab-content.active {
             display: block;
         }
-        
+
         label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
+            font-weight: 500;
+            color: var(--text-primary);
         }
-        
+
         input, select, textarea {
             width: 100%;
             padding: 0.75rem;
             margin-bottom: 1rem;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            transition: border 0.3s;
         }
-        
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(92, 107, 192, 0.2);
+        }
+
         button {
             background-color: var(--primary);
             color: white;
@@ -120,52 +183,64 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 1rem;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
-        
+
         button:hover {
-            background-color: var(--secondary);
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-        
+
+        button:active {
+            transform: translateY(0);
+        }
+
         button.secondary {
-            background-color: #757575;
+            background-color: var(--text-secondary);
         }
-        
+
         button.success {
             background-color: var(--success);
         }
-        
+
         button.warning {
             background-color: var(--warning);
         }
-        
+
         button.danger {
             background-color: var(--danger);
         }
-        
+
+        button.info {
+            background-color: var(--info);
+        }
+
         .result {
             margin-top: 1rem;
             padding: 1rem;
-            background-color: #f8f9fa;
+            background-color: var(--bg-color);
             border-radius: 4px;
             border-left: 4px solid var(--accent);
+            color: var(--text-primary);
         }
-        
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
         }
-        
+
         .lotto-balls {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
             margin: 1rem 0;
         }
-        
+
         .ball {
             width: 40px;
             height: 40px;
@@ -176,211 +251,638 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
         }
-        
+
+        .ball:hover {
+            transform: scale(1.1);
+        }
+
         .ball.powerball {
             background-color: var(--danger);
         }
-        
+
+        .ball.megaball {
+            background-color: var(--info);
+        }
+
+        .ball.eurostar {
+            background-color: var(--success);
+        }
+
         .progress-container {
             width: 100%;
-            background-color: #e0e0e0;
+            background-color: var(--border-color);
             border-radius: 4px;
             margin: 1rem 0;
-        }
-        
-        .progress-bar {
             height: 20px;
-            background-color: var(--primary);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             border-radius: 4px;
             width: 0%;
             transition: width 0.3s;
+            position: relative;
         }
-        
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 30px 30px;
+            animation: progressAnimation 1s linear infinite;
+        }
+
+        @keyframes progressAnimation {
+            0% { background-position: 0 0; }
+            100% { background-position: 30px 0; }
+        }
+
         .status {
             margin: 1rem 0;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .status.info {
+            background-color: rgba(66, 165, 245, 0.1);
+            border-left: 4px solid var(--info);
+            color: var(--info);
+        }
+
+        .status.success {
+            background-color: rgba(102, 187, 106, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        .status.warning {
+            background-color: rgba(255, 167, 38, 0.1);
+            border-left: 4px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .status.error {
+            background-color: rgba(239, 83, 80, 0.1);
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .algorithm-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: var(--bg-color);
+            border-radius: 4px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .algorithm-info h3 {
+            color: var(--secondary);
+            margin-top: 0;
+        }
+
+        .code {
+            font-family: 'Source Code Pro', monospace;
+            background-color: var(--bg-color);
             padding: 0.5rem;
             border-radius: 4px;
+            display: block;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--accent);
         }
-        
-        .status.info {
-            background-color: #e3f2fd;
-            border-left: 4px solid #2196f3;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
         }
-        
-        .status.success {
-            background-color: #e8f5e9;
-            border-left: 4px solid var(--success);
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
-        
-        .status.warning {
-            background-color: #fff8e1;
-            border-left: 4px solid var(--warning);
+
+        th {
+            background-color: var(--bg-color);
+            font-weight: 500;
+            color: var(--primary);
         }
-        
-        .status.error {
-            background-color: #ffebee;
-            border-left: 4px solid var(--danger);
+
+        tr:hover {
+            background-color: var(--bg-color);
         }
-        
+
+        /* Histogram styles */
+        .histogram {
+            display: flex;
+            height: 200px;
+            align-items: flex-end;
+            gap: 2px;
+            margin: 1rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .histogram-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            min-width: 5px;
+            position: relative;
+            transition: height 0.5s ease;
+        }
+
+        .histogram-bar-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Frequency table styles */
+        .frequency-table {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .frequency-table th, .frequency-table td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        .hot-number {
+            background-color: rgba(239, 83, 80, 0.1);
+            font-weight: bold;
+        }
+
+        .cold-number {
+            background-color: rgba(66, 165, 245, 0.1);
+            font-weight: bold;
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: normal;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(30deg);
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
             }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-radius: 4px;
+                margin-bottom: 5px;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>Lotto PRNG Analyzer</h1>
-            <p class="subtitle">Analyze and reverse-engineer lottery number generators</p>
+            <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <h1>Advanced PRNG & Lotto Analyzer Pro</h1>
+            <p class="subtitle">Comprehensive analysis and prediction toolkit for pseudo-random number generators and lottery systems</p>
         </div>
     </header>
     
     <div class="container">
         <div class="card">
-            <h2>Lotto Number Generator</h2>
+            <h2>PRNG & Lotto Analysis Toolkit</h2>
             
             <div class="tabs">
-                <button class="tab active" onclick="openTab(event, 'generate')">Generate Numbers</button>
-                <button class="tab" onclick="openTab(event, 'reverse')">Reverse Engineer</button>
-                <button class="tab" onclick="openTab(event, 'compare')">Compare Draws</button>
+                <button class="tab active" onclick="openTab(event, 'prng-generate')">PRNG Generator</button>
+                <button class="tab" onclick="openTab(event, 'prng-reverse')">PRNG Reverse</button>
+                <button class="tab" onclick="openTab(event, 'lotto-generate')">Lotto Generator</button>
+                <button class="tab" onclick="openTab(event, 'lotto-reverse')">Lotto Reverse</button>
+                <button class="tab" onclick="openTab(event, 'compare')">Compare</button>
+                <button class="tab" onclick="openTab(event, 'visualization')">Visualization</button>
             </div>
             
-            <div id="generate" class="tab-content active">
+            <!-- PRNG Generator Tab -->
+            <div id="prng-generate" class="tab-content active">
                 <div class="grid">
                     <div>
-                        <label for="game-type">Lottery Game:</label>
-                        <select id="game-type">
-                            <option value="powerball">Powerball (5/69 + 1/26)</option>
-                            <option value="megamillions">Mega Millions (5/70 + 1/25)</option>
-                            <option value="euromillions">EuroMillions (5/50 + 2/12)</option>
-                            <option value="custom">Custom Game</option>
+                        <label for="prng-algorithm">PRNG Algorithm:</label>
+                        <select id="prng-algorithm">
+                            <option value="lcg">Linear Congruential Generator (LCG)</option>
+                            <option value="mt">Mersenne Twister</option>
+                            <option value="xorshift">Xorshift</option>
+                            <option value="pcg">PCG (Permuted Congruential Generator)</option>
+                            <option value="mulberry32">Mulberry32</option>
+                            <option value="sfc32">sfc32 (Small Fast Counter)</option>
+                            <option value="jsf32">jsf32 (Jenkins' Small Fast)</option>
                         </select>
                         
-                        <div id="custom-params" style="display: none;">
-                            <div class="grid">
-                                <div>
-                                    <label for="main-numbers">Main Numbers Pool:</label>
-                                    <input type="number" id="main-numbers" min="1" value="69">
-                                </div>
-                                <div>
-                                    <label for="pick-numbers">Numbers to Pick:</label>
-                                    <input type="number" id="pick-numbers" min="1" value="5">
-                                </div>
+                        <div id="lcg-params">
+                            <label for="lcg-multiplier">Multiplier (a):</label>
+                            <input type="number" id="lcg-multiplier" value="1664525">
+                            
+                            <label for="lcg-increment">Increment (c):</label>
+                            <input type="number" id="lcg-increment" value="1013904223">
+                            
+                            <label for="lcg-modulus">Modulus (m):</label>
+                            <input type="number" id="lcg-modulus" value="4294967296">
+                        </div>
+                        
+                        <label for="prng-seed">Seed:</label>
+                        <input type="number" id="prng-seed" value="12345">
+                        
+                        <label for="prng-count">Number of values to generate:</label>
+                        <input type="number" id="prng-count" value="100" min="1" max="10000">
+                        
+                        <label for="prng-range">Output range (min, max):</label>
+                        <div class="grid">
+                            <div>
+                                <input type="number" id="prng-min" value="0" placeholder="Min">
                             </div>
-                            <div class="grid">
-                                <div>
-                                    <label for="bonus-numbers">Bonus Numbers Pool:</label>
-                                    <input type="number" id="bonus-numbers" min="0" value="26">
-                                </div>
-                                <div>
-                                    <label for="pick-bonus">Bonus Numbers to Pick:</label>
-                                    <input type="number" id="pick-bonus" min="0" value="1">
-                                </div>
+                            <div>
+                                <input type="number" id="prng-max" value="100" placeholder="Max">
                             </div>
                         </div>
                         
-                        <label for="seed">Seed (leave empty for random):</label>
-                        <input type="number" id="seed">
-                        
-                        <label for="draw-count">Number of draws:</label>
-                        <input type="number" id="draw-count" min="1" value="1" max="100">
-                        
-                        <button onclick="generateLottoNumbers()" class="success">Generate</button>
-                        <button onclick="clearGeneration()" class="secondary">Clear</button>
+                        <button onclick="generatePRNGNumbers()" class="success">Generate</button>
+                        <button onclick="clearPRNGGeneration()" class="secondary">Clear</button>
+                        <button onclick="randomizePRNGParams()" class="info">Randomize</button>
                     </div>
                     
                     <div>
                         <label>Generated Numbers:</label>
-                        <div id="generated-results"></div>
+                        <textarea id="prng-generated-numbers" rows="10" readonly></textarea>
                         
-                        <div class="result">
-                            <strong>Generation Details:</strong>
-                            <div id="gen-details"></div>
+                        <div class="result" id="prng-stats">
+                            <strong>Statistics:</strong>
+                            <div id="prng-stats-content"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3>Algorithm Information</h3>
+                    <div id="prng-algorithm-info"></div>
+                </div>
+            </div>
+            
+            <!-- PRNG Reverse Engineer Tab -->
+            <div id="prng-reverse" class="tab-content">
+                <div class="grid">
+                    <div>
+                        <label for="reverse-prng-algorithm">PRNG Algorithm:</label>
+                        <select id="reverse-prng-algorithm">
+                            <option value="lcg">Linear Congruential Generator (LCG)</option>
+                            <option value="xorshift32">Xorshift32</option>
+                            <option value="mulberry32">Mulberry32</option>
+                            <option value="sfc32">sfc32</option>
+                        </select>
+                        
+                        <label for="prng-target-numbers">Observed Numbers (one per line):</label>
+                        <textarea id="prng-target-numbers" rows="5" placeholder="Enter at least 3 consecutive numbers for reliable analysis"></textarea>
+                        
+                        <div id="reverse-prng-params" style="display: none;">
+                            <label for="known-multiplier">Known Multiplier (a):</label>
+                            <input type="number" id="known-multiplier">
+                            
+                            <label for="known-increment">Known Increment (c):</label>
+                            <input type="number" id="known-increment">
+                            
+                            <label for="known-modulus">Known Modulus (m):</label>
+                            <input type="number" id="known-modulus">
+                        </div>
+                        
+                        <div class="status info" id="prng-reverse-status">
+                            Enter observed numbers to begin reverse engineering. More numbers increase accuracy.
+                        </div>
+                        
+                        <div class="progress-container" id="prng-reverse-progress" style="display: none;">
+                            <div class="progress-bar" id="prng-progress-bar"></div>
+                        </div>
+                        
+                        <button onclick="reverseEngineerPRNG()" class="warning">Reverse Engineer Seed</button>
+                        <button onclick="stopPRNGReverseEngineer()" class="danger" id="prng-stop-button" style="display: none;">Stop</button>
+                        <button onclick="clearPRNGReverse()" class="secondary">Clear</button>
+                        <button onclick="samplePRNGData()" class="info">Load Sample Data</button>
+                    </div>
+                    
+                    <div>
+                        <label>Possible Seeds:</label>
+                        <div class="result" id="prng-seed-results">
+                            Seed candidates will appear here after analysis.
+                        </div>
+                        
+                        <label>Numbers Generated from Found Seeds:</label>
+                        <textarea id="prng-seed-verification" rows="5" readonly></textarea>
+                        
+                        <div id="prng-predictions">
+                            <h4>Prediction Analysis</h4>
+                            <div id="prng-predictions-content"></div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div id="reverse" class="tab-content">
+            <!-- Lotto Generator Tab -->
+            <div id="lotto-generate" class="tab-content">
                 <div class="grid">
                     <div>
-                        <label for="reverse-game-type">Lottery Game:</label>
-                        <select id="reverse-game-type">
+                        <label for="lotto-game-type">Lottery Game:</label>
+                        <select id="lotto-game-type">
+                            <option value="powerball">Powerball (5/69 + 1/26)</option>
+                            <option value="megamillions">Mega Millions (5/70 + 1/25)</option>
+                            <option value="euromillions">EuroMillions (5/50 + 2/12)</option>
+                            <option value="lotto649">Lotto 6/49</option>
+                            <option value="custom">Custom Game</option>
+                        </select>
+                        
+                        <div id="lotto-custom-params" style="display: none;">
+                            <div class="grid">
+                                <div>
+                                    <label for="lotto-main-numbers">Main Numbers Pool:</label>
+                                    <input type="number" id="lotto-main-numbers" min="1" value="69">
+                                </div>
+                                <div>
+                                    <label for="lotto-pick-numbers">Numbers to Pick:</label>
+                                    <input type="number" id="lotto-pick-numbers" min="1" value="5">
+                                </div>
+                            </div>
+                            <div class="grid">
+                                <div>
+                                    <label for="lotto-bonus-numbers">Bonus Numbers Pool:</label>
+                                    <input type="number" id="lotto-bonus-numbers" min="0" value="26">
+                                </div>
+                                <div>
+                                    <label for="lotto-pick-bonus">Bonus Numbers to Pick:</label>
+                                    <input type="number" id="lotto-pick-bonus" min="0" value="1">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <label for="lotto-seed">Seed (leave empty for random):</label>
+                        <input type="number" id="lotto-seed">
+                        
+                        <label for="lotto-draw-count">Number of draws:</label>
+                        <input type="number" id="lotto-draw-count" min="1" value="5" max="1000">
+                        
+                        <button onclick="generateLottoNumbers()" class="success">Generate</button>
+                        <button onclick="clearLottoGeneration()" class="secondary">Clear</button>
+                        <button onclick="randomizeLottoSeed()" class="info">Random Seed</button>
+                    </div>
+                    
+                    <div>
+                        <label>Generated Numbers:</label>
+                        <div id="lotto-generated-results"></div>
+                        
+                        <div class="result">
+                            <strong>Generation Details:</strong>
+                            <div id="lotto-gen-details"></div>
+                        </div>
+                        
+                        <div id="lotto-frequency-analysis">
+                            <h4>Frequency Analysis</h4>
+                            <div id="lotto-frequency-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lotto Reverse Engineer Tab -->
+            <div id="lotto-reverse" class="tab-content">
+                <div class="grid">
+                    <div>
+                        <label for="lotto-reverse-game-type">Lottery Game:</label>
+                        <select id="lotto-reverse-game-type">
                             <option value="powerball">Powerball (5/69 + 1/26)</option>
                             <option value="megamillions">Mega Millions (5/70 + 1/25)</option>
                             <option value="euromillions">EuroMillions (5/50 + 2/12)</option>
                             <option value="custom-reverse">Custom Game</option>
                         </select>
                         
-                        <div id="custom-reverse-params" style="display: none;">
+                        <div id="lotto-custom-reverse-params" style="display: none;">
                             <div class="grid">
                                 <div>
-                                    <label for="reverse-main-numbers">Main Numbers Pool:</label>
-                                    <input type="number" id="reverse-main-numbers" min="1" value="69">
+                                    <label for="lotto-reverse-main-numbers">Main Numbers Pool:</label>
+                                    <input type="number" id="lotto-reverse-main-numbers" min="1" value="69">
                                 </div>
                                 <div>
-                                    <label for="reverse-pick-numbers">Numbers to Pick:</label>
-                                    <input type="number" id="reverse-pick-numbers" min="1" value="5">
+                                    <label for="lotto-reverse-pick-numbers">Numbers to Pick:</label>
+                                    <input type="number" id="lotto-reverse-pick-numbers" min="1" value="5">
                                 </div>
                             </div>
                             <div class="grid">
                                 <div>
-                                    <label for="reverse-bonus-numbers">Bonus Numbers Pool:</label>
-                                    <input type="number" id="reverse-bonus-numbers" min="0" value="26">
+                                    <label for="lotto-reverse-bonus-numbers">Bonus Numbers Pool:</label>
+                                    <input type="number" id="lotto-reverse-bonus-numbers" min="0" value="26">
                                 </div>
                                 <div>
-                                    <label for="reverse-pick-bonus">Bonus Numbers to Pick:</label>
-                                    <input type="number" id="reverse-pick-bonus" min="0" value="1">
+                                    <label for="lotto-reverse-pick-bonus">Bonus Numbers to Pick:</label>
+                                    <input type="number" id="lotto-reverse-pick-bonus" min="0" value="1">
                                 </div>
                             </div>
                         </div>
                         
-                        <label for="observed-numbers">Observed Numbers (one draw per line, format: 1,2,3,4,5|1):</label>
-                        <textarea id="observed-numbers" rows="5" placeholder="Example for Powerball:
+                        <label for="lotto-observed-numbers">Observed Numbers (one draw per line, format: 1,2,3,4,5|1):</label>
+                        <textarea id="lotto-observed-numbers" rows="5" placeholder="Example for Powerball:
 3, 17, 25, 36, 55 | 12
 5, 10, 20, 30, 40 | 5"></textarea>
                         
-                        <div class="status info" id="reverse-status">
-                            Enter observed numbers to begin reverse engineering.
+                        <label for="lotto-reverse-range">Seed search range:</label>
+                        <div class="grid">
+                            <div>
+                                <input type="number" id="lotto-reverse-min" value="0" placeholder="Min seed">
+                            </div>
+                            <div>
+                                <input type="number" id="lotto-reverse-max" value="100000" placeholder="Max seed">
+                            </div>
                         </div>
                         
-                        <div class="progress-container" id="reverse-progress" style="display: none;">
-                            <div class="progress-bar" id="progress-bar"></div>
+                        <div class="status info" id="lotto-reverse-status">
+                            Enter observed numbers to begin reverse engineering. More draws increase accuracy.
                         </div>
                         
-                        <button onclick="reverseEngineerSeed()" class="warning">Reverse Engineer Seed</button>
-                        <button onclick="stopReverseEngineer()" class="danger" id="stop-button" style="display: none;">Stop</button>
-                        <button onclick="clearReverse()" class="secondary">Clear</button>
+                        <div class="progress-container" id="lotto-reverse-progress" style="display: none;">
+                            <div class="progress-bar" id="lotto-progress-bar"></div>
+                        </div>
+                        
+                        <button onclick="reverseEngineerLottoSeed()" class="warning">Reverse Engineer Seed</button>
+                        <button onclick="stopLottoReverseEngineer()" class="danger" id="lotto-stop-button" style="display: none;">Stop</button>
+                        <button onclick="clearLottoReverse()" class="secondary">Clear</button>
+                        <button onclick="sampleLottoData()" class="info">Load Sample Data</button>
                     </div>
                     
                     <div>
                         <label>Reverse Engineering Results:</label>
-                        <div class="result" id="reverse-results">
+                        <div class="result" id="lotto-reverse-results">
                             Results will appear here after analysis.
                         </div>
                         
                         <label>Verification:</label>
-                        <div id="verification-results"></div>
+                        <div id="lotto-verification-results"></div>
+                        
+                        <div id="lotto-predictions">
+                            <h4>Predicted Future Draws</h4>
+                            <div id="lotto-predictions-content"></div>
+                        </div>
                     </div>
                 </div>
             </div>
             
+            <!-- Compare Tab -->
             <div id="compare" class="tab-content">
                 <div class="grid">
                     <div>
-                        <label for="compare-seed">Seed to compare:</label>
-                        <input type="number" id="compare-seed">
+                        <label for="compare-mode">Comparison Mode:</label>
+                        <select id="compare-mode">
+                            <option value="prng">PRNG Sequences</option>
+                            <option value="lotto">Lotto Draws</option>
+                        </select>
                         
-                        <label for="compare-draws">Number of draws to generate:</label>
-                        <input type="number" id="compare-draws" min="1" value="10">
+                        <!-- PRNG Compare Fields -->
+                        <div id="prng-compare-fields">
+                            <label for="compare-prng-seed">Seed to compare:</label>
+                            <input type="number" id="compare-prng-seed">
+                            
+                            <label for="compare-prng-count">Number of values to generate:</label>
+                            <input type="number" id="compare-prng-count" min="1" value="10">
+                            
+                            <label for="compare-prng-observed">Observed Numbers (one per line):</label>
+                            <textarea id="compare-prng-observed" rows="5"></textarea>
+                        </div>
                         
-                        <label for="compare-observed">Observed Numbers (one draw per line):</label>
-                        <textarea id="compare-observed" rows="5"></textarea>
+                        <!-- Lotto Compare Fields -->
+                        <div id="lotto-compare-fields" style="display: none;">
+                            <label for="compare-lotto-seed">Seed to compare:</label>
+                            <input type="number" id="compare-lotto-seed">
+                            
+                            <label for="compare-lotto-draws">Number of draws to generate:</label>
+                            <input type="number" id="compare-lotto-draws" min="1" value="10">
+                            
+                            <label for="compare-lotto-observed">Observed Numbers (one draw per line):</label>
+                            <textarea id="compare-lotto-observed" rows="5"></textarea>
+                        </div>
                         
-                        <button onclick="compareDraws()" class="success">Compare</button>
+                        <button onclick="compareSequences()" class="success">Compare</button>
+                        <button onclick="clearComparison()" class="secondary">Clear</button>
                     </div>
                     
                     <div>
@@ -393,944 +895,2056 @@
                         <div class="result" id="compare-stats">
                             Statistics will appear here after comparison.
                         </div>
+                        
+                        <div id="compare-visualization"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Visualization Tab -->
+            <div id="visualization" class="tab-content">
+                <div class="grid">
+                    <div>
+                        <label for="visualization-type">Visualization Type:</label>
+                        <select id="visualization-type">
+                            <option value="histogram">Histogram</option>
+                            <option value="scatter">Scatter Plot</option>
+                            <option value="autocorrelation">Autocorrelation</option>
+                            <option value="frequency">Frequency Chart</option>
+                        </select>
+                        
+                        <label for="visualization-data">Data to visualize:</label>
+                        <textarea id="visualization-data" rows="5" placeholder="Enter numbers to visualize, one per line"></textarea>
+                        
+                        <button onclick="generateVisualization()" class="success">Generate Visualization</button>
+                        <button onclick="clearVisualization()" class="secondary">Clear</button>
+                        <button onclick="sampleVisualizationData()" class="info">Sample Data</button>
+                    </div>
+                    
+                    <div>
+                        <div id="visualization-container" style="width: 100%; height: 400px;">
+                            <canvas id="visualization-canvas"></canvas>
+                        </div>
+                        
+                        <div class="result" id="visualization-stats">
+                            <strong>Visualization Statistics:</strong>
+                            <div id="visualization-stats-content"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="card">
-            <h2>How It Works</h2>
+            <h2>Algorithm Documentation</h2>
             <div class="grid">
                 <div>
-                    <h3>Lotto PRNG Generation</h3>
-                    <p>This tool uses a deterministic pseudo-random number generator (PRNG) to create lottery numbers based on a seed value.</p>
-                    <p>The algorithm:</p>
-                    <ol>
-                        <li>Takes a seed number (or uses current timestamp if none provided)</li>
-                        <li>Generates main numbers using a Fisher-Yates shuffle</li>
-                        <li>Generates bonus numbers using a separate PRNG sequence</li>
-                        <li>Produces the same sequence for the same seed</li>
-                    </ol>
-                </div>
-                
-                <div>
-                    <h3>Seed Reverse Engineering</h3>
-                    <p>When you provide observed numbers, the tool:</p>
-                    <ol>
-                        <li>Attempts to find a seed that produces matching numbers</li>
-                        <li>Uses brute-force search within a specified range</li>
-                        <li>Verifies candidate seeds by generating subsequent draws</li>
-                        <li>Reports matching seeds and their predicted future draws</li>
-                    </ol>
-                    <p class="status warning">Note: Reverse engineering may take time depending on the range needed.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <footer>
-        <div class="container">
-            <p>Lotto PRNG Analyzer &copy; 2023 | For educational and research purposes only</p>
-            <p>This tool does not predict actual lottery results and should not be used for gambling.</p>
-        </div>
-    </footer>
-    
-    <script>
-        // Global variables
-        let reverseWorker = null;
-        let stopReverseFlag = false;
+                    <h3>PRNG Algorithms</h3>
+                    <div class="algorithm-info">
+                        <h4>Linear Congruential Generator (LCG)</h4>
+                        <p>One of the oldest and simplest PRNG algorithms defined by the recurrence relation:</p>
+                        <p><strong>X<sub>n+1</sub> = (a × X<sub>n</sub> + c) mod m</strong></p>
+                        <p>Where:</p>
+                        <ul>
+                            <li>X is the sequence of pseudo-random values</li>
+                            <li>a is the multiplier</li>
+                            <li>c is the increment</li>
+                            <li>m is the modulus</li>
+                        </ul>
+                        <p class="status warning">Warning: LCGs are not cryptographically secure and can be predictable with enough output.</p>
+                    </div>
+                    
+                    <div class="algorithm-info">
+                        <h4>Mersenne Twister</h4>
+                        <p>A widely used PRNG with a period of 2<sup>19937</sup>-1. Provides fast generation of high-quality pseudo-random numbers.</p>
+                        <p>Advantages:</p>
+                        <ul>
+                            <li>Very long period</li>
+                            <li>Good statistical properties</li>
+                            <li>Fast generation</li>
+                        </ul>
+                        <p>Used in many programming languages and applications including Python, Ruby,
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Global variables
+    let prngReverseWorker;
+    let lottoReverseWorker;
+    let visualizationChart = null;
+
+    // DOM Ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize theme
+        initTheme();
         
-        // Tab functionality
-        function openTab(evt, tabName) {
-            const tabContents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].classList.remove("active");
-            }
-            
-            const tabs = document.getElementsByClassName("tab");
-            for (let i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove("active");
-            }
-            
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
+        // Set up event listeners
+        document.getElementById('prng-algorithm').addEventListener('change', updateAlgorithmParams);
+        document.getElementById('lotto-game-type').addEventListener('change', updateLottoParams);
+        document.getElementById('lotto-reverse-game-type').addEventListener('change', updateLottoReverseParams);
+        document.getElementById('compare-mode').addEventListener('change', updateCompareFields);
+        
+        // Initialize algorithm info
+        updateAlgorithmParams();
+        
+        // Load sample data for visualization
+        sampleVisualizationData();
+    });
+
+    // Theme functionality
+    function initTheme() {
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+
+    // Tab functionality
+    function openTab(evt, tabName) {
+        const tabContents = document.getElementsByClassName('tab-content');
+        for (let i = 0; i < tabContents.length; i++) {
+            tabContents[i].classList.remove('active');
         }
         
-        // Game type change handlers
-        document.getElementById('game-type').addEventListener('change', function() {
-            document.getElementById('custom-params').style.display = 
-                this.value === 'custom' ? 'block' : 'none';
+        const tabs = document.getElementsByClassName('tab');
+        for (let i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('active');
+        }
+        
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // PRNG Generator Functions
+    function updateAlgorithmParams() {
+        const algorithm = document.getElementById('prng-algorithm').value;
+        const lcgParams = document.getElementById('lcg-params');
+        
+        if (algorithm === 'lcg') {
+            lcgParams.style.display = 'block';
+        } else {
+            lcgParams.style.display = 'none';
+        }
+        
+        updateAlgorithmInfo();
+    }
+
+    function updateAlgorithmInfo() {
+        const algorithm = document.getElementById('prng-algorithm').value;
+        let info = '';
+        
+        switch(algorithm) {
+            case 'lcg':
+                info = `
+                    <h4>Linear Congruential Generator (LCG)</h4>
+                    <p>One of the oldest and simplest PRNG algorithms defined by the recurrence relation:</p>
+                    <p><strong>X<sub>n+1</sub> = (a × X<sub>n</sub> + c) mod m</strong></p>
+                    <p>Where:</p>
+                    <ul>
+                        <li>X is the sequence of pseudo-random values</li>
+                        <li>a is the multiplier</li>
+                        <li>c is the increment</li>
+                        <li>m is the modulus</li>
+                    </ul>
+                    <p class="status warning">Warning: LCGs are not cryptographically secure and can be predictable with enough output.</p>
+                `;
+                break;
+            case 'mt':
+                info = `
+                    <h4>Mersenne Twister</h4>
+                    <p>A widely used PRNG with a period of 2<sup>19937</sup>-1. Provides fast generation of high-quality pseudo-random numbers.</p>
+                    <p>Advantages:</p>
+                    <ul>
+                        <li>Very long period</li>
+                        <li>Good statistical properties</li>
+                        <li>Fast generation</li>
+                    </ul>
+                    <p>Used in many programming languages including Python, Ruby, PHP, and more.</p>
+                `;
+                break;
+            case 'xorshift':
+                info = `
+                    <h4>Xorshift</h4>
+                    <p>A class of PRNGs that use exclusive or and bit shifts. Very fast and with good statistical properties.</p>
+                    <p>Basic algorithm (32-bit version):</p>
+                    <div class="code">
+                        x ^= x << 13;<br>
+                        x ^= x >> 17;<br>
+                        x ^= x << 5;
+                    </div>
+                    <p>Period is 2<sup>32</sup>-1 for the 32-bit version.</p>
+                `;
+                break;
+            case 'pcg':
+                info = `
+                    <h4>PCG (Permuted Congruential Generator)</h4>
+                    <p>A family of PRNGs that combine LCGs with permutation functions to improve output quality.</p>
+                    <p>Features:</p>
+                    <ul>
+                        <li>Excellent statistical properties</li>
+                        <li>Small memory footprint</li>
+                        <li>Predictable advancement (useful for simulations)</li>
+                        <li>Multiple output variations</li>
+                    </ul>
+                `;
+                break;
+            case 'mulberry32':
+                info = `
+                    <h4>Mulberry32</h4>
+                    <p>A simple 32-bit PRNG with good distribution properties.</p>
+                    <p>Algorithm:</p>
+                    <div class="code">
+                        function mulberry32(a) {<br>
+                        &nbsp;&nbsp;a += 0x6D2B79F5;<br>
+                        &nbsp;&nbsp;let t = Math.imul(a ^ a >>> 15, 1 | a);<br>
+                        &nbsp;&nbsp;t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;<br>
+                        &nbsp;&nbsp;return ((t ^ t >>> 14) >>> 0) / 4294967296;<br>
+                        }
+                    </div>
+                `;
+                break;
+            case 'sfc32':
+                info = `
+                    <h4>sfc32 (Small Fast Counter)</h4>
+                    <p>A 32-bit PRNG that is part of the PractRand random number testing suite.</p>
+                    <p>Algorithm:</p>
+                    <div class="code">
+                        function sfc32(a, b, c, d) {<br>
+                        &nbsp;&nbsp;a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0;<br>
+                        &nbsp;&nbsp;let t = (a + b) | 0;<br>
+                        &nbsp;&nbsp;a = b ^ b >>> 9;<br>
+                        &nbsp;&nbsp;b = c + (c << 3) | 0;<br>
+                        &nbsp;&nbsp;c = (c << 21 | c >>> 11);<br>
+                        &nbsp;&nbsp;d = d + 1 | 0;<br>
+                        &nbsp;&nbsp;t = t + d | 0;<br>
+                        &nbsp;&nbsp;c = c + t | 0;<br>
+                        &nbsp;&nbsp;return (t >>> 0) / 4294967296;<br>
+                        }
+                    </div>
+                `;
+                break;
+            case 'jsf32':
+                info = `
+                    <h4>jsf32 (Jenkins' Small Fast)</h4>
+                    <p>Bob Jenkins' small fast (non-cryptographic) PRNG.</p>
+                    <p>Algorithm:</p>
+                    <div class="code">
+                        function jsf32(a, b, c, d) {<br>
+                        &nbsp;&nbsp;a |= 0; b |= 0; c |= 0; d |= 0;<br>
+                        &nbsp;&nbsp;let t = a - (b << 27 | b >>> 5) | 0;<br>
+                        &nbsp;&nbsp;a = b ^ (c << 17 | c >>> 15);<br>
+                        &nbsp;&nbsp;b = c + d | 0;<br>
+                        &nbsp;&nbsp;c = d + t | 0;<br>
+                        &nbsp;&nbsp;d = a + t | 0;<br>
+                        &nbsp;&nbsp;return (d >>> 0) / 4294967296;<br>
+                        }
+                    </div>
+                `;
+                break;
+        }
+        
+        document.getElementById('prng-algorithm-info').innerHTML = info;
+    }
+
+    function generatePRNGNumbers() {
+        const algorithm = document.getElementById('prng-algorithm').value;
+        const seed = parseInt(document.getElementById('prng-seed').value) || Math.floor(Math.random() * 1000000);
+        const count = parseInt(document.getElementById('prng-count').value) || 100;
+        const min = parseInt(document.getElementById('prng-min').value) || 0;
+        const max = parseInt(document.getElementById('prng-max').value) || 100;
+        
+        if (min >= max) {
+            alert('Max value must be greater than min value');
+            return;
+        }
+        
+        let numbers = [];
+        let generator;
+        
+        switch(algorithm) {
+            case 'lcg':
+                const multiplier = parseInt(document.getElementById('lcg-multiplier').value) || 1664525;
+                const increment = parseInt(document.getElementById('lcg-increment').value) || 1013904223;
+                const modulus = parseInt(document.getElementById('lcg-modulus').value) || 4294967296;
+                
+                generator = lcg(multiplier, increment, modulus, seed);
+                break;
+            case 'mt':
+                generator = mersenneTwister(seed);
+                break;
+            case 'xorshift':
+                generator = xorshift(seed);
+                break;
+            case 'pcg':
+                generator = pcg(seed);
+                break;
+            case 'mulberry32':
+                generator = mulberry32(seed);
+                break;
+            case 'sfc32':
+                generator = sfc32(seed, seed + 1, seed + 2, seed + 3);
+                break;
+            case 'jsf32':
+                generator = jsf32(seed, seed + 1, seed + 2, seed + 3);
+                break;
+            default:
+                generator = lcg(1664525, 1013904223, 4294967296, seed);
+        }
+        
+        for (let i = 0; i < count; i++) {
+            const randomValue = generator();
+            const scaledValue = Math.floor(randomValue * (max - min + 1)) + min;
+            numbers.push(scaledValue);
+        }
+        
+        document.getElementById('prng-generated-numbers').value = numbers.join('\n');
+        calculatePRNGStats(numbers);
+    }
+
+    function clearPRNGGeneration() {
+        document.getElementById('prng-generated-numbers').value = '';
+        document.getElementById('prng-stats-content').innerHTML = '';
+    }
+
+    function randomizePRNGParams() {
+        document.getElementById('prng-seed').value = Math.floor(Math.random() * 1000000);
+        
+        if (document.getElementById('prng-algorithm').value === 'lcg') {
+            document.getElementById('lcg-multiplier').value = Math.floor(Math.random() * 1000000) + 1;
+            document.getElementById('lcg-increment').value = Math.floor(Math.random() * 1000000) + 1;
+            document.getElementById('lcg-modulus').value = Math.floor(Math.random() * 1000000000) + 1000000;
+        }
+    }
+
+    function calculatePRNGStats(numbers) {
+        if (numbers.length === 0) return;
+        
+        const sum = numbers.reduce((a, b) => a + b, 0);
+        const mean = sum / numbers.length;
+        const min = Math.min(...numbers);
+        const max = Math.max(...numbers);
+        const range = max - min;
+        
+        // Calculate variance and standard deviation
+        const variance = numbers.reduce((acc, num) => acc + Math.pow(num - mean, 2), 0) / numbers.length;
+        const stdDev = Math.sqrt(variance);
+        
+        // Calculate frequency distribution
+        const frequency = {};
+        numbers.forEach(num => {
+            frequency[num] = (frequency[num] || 0) + 1;
         });
         
-        document.getElementById('reverse-game-type').addEventListener('change', function() {
-            document.getElementById('custom-reverse-params').style.display = 
-                this.value === 'custom-reverse' ? 'block' : 'none';
-        });
+        const uniqueCount = Object.keys(frequency).length;
+        const duplicates = numbers.length - uniqueCount;
         
-        // Lotto number generator
-        function generateLottoNumbers() {
-            const gameType = document.getElementById('game-type').value;
-            let mainPool, pickCount, bonusPool, bonusCount;
-            
-            if (gameType === 'custom') {
-                mainPool = parseInt(document.getElementById('main-numbers').value) || 69;
-                pickCount = parseInt(document.getElementById('pick-numbers').value) || 5;
-                bonusPool = parseInt(document.getElementById('bonus-numbers').value) || 0;
-                bonusCount = parseInt(document.getElementById('pick-bonus').value) || 0;
-            } else {
-                // Set parameters based on game type
-                switch (gameType) {
-                    case 'powerball':
-                        mainPool = 69;
-                        pickCount = 5;
-                        bonusPool = 26;
-                        bonusCount = 1;
-                        break;
-                    case 'megamillions':
-                        mainPool = 70;
-                        pickCount = 5;
-                        bonusPool = 25;
-                        bonusCount = 1;
-                        break;
-                    case 'euromillions':
-                        mainPool = 50;
-                        pickCount = 5;
-                        bonusPool = 12;
-                        bonusCount = 2;
-                        break;
-                    default:
-                        mainPool = 69;
-                        pickCount = 5;
-                        bonusPool = 26;
-                        bonusCount = 1;
-                }
-            }
-            
-            const seedInput = document.getElementById('seed').value.trim();
-            const seed = seedInput ? parseInt(seedInput) : Math.floor(Math.random() * 1000000000);
-            const drawCount = parseInt(document.getElementById('draw-count').value) || 1;
-            
-            // Generate numbers
-            let results = '';
-            let allNumbers = [];
-            
-            for (let i = 0; i < drawCount; i++) {
-                const currentSeed = seed + i; // Different seed for each draw
-                const draw = generateDraw(currentSeed, mainPool, pickCount, bonusPool, bonusCount);
-                allNumbers.push(draw);
-                
-                // Format the numbers
-                const mainNumbers = draw.mainNumbers.sort((a, b) => a - b);
-                const bonusNumbers = draw.bonusNumbers.sort((a, b) => a - b);
-                
-                results += `<div class="lotto-draw">
-                    <div class="lotto-balls">`;
-                
-                mainNumbers.forEach(num => {
-                    results += `<div class="ball">${num}</div>`;
-                });
-                
-                if (bonusNumbers.length > 0) {
-                    results += `<div class="ball powerball">${bonusNumbers.join(', ')}</div>`;
-                }
-                
-                results += `</div>
-                    <div><small>Draw ${i+1} | Seed: ${currentSeed}</small></div>
-                </div>`;
-            }
-            
-            document.getElementById('generated-results').innerHTML = results;
-            
-            // Show generation details
-            const details = `
-                <p>Game: ${gameType}</p>
-                <p>Main numbers: ${pickCount} from ${mainPool}</p>
-                ${bonusPool > 0 ? `<p>Bonus numbers: ${bonusCount} from ${bonusPool}</p>` : ''}
-                <p>Initial seed: ${seed}</p>
-                <p>Total draws generated: ${drawCount}</p>
-            `;
-            
-            document.getElementById('gen-details').innerHTML = details;
-        }
+        let statsHTML = `
+            <p>Count: ${numbers.length}</p>
+            <p>Min: ${min}</p>
+            <p>Max: ${max}</p>
+            <p>Range: ${range}</p>
+            <p>Mean: ${mean.toFixed(2)}</p>
+            <p>Variance: ${variance.toFixed(2)}</p>
+            <p>Standard Deviation: ${stdDev.toFixed(2)}</p>
+            <p>Unique Values: ${uniqueCount} (${duplicates} duplicates)</p>
+        `;
         
-        function generateDraw(seed, mainPool, pickCount, bonusPool, bonusCount) {
-            // Create a seeded PRNG using Mulberry32 algorithm
-            const prng = new SeededPRNG(seed);
-            
-            // Generate main numbers using Fisher-Yates shuffle
-            const mainNumbers = [];
-            const pool = Array.from({length: mainPool}, (_, i) => i + 1);
-            
-            for (let i = pool.length - 1; i >= pool.length - pickCount; i--) {
-                const j = Math.floor(prng.next() * (i + 1));
-                [pool[i], pool[j]] = [pool[j], pool[i]];
-                mainNumbers.push(pool[i]);
-            }
-            
-            // Generate bonus numbers
-            const bonusNumbers = [];
-            if (bonusPool > 0 && bonusCount > 0) {
-                const bonusPrng = new SeededPRNG(seed + 12345); // Different sequence for bonus
-                const bonusPoolArr = Array.from({length: bonusPool}, (_, i) => i + 1);
-                
-                for (let i = bonusPoolArr.length - 1; i >= bonusPoolArr.length - bonusCount; i--) {
-                    const j = Math.floor(bonusPrng.next() * (i + 1));
-                    [bonusPoolArr[i], bonusPoolArr[j]] = [bonusPoolArr[j], bonusPoolArr[i]];
-                    bonusNumbers.push(bonusPoolArr[i]);
-                }
-            }
-            
-            return {
-                mainNumbers: mainNumbers,
-                bonusNumbers: bonusNumbers,
-                seed: seed
-            };
-        }
+        document.getElementById('prng-stats-content').innerHTML = statsHTML;
+    }
+
+    // PRNG Algorithms
+    function lcg(a, c, m, seed) {
+        let state = seed;
+        return function() {
+            state = (a * state + c) % m;
+            return state / m;
+        };
+    }
+
+    function mersenneTwister(seed) {
+        // Simplified MT19937 implementation
+        const N = 624;
+        const M = 397;
+        const MATRIX_A = 0x9908b0df;
+        const UPPER_MASK = 0x80000000;
+        const LOWER_MASK = 0x7fffffff;
         
-        // Seeded PRNG implementation (Mulberry32)
-        class SeededPRNG {
-            constructor(seed) {
-                this.seed = seed;
-            }
-            
-            next() {
-                this.seed |= 0;
-                this.seed = this.seed + 0x6D2B79F5 | 0;
-                let t = Math.imul(this.seed ^ this.seed >>> 15, 1 | this.seed);
-                t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        let mt = new Array(N);
+        let mti = N + 1;
+        
+        function init_genrand(s) {
+            mt[0] = s >>> 0;
+            for (mti = 1; mti < N; mti++) {
+                mt[mti] = (1812433253 * (mt[mti-1] ^ (mt[mti-1] >>> 30)) + mti) >>> 0;
             }
         }
         
-        // Clear generation
-        function clearGeneration() {
-            document.getElementById('generated-results').innerHTML = '';
-            document.getElementById('gen-details').innerHTML = '';
-            document.getElementById('seed').value = '';
+        init_genrand(seed);
+        
+        return function() {
+            let y;
+            const mag01 = [0x0, MATRIX_A];
+            
+            if (mti >= N) {
+                let kk;
+                
+                for (kk = 0; kk < N - M; kk++) {
+                    y = (mt[kk] & UPPER_MASK) | (mt[kk+1] & LOWER_MASK);
+                    mt[kk] = mt[kk+M] ^ (y >>> 1) ^ mag01[y & 0x1];
+                }
+                
+                for (; kk < N-1; kk++) {
+                    y = (mt[kk] & UPPER_MASK) | (mt[kk+1] & LOWER_MASK);
+                    mt[kk] = mt[kk+(M-N)] ^ (y >>> 1) ^ mag01[y & 0x1];
+                }
+                
+                y = (mt[N-1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
+                mt[N-1] = mt[M-1] ^ (y >>> 1) ^ mag01[y & 0x1];
+                
+                mti = 0;
+            }
+            
+            y = mt[mti++];
+            
+            // Tempering
+            y ^= (y >>> 11);
+            y ^= (y << 7) & 0x9d2c5680;
+            y ^= (y << 15) & 0xefc60000;
+            y ^= (y >>> 18);
+            
+            return y / 4294967296;
+        };
+    }
+
+    function xorshift(seed) {
+        let state = seed || 1;
+        return function() {
+            state ^= state << 13;
+            state ^= state >> 17;
+            state ^= state << 5;
+            return (state >>> 0) / 4294967296;
+        };
+    }
+
+    function pcg(seed) {
+        let state = seed || 0x853c49e6748fea9b;
+        const inc = 0xda3e39cb94b95bdb;
+        
+        return function() {
+            const oldstate = state;
+            state = oldstate * 6364136223846793005 + inc;
+            const xorshifted = ((oldstate >> 18) ^ oldstate) >> 27;
+            const rot = oldstate >> 59;
+            return ((xorshifted >> rot) | (xorshifted << ((-rot) & 31))) >>> 0 / 4294967296;
+        };
+    }
+
+    function mulberry32(seed) {
+        return function() {
+            seed += 0x6D2B79F5;
+            let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+            t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+            return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+    }
+
+    function sfc32(a, b, c, d) {
+        return function() {
+            a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; 
+            let t = (a + b) | 0;
+            a = b ^ b >>> 9;
+            b = c + (c << 3) | 0;
+            c = (c << 21 | c >>> 11);
+            d = d + 1 | 0;
+            t = t + d | 0;
+            c = c + t | 0;
+            return (t >>> 0) / 4294967296;
+        };
+    }
+
+    function jsf32(a, b, c, d) {
+        return function() {
+            a |= 0; b |= 0; c |= 0; d |= 0;
+            let t = a - (b << 27 | b >>> 5) | 0;
+            a = b ^ (c << 17 | c >>> 15);
+            b = c + d | 0;
+            c = d + t | 0;
+            d = a + t | 0;
+            return ((d >>> 0) / 4294967296);
+        };
+    }
+
+    // PRNG Reverse Engineering
+    function reverseEngineerPRNG() {
+        const algorithm = document.getElementById('reverse-prng-algorithm').value;
+        const targetNumbersText = document.getElementById('prng-target-numbers').value.trim();
+        
+        if (!targetNumbersText) {
+            alert('Please enter observed numbers to analyze');
+            return;
         }
         
-        // Reverse engineer seed
-        function reverseEngineerSeed() {
-            const gameType = document.getElementById('reverse-game-type').value;
-            let mainPool, pickCount, bonusPool, bonusCount;
-            
-            if (gameType === 'custom-reverse') {
-                mainPool = parseInt(document.getElementById('reverse-main-numbers').value) || 69;
-                pickCount = parseInt(document.getElementById('reverse-pick-numbers').value) || 5;
-                bonusPool = parseInt(document.getElementById('reverse-bonus-numbers').value) || 0;
-                bonusCount = parseInt(document.getElementById('reverse-pick-bonus').value) || 0;
-            } else {
-                // Set parameters based on game type
-                switch (gameType) {
-                    case 'powerball':
-                        mainPool = 69;
-                        pickCount = 5;
-                        bonusPool = 26;
-                        bonusCount = 1;
-                        break;
-                    case 'megamillions':
-                        mainPool = 70;
-                        pickCount = 5;
-                        bonusPool = 25;
-                        bonusCount = 1;
-                        break;
-                    case 'euromillions':
-                        mainPool = 50;
-                        pickCount = 5;
-                        bonusPool = 12;
-                        bonusCount = 2;
-                        break;
-                    default:
-                        mainPool = 69;
-                        pickCount = 5;
-                        bonusPool = 26;
-                        bonusCount = 1;
-                }
+        const targetNumbers = targetNumbersText.split('\n').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+        
+        if (targetNumbers.length < 3) {
+            alert('Need at least 3 numbers for reliable analysis');
+            return;
+        }
+        
+        const statusElement = document.getElementById('prng-reverse-status');
+        const progressContainer = document.getElementById('prng-reverse-progress');
+        const progressBar = document.getElementById('prng-progress-bar');
+        const stopButton = document.getElementById('prng-stop-button');
+        
+        statusElement.textContent = 'Starting reverse engineering process...';
+        statusElement.className = 'status info';
+        progressContainer.style.display = 'block';
+        stopButton.style.display = 'inline-block';
+        
+        // Create a web worker for the heavy computation
+        if (window.Worker) {
+            if (prngReverseWorker) {
+                prngReverseWorker.terminate();
             }
             
-            const observedText = document.getElementById('observed-numbers').value.trim();
-            if (!observedText) {
-                document.getElementById('reverse-status').innerHTML = 
-                    '<div class="status error">Please enter observed numbers to analyze.</div>';
-                return;
-            }
-            
-            // Parse observed numbers
-            const observedDraws = [];
-            const lines = observedText.split('\n');
-            
-            for (const line of lines) {
-                const parts = line.split('|').map(p => p.trim());
-                if (parts.length === 0) continue;
+            prngReverseWorker = new Worker(URL.createObjectURL(new Blob([`
+                // Worker code for PRNG reverse engineering
+                onmessage = function(e) {
+                    const { algorithm, targetNumbers, knownParams } = e.data;
+                    const results = [];
+                    
+                    // Simple brute-force approach (for demo purposes)
+                    // In a real application, you'd use more sophisticated methods
+                    const maxAttempts = 100000;
+                    let bestMatch = { seed: null, matches: 0, sequence: [] };
+                    
+                    for (let seed = 0; seed < maxAttempts; seed++) {
+                        let generator;
+                        let sequence = [];
+                        let matches = 0;
+                        
+                        switch(algorithm) {
+                            case 'lcg':
+                                const a = knownParams?.multiplier || 1664525;
+                                const c = knownParams?.increment || 1013904223;
+                                const m = knownParams?.modulus || 4294967296;
+                                generator = lcg(a, c, m, seed);
+                                break;
+                            case 'xorshift32':
+                                generator = xorshift(seed);
+                                break;
+                            case 'mulberry32':
+                                generator = mulberry32(seed);
+                                break;
+                            case 'sfc32':
+                                generator = sfc32(seed, seed+1, seed+2, seed+3);
+                                break;
+                            default:
+                                generator = lcg(1664525, 1013904223, 4294967296, seed);
+                        }
+                        
+                        // Generate the same number of values as in target
+                        for (let i = 0; i < targetNumbers.length; i++) {
+                            const val = Math.floor(generator() * 100); // Scale to similar range
+                            sequence.push(val);
+                            if (val === targetNumbers[i]) {
+                                matches++;
+                            }
+                        }
+                        
+                        if (matches > bestMatch.matches) {
+                            bestMatch = { seed, matches, sequence };
+                        }
+                        
+                        // Report progress every 1000 seeds
+                        if (seed % 1000 === 0) {
+                            postMessage({
+                                type: 'progress',
+                                progress: (seed / maxAttempts) * 100,
+                                currentBest: bestMatch
+                            });
+                        }
+                    }
+                    
+                    postMessage({
+                        type: 'result',
+                        bestMatch
+                    });
+                };
                 
-                // Parse main numbers
-                const mainNumbers = parts[0].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
-                if (mainNumbers.length !== pickCount) {
-                    document.getElementById('reverse-status').innerHTML = 
-                        `<div class="status error">Invalid main numbers count in draw: ${mainNumbers.join(', ')}. Expected ${pickCount} numbers.</div>`;
-                    return;
-                }
+                // PRNG implementations for worker
+                ${lcg.toString()}
+                ${xorshift.toString()}
+                ${mulberry32.toString()}
+                ${sfc32.toString()}
+            `], { type: 'text/javascript' })));
+            
+            prngReverseWorker.onmessage = function(e) {
+                const data = e.data;
                 
-                // Parse bonus numbers if available
-                let bonusNumbers = [];
-                if (parts.length > 1 && bonusCount > 0) {
-                    bonusNumbers = parts[1].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
-                    if (bonusNumbers.length !== bonusCount) {
-                        document.getElementById('reverse-status').innerHTML = 
-                            `<div class="status error">Invalid bonus numbers count in draw: ${bonusNumbers.join(', ')}. Expected ${bonusCount} numbers.</div>`;
+                if (data.type === 'progress') {
+                    progressBar.style.width = `${data.progress}%`;
+                    statusElement.textContent = `Analyzing... ${Math.floor(data.progress)}% complete. Best match: ${data.currentBest.matches}/${targetNumbers.length} numbers matched`;
+                    
+                    if (data.currentBest.matches === targetNumbers.length) {
+                        // Found perfect match
+                        prngReverseWorker.terminate();
+                        showPRNGReverseResults(data.currentBest, targetNumbers);
                         return;
                     }
+                } else if (data.type === 'result') {
+                    showPRNGReverseResults(data.bestMatch, targetNumbers);
                 }
+            };
+            
+            const knownParams = {};
+            if (document.getElementById('known-multiplier').value) {
+                knownParams.multiplier = parseInt(document.getElementById('known-multiplier').value);
+            }
+            if (document.getElementById('known-increment').value) {
+                knownParams.increment = parseInt(document.getElementById('known-increment').value);
+            }
+            if (document.getElementById('known-modulus').value) {
+                knownParams.modulus = parseInt(document.getElementById('known-modulus').value);
+            }
+            
+            prngReverseWorker.postMessage({
+                algorithm,
+                targetNumbers,
+                knownParams
+            });
+        } else {
+            statusElement.className = 'status error';
+            statusElement.textContent = 'Web Workers not supported in your browser. Reverse engineering requires a modern browser.';
+        }
+    }
+
+    function stopPRNGReverseEngineer() {
+        if (prngReverseWorker) {
+            prngReverseWorker.terminate();
+            prngReverseWorker = null;
+        }
+        
+        document.getElementById('prng-reverse-status').className = 'status warning';
+        document.getElementById('prng-reverse-status').textContent = 'Reverse engineering stopped by user.';
+        document.getElementById('prng-stop-button').style.display = 'none';
+    }
+
+    function showPRNGReverseResults(result, targetNumbers) {
+        const statusElement = document.getElementById('prng-reverse-status');
+        const progressContainer = document.getElementById('prng-reverse-progress');
+        const stopButton = document.getElementById('prng-stop-button');
+        const seedResults = document.getElementById('prng-seed-results');
+        const verification = document.getElementById('prng-seed-verification');
+        const predictions = document.getElementById('prng-predictions-content');
+        
+        progressContainer.style.display = 'none';
+        stopButton.style.display = 'none';
+        
+        if (result.matches === targetNumbers.length) {
+            statusElement.className = 'status success';
+            statusElement.textContent = `Success! Found matching seed: ${result.seed}`;
+            
+            seedResults.innerHTML = `
+                <p><strong>Found Seed:</strong> ${result.seed}</p>
+                <p><strong>Matches:</strong> ${result.matches}/${targetNumbers.length} numbers matched perfectly</p>
+                <p><strong>Generated Sequence:</strong> ${result.sequence.join(', ')}</p>
+            `;
+        } else {
+            statusElement.className = 'status warning';
+            statusElement.textContent = `Partial match found. Best seed: ${result.seed} (${result.matches}/${targetNumbers.length} matches)`;
+            
+            seedResults.innerHTML = `
+                <p><strong>Best Seed Found:</strong> ${result.seed}</p>
+                <p><strong>Matches:</strong> ${result.matches}/${targetNumbers.length} numbers matched</p>
+                <p><strong>Generated Sequence:</strong> ${result.sequence.join(', ')}</p>
+                <p class="status warning">Note: This may not be the actual seed used. More input numbers increase accuracy.</p>
+            `;
+        }
+        
+        // Generate next numbers for verification
+        const algorithm = document.getElementById('reverse-prng-algorithm').value;
+        let generator;
+        
+        switch(algorithm) {
+            case 'lcg':
+                const a = parseInt(document.getElementById('known-multiplier').value) || 1664525;
+                const c = parseInt(document.getElementById('known-increment').value) || 1013904223;
+                const m = parseInt(document.getElementById('known-modulus').value) || 4294967296;
+                generator = lcg(a, c, m, result.seed);
+                break;
+            case 'xorshift32':
+                generator = xorshift(result.seed);
+                break;
+            case 'mulberry32':
+                generator = mulberry32(result.seed);
+                break;
+            case 'sfc32':
+                generator = sfc32(result.seed, result.seed+1, result.seed+2, result.seed+3);
+                break;
+            default:
+                generator = lcg(1664525, 1013904223, 4294967296, result.seed);
+        }
+        
+        const nextNumbers = [];
+        for (let i = 0; i < 10; i++) {
+            nextNumbers.push(Math.floor(generator() * 100)); // Scale to similar range
+        }
+        
+        verification.value = nextNumbers.join('\n');
+        
+        // Show prediction analysis
+        predictions.innerHTML = `
+            <p><strong>Next predicted numbers:</strong> ${nextNumbers.join(', ')}</p>
+            <p class="status info">These are the next numbers that would be generated by this PRNG with the found seed.</p>
+        `;
+    }
+
+    function clearPRNGReverse() {
+        document.getElementById('prng-target-numbers').value = '';
+        document.getElementById('prng-seed-results').innerHTML = 'Seed candidates will appear here after analysis.';
+        document.getElementById('prng-seed-verification').value = '';
+        document.getElementById('prng-predictions-content').innerHTML = '';
+        document.getElementById('prng-reverse-status').className = 'status info';
+        document.getElementById('prng-reverse-status').textContent = 'Enter observed numbers to begin reverse engineering. More numbers increase accuracy.';
+        document.getElementById('prng-reverse-progress').style.display = 'none';
+        document.getElementById('prng-progress-bar').style.width = '0%';
+        document.getElementById('prng-stop-button').style.display = 'none';
+        
+        if (prngReverseWorker) {
+            prngReverseWorker.terminate();
+            prngReverseWorker = null;
+        }
+    }
+
+    function samplePRNGData() {
+        const samples = [
+            42, 71, 35, 89, 26, 53, 97, 13, 60, 84,
+            31, 67, 19, 75, 8, 49, 92, 5, 63, 37
+        ].slice(0, 10).join('\n');
+        
+        document.getElementById('prng-target-numbers').value = samples;
+    }
+
+    // Lotto Generator Functions
+    function updateLottoParams() {
+        const gameType = document.getElementById('lotto-game-type').value;
+        const customParams = document.getElementById('lotto-custom-params');
+        
+        if (gameType === 'custom') {
+            customParams.style.display = 'block';
+        } else {
+            customParams.style.display = 'none';
+        }
+    }
+
+    function generateLottoNumbers() {
+        const gameType = document.getElementById('lotto-game-type').value;
+        let mainPool, pickCount, bonusPool, bonusCount;
+        let seed = document.getElementById('lotto-seed').value;
+        
+        if (!seed) {
+            seed = Math.floor(Math.random() * 1000000);
+            document.getElementById('lotto-seed').value = seed;
+        } else {
+            seed = parseInt(seed);
+        }
+        
+        const drawCount = parseInt(document.getElementById('lotto-draw-count').value) || 5;
+        
+        // Set parameters based on game type
+        switch(gameType) {
+            case 'powerball':
+                mainPool = 69;
+                pickCount = 5;
+                bonusPool = 26;
+                bonusCount = 1;
+                break;
+            case 'megamillions':
+                mainPool = 70;
+                pickCount = 5;
+                bonusPool = 25;
+                bonusCount = 1;
+                break;
+            case 'euromillions':
+                mainPool = 50;
+                pickCount = 5;
+                bonusPool = 12;
+                bonusCount = 2;
+                break;
+            case 'lotto649':
+                mainPool = 49;
+                pickCount = 6;
+                bonusPool = 0;
+                bonusCount = 0;
+                break;
+            case 'custom':
+                mainPool = parseInt(document.getElementById('lotto-main-numbers').value) || 69;
+                pickCount = parseInt(document.getElementById('lotto-pick-numbers').value) || 5;
+                bonusPool = parseInt(document.getElementById('lotto-bonus-numbers').value) || 0;
+                bonusCount = parseInt(document.getElementById('lotto-pick-bonus').value) || 0;
+                break;
+            default:
+                mainPool = 69;
+                pickCount = 5;
+                bonusPool = 26;
+                bonusCount = 1;
+        }
+        
+        // Validate parameters
+        if (pickCount > mainPool) {
+            alert(`Cannot pick ${pickCount} numbers from a pool of ${mainPool}`);
+            return;
+        }
+        
+        if (bonusCount > bonusPool) {
+            alert(`Cannot pick ${bonusCount} bonus numbers from a pool of ${bonusPool}`);
+            return;
+        }
+        
+        // Generate draws
+        const generator = mulberry32(seed);
+        const draws = [];
+        const allNumbers = {};
+        const allBonusNumbers = {};
+        
+        for (let i = 0; i < drawCount; i++) {
+            const mainNumbers = generateUniqueNumbers(generator, mainPool, pickCount);
+            const bonusNumbers = bonusCount > 0 ? generateUniqueNumbers(generator, bonusPool, bonusCount) : [];
+            
+            draws.push({
+                main: mainNumbers,
+                bonus: bonusNumbers
+            });
+            
+            // Track frequency
+            mainNumbers.forEach(num => {
+                allNumbers[num] = (allNumbers[num] || 0) + 1;
+            });
+            
+            bonusNumbers.forEach(num => {
+                allBonusNumbers[num] = (allBonusNumbers[num] || 0) + 1;
+            });
+        }
+        
+        // Display results
+        displayLottoResults(draws, gameType);
+        
+        // Display frequency analysis
+        displayFrequencyAnalysis(allNumbers, allBonusNumbers, gameType);
+        
+        // Display generation details
+        document.getElementById('lotto-gen-details').innerHTML = `
+            <p><strong>Seed:</strong> ${seed}</p>
+            <p><strong>Main Numbers Pool:</strong> 1-${mainPool}, Pick ${pickCount}</p>
+            ${bonusPool > 0 ? `<p><strong>Bonus Numbers Pool:</strong> 1-${bonusPool}, Pick ${bonusCount}</p>` : ''}
+            <p><strong>Total Draws Generated:</strong> ${drawCount}</p>
+        `;
+    }
+
+    function generateUniqueNumbers(generator, poolSize, count) {
+        const numbers = [];
+        while (numbers.length < count) {
+            const num = Math.floor(generator() * poolSize) + 1;
+            if (!numbers.includes(num)) {
+                numbers.push(num);
+            }
+        }
+        return numbers.sort((a, b) => a - b);
+    }
+
+    function displayLottoResults(draws, gameType) {
+        const container = document.getElementById('lotto-generated-results');
+        container.innerHTML = '';
+        
+        draws.forEach((draw, index) => {
+            const drawElement = document.createElement('div');
+            drawElement.className = 'lotto-draw';
+            drawElement.style.marginBottom = '1rem';
+            
+            const drawTitle = document.createElement('div');
+            drawTitle.textContent = `Draw ${index + 1}:`;
+            drawTitle.style.fontWeight = '500';
+            drawTitle.style.marginBottom = '0.5rem';
+            
+            const ballsContainer = document.createElement('div');
+            ballsContainer.className = 'lotto-balls';
+            
+            // Main numbers
+            draw.main.forEach(num => {
+                const ball = document.createElement('div');
+                ball.className = 'ball';
+                ball.textContent = num;
+                ballsContainer.appendChild(ball);
+            });
+            
+            // Bonus numbers
+            if (draw.bonus.length > 0) {
+                const separator = document.createElement('span');
+                separator.textContent = '+';
+                separator.style.margin = '0 0.5rem';
+                separator.style.fontWeight = 'bold';
+                ballsContainer.appendChild(separator);
                 
-                observedDraws.push({
-                    mainNumbers: mainNumbers,
-                    bonusNumbers: bonusNumbers
+                draw.bonus.forEach(num => {
+                    const ball = document.createElement('div');
+                    ball.className = 'ball';
+                    
+                    // Style bonus balls differently based on game type
+                    if (gameType === 'powerball') {
+                        ball.className += ' powerball';
+                    } else if (gameType === 'megamillions') {
+                        ball.className += ' megaball';
+                    } else if (gameType === 'euromillions') {
+                        ball.className += ' eurostar';
+                    }
+                    
+                    ball.textContent = num;
+                    ballsContainer.appendChild(ball);
                 });
             }
             
-            if (observedDraws.length === 0) {
-                document.getElementById('reverse-status').innerHTML = 
-                    '<div class="status error">No valid draws found in input.</div>';
+            drawElement.appendChild(drawTitle);
+            drawElement.appendChild(ballsContainer);
+            container.appendChild(drawElement);
+        });
+    }
+
+    function displayFrequencyAnalysis(mainNumbers, bonusNumbers, gameType) {
+        const container = document.getElementById('lotto-frequency-content');
+        container.innerHTML = '';
+        
+        // Create main numbers frequency table
+        if (Object.keys(mainNumbers).length > 0) {
+            const mainTitle = document.createElement('h5');
+            mainTitle.textContent = 'Main Numbers Frequency';
+            container.appendChild(mainTitle);
+            
+            const mainTable = document.createElement('table');
+            mainTable.className = 'frequency-table';
+            
+            // Sort by frequency (descending)
+            const sortedMain = Object.entries(mainNumbers).sort((a, b) => b[1] - a[1]);
+            
+            // Calculate hot/cold thresholds
+            const frequencies = sortedMain.map(item => item[1]);
+            const avgFrequency = frequencies.reduce((a, b) => a + b, 0) / frequencies.length;
+            const hotThreshold = avgFrequency * 1.5;
+            const coldThreshold = avgFrequency * 0.5;
+            
+            // Create table rows
+            const tableBody = document.createElement('tbody');
+            
+            // Group numbers into rows of 10 for better display
+            for (let i = 0; i < sortedMain.length; i += 10) {
+                const row = document.createElement('tr');
+                
+                for (let j = 0; j < 10 && i + j < sortedMain.length; j++) {
+                    const [num, freq] = sortedMain[i + j];
+                    const cell = document.createElement('td');
+                    
+                    if (freq >= hotThreshold) {
+                        cell.className = 'hot-number';
+                        cell.title = 'Hot number (appears more frequently than average)';
+                    } else if (freq <= coldThreshold) {
+                        cell.className = 'cold-number';
+                        cell.title = 'Cold number (appears less frequently than average)';
+                    }
+                    
+                    cell.textContent = `${num}: ${freq}`;
+                    row.appendChild(cell);
+                }
+                
+                tableBody.appendChild(row);
+            }
+            
+            mainTable.appendChild(tableBody);
+            container.appendChild(mainTable);
+        }
+        
+        // Create bonus numbers frequency table if they exist
+        if (Object.keys(bonusNumbers).length > 0) {
+            const bonusTitle = document.createElement('h5');
+            bonusTitle.textContent = gameType === 'euromillions' ? 'Lucky Stars Frequency' : 
+                                   gameType === 'powerball' ? 'Powerball Frequency' : 
+                                   gameType === 'megamillions' ? 'Mega Ball Frequency' : 
+                                   'Bonus Numbers Frequency';
+            container.appendChild(bonusTitle);
+            
+            const bonusTable = document.createElement('table');
+            bonusTable.className = 'frequency-table';
+            
+            // Sort by frequency (descending)
+            const sortedBonus = Object.entries(bonusNumbers).sort((a, b) => b[1] - a[1]);
+            
+            const tableBody = document.createElement('tbody');
+            const row = document.createElement('tr');
+            
+            sortedBonus.forEach(([num, freq]) => {
+                const cell = document.createElement('td');
+                cell.textContent = `${num}: ${freq}`;
+                row.appendChild(cell);
+            });
+            
+            tableBody.appendChild(row);
+            bonusTable.appendChild(tableBody);
+            container.appendChild(bonusTable);
+        }
+    }
+
+    function clearLottoGeneration() {
+        document.getElementById('lotto-generated-results').innerHTML = '';
+        document.getElementById('lotto-gen-details').innerHTML = '';
+        document.getElementById('lotto-frequency-content').innerHTML = '';
+        document.getElementById('lotto-seed').value = '';
+    }
+
+    function randomizeLottoSeed() {
+        document.getElementById('lotto-seed').value = Math.floor(Math.random() * 1000000);
+    }
+
+    // Lotto Reverse Engineering
+    function updateLottoReverseParams() {
+        const gameType = document.getElementById('lotto-reverse-game-type').value;
+        const customParams = document.getElementById('lotto-custom-reverse-params');
+        
+        if (gameType === 'custom-reverse') {
+            customParams.style.display = 'block';
+        } else {
+            customParams.style.display = 'none';
+        }
+    }
+
+    function reverseEngineerLottoSeed() {
+        const gameType = document.getElementById('lotto-reverse-game-type').value;
+        let mainPool, pickCount, bonusPool, bonusCount;
+        
+        // Set parameters based on game type
+        switch(gameType) {
+            case 'powerball':
+                mainPool = 69;
+                pickCount = 5;
+                bonusPool = 26;
+                bonusCount = 1;
+                break;
+            case 'megamillions':
+                mainPool = 70;
+                pickCount = 5;
+                bonusPool = 25;
+                bonusCount = 1;
+                break;
+            case 'euromillions':
+                mainPool = 50;
+                pickCount = 5;
+                bonusPool = 12;
+                bonusCount = 2;
+                break;
+            case 'custom-reverse':
+                mainPool = parseInt(document.getElementById('lotto-reverse-main-numbers').value) || 69;
+                pickCount = parseInt(document.getElementById('lotto-reverse-pick-numbers').value) || 5;
+                bonusPool = parseInt(document.getElementById('lotto-reverse-bonus-numbers').value) || 0;
+                bonusCount = parseInt(document.getElementById('lotto-reverse-pick-bonus').value) || 0;
+                break;
+            default:
+                mainPool = 69;
+                pickCount = 5;
+                bonusPool = 26;
+                bonusCount = 1;
+        }
+        
+        // Get observed numbers
+        const observedText = document.getElementById('lotto-observed-numbers').value.trim();
+        if (!observedText) {
+            alert('Please enter observed draws to analyze');
+            return;
+        }
+        
+        const observedDraws = observedText.split('\n')
+            .map(line => line.trim())
+            .filter(line => line)
+            .map(line => {
+                const parts = line.split('|').map(part => part.trim());
+                const main = parts[0].split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+                const bonus = parts.length > 1 ? 
+                    parts[1].split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num)) : [];
+                return { main, bonus };
+            });
+        
+        // Validate draws
+        for (const draw of observedDraws) {
+            if (draw.main.length !== pickCount) {
+                alert(`Each draw must have exactly ${pickCount} main numbers`);
                 return;
             }
             
-            // Prepare for reverse engineering
-            document.getElementById('reverse-status').innerHTML = 
-                `<div class="status info">Starting reverse engineering for ${observedDraws.length} draws...</div>`;
-            document.getElementById('reverse-progress').style.display = 'block';
-            document.getElementById('progress-bar').style.width = '0%';
-            document.getElementById('stop-button').style.display = 'inline-block';
-            stopReverseFlag = false;
+            if (draw.bonus.length !== bonusCount) {
+                alert(`Each draw must have exactly ${bonusCount} bonus number(s)`);
+                return;
+            }
             
-            // Use Web Worker for reverse engineering to avoid UI freeze
-            if (window.Worker) {
-                if (reverseWorker) {
-                    reverseWorker.terminate();
-                }
-                
-                reverseWorker = new Worker(URL.createObjectURL(new Blob([
-                    `onmessage = function(e) {
-                        const { startSeed, endSeed, observedDraws, mainPool, pickCount, bonusPool, bonusCount } = e.data;
-                        const foundSeeds = [];
-                        
-                        for (let seed = startSeed; seed <= endSeed; seed++) {
-                            if (self.stopSignal) break;
-                            
-                            let match = true;
-                            let verification = [];
-                            
-                            for (let i = 0; i < observedDraws.length && match; i++) {
-                                const currentSeed = seed + i;
-                                const draw = generateDrawInWorker(currentSeed, mainPool, pickCount, bonusPool, bonusCount);
-                                verification.push(draw);
-                                
-                                // Check main numbers (order doesn't matter)
-                                const observedMain = observedDraws[i].mainNumbers.slice().sort((a, b) => a - b);
-                                const generatedMain = draw.mainNumbers.slice().sort((a, b) => a - b);
-                                
-                                for (let j = 0; j < observedMain.length; j++) {
-                                    if (observedMain[j] !== generatedMain[j]) {
-                                        match = false;
-                                        break;
-                                    }
-                                }
-                                
-                                // Check bonus numbers if they exist
-                                if (match && observedDraws[i].bonusNumbers && observedDraws[i].bonusNumbers.length > 0) {
-                                    const observedBonus = observedDraws[i].bonusNumbers.slice().sort((a, b) => a - b);
-                                    const generatedBonus = draw.bonusNumbers.slice().sort((a, b) => a - b);
-                                    
-                                    for (let j = 0; j < observedBonus.length; j++) {
-                                        if (observedBonus[j] !== generatedBonus[j]) {
-                                            match = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            if (match) {
-                                foundSeeds.push({
-                                    seed: seed,
-                                    verification: verification
-                                });
-                            }
-                            
-                            // Report progress every 10000 seeds
-                            if (seed % 10000 === 0) {
-                                const progress = ((seed - startSeed) / (endSeed - startSeed)) * 100;
-                                postMessage({
-                                    type: 'progress',
-                                    progress: progress,
-                                    currentSeed: seed
-                                });
-                            }
-                        }
-                        
-                        postMessage({
-                            type: 'result',
-                            foundSeeds: foundSeeds
-                        });
-                    }
+            if (draw.main.some(num => num < 1 || num > mainPool)) {
+                alert(`Main numbers must be between 1 and ${mainPool}`);
+                return;
+            }
+            
+            if (bonusPool > 0 && draw.bonus.some(num => num < 1 || num > bonusPool)) {
+                alert(`Bonus numbers must be between 1 and ${bonusPool}`);
+                return;
+            }
+        }
+        
+        if (observedDraws.length < 3) {
+            alert('Need at least 3 draws for reliable analysis');
+            return;
+        }
+        
+        const minSeed = parseInt(document.getElementById('lotto-reverse-min').value) || 0;
+        const maxSeed = parseInt(document.getElementById('lotto-reverse-max').value) || 100000;
+        
+        if (minSeed >= maxSeed) {
+            alert('Max seed must be greater than min seed');
+            return;
+        }
+        
+        const statusElement = document.getElementById('lotto-reverse-status');
+        const progressContainer = document.getElementById('lotto-reverse-progress');
+        const progressBar = document.getElementById('lotto-progress-bar');
+        const stopButton = document.getElementById('lotto-stop-button');
+        
+        statusElement.textContent = 'Starting reverse engineering process...';
+        statusElement.className = 'status info';
+        progressContainer.style.display = 'block';
+        stopButton.style.display = 'inline-block';
+        
+        // Create a web worker for the heavy computation
+        if (window.Worker) {
+            if (lottoReverseWorker) {
+                lottoReverseWorker.terminate();
+            }
+            
+            lottoReverseWorker = new Worker(URL.createObjectURL(new Blob([`
+                // Worker code for lotto reverse engineering
+                onmessage = function(e) {
+                    const { mainPool, pickCount, bonusPool, bonusCount, observedDraws, minSeed, maxSeed } = e.data;
+                    const results = [];
                     
-                    function generateDrawInWorker(seed, mainPool, pickCount, bonusPool, bonusCount) {
-                        // Simplified draw generation for worker
-                        const prng = new SeededPRNGWorker(seed);
+                    // Simple brute-force approach (for demo purposes)
+                    let bestMatch = { seed: null, matches: 0 };
+                    
+                    for (let seed = minSeed; seed <= maxSeed; seed++) {
+                        const generator = mulberry32(seed);
+                        let allMatch = true;
                         
-                        // Generate main numbers
-                        const mainNumbers = [];
-                        const pool = Array.from({length: mainPool}, (_, i) => i + 1);
-                        
-                        for (let i = pool.length - 1; i >= pool.length - pickCount; i--) {
-                            const j = Math.floor(prng.next() * (i + 1));
-                            [pool[i], pool[j]] = [pool[j], pool[i]];
-                            mainNumbers.push(pool[i]);
-                        }
-                        
-                        // Generate bonus numbers
-                        const bonusNumbers = [];
-                        if (bonusPool > 0 && bonusCount > 0) {
-                            const bonusPrng = new SeededPRNGWorker(seed + 12345);
-                            const bonusPoolArr = Array.from({length: bonusPool}, (_, i) => i + 1);
+                        // Check if this seed generates the observed sequence
+                        for (const draw of observedDraws) {
+                            const generatedMain = generateUniqueNumbers(generator, mainPool, pickCount);
+                            const generatedBonus = bonusCount > 0 ? generateUniqueNumbers(generator, bonusPool, bonusCount) : [];
                             
-                            for (let i = bonusPoolArr.length - 1; i >= bonusPoolArr.length - bonusCount; i--) {
-                                const j = Math.floor(bonusPrng.next() * (i + 1));
-                                [bonusPoolArr[i], bonusPoolArr[j]] = [bonusPoolArr[j], bonusPoolArr[i]];
-                                bonusNumbers.push(bonusPoolArr[i]);
+                            // Check if main numbers match (order matters)
+                            const mainMatch = JSON.stringify(generatedMain) === JSON.stringify(draw.main);
+                            
+                            // Check if bonus numbers match
+                            const bonusMatch = bonusCount === 0 || JSON.stringify(generatedBonus) === JSON.stringify(draw.bonus);
+                            
+                            if (!mainMatch || !bonusMatch) {
+                                allMatch = false;
+                                break;
                             }
                         }
                         
-                        return {
-                            mainNumbers: mainNumbers,
-                            bonusNumbers: bonusNumbers
-                        };
-                    }
-                    
-                    function SeededPRNGWorker(seed) {
-                        this.seed = seed;
-                        this.next = function() {
-                            this.seed |= 0;
-                            this.seed = this.seed + 0x6D2B79F5 | 0;
-                            let t = Math.imul(this.seed ^ this.seed >>> 15, 1 | this.seed);
-                            t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-                            return ((t ^ t >>> 14) >>> 0) / 4294967296;
-                        }
-                    }`
-                ], {type: 'application/javascript'})));
-                
-                reverseWorker.onmessage = function(e) {
-                    if (e.data.type === 'progress') {
-                        document.getElementById('progress-bar').style.width = e.data.progress + '%';
-                        document.getElementById('reverse-status').innerHTML = 
-                            `<div class="status info">Searching... ${e.data.progress.toFixed(1)}% complete (seed: ${e.data.currentSeed})</div>`;
-                    } else if (e.data.type === 'result') {
-                        reverseWorker.terminate();
-                        reverseWorker = null;
-                        
-                        document.getElementById('stop-button').style.display = 'none';
-                        
-                        if (stopReverseFlag) {
-                            document.getElementById('reverse-status').innerHTML = 
-                                '<div class="status warning">Reverse engineering stopped by user.</div>';
+                        if (allMatch) {
+                            postMessage({
+                                type: 'result',
+                                seed,
+                                matches: observedDraws.length
+                            });
                             return;
                         }
                         
-                        if (e.data.foundSeeds.length > 0) {
-                            let resultsHtml = '<h3>Found Matching Seeds</h3>';
-                            let verificationHtml = '';
-                            
-                            e.data.foundSeeds.forEach((found, idx) => {
-                                resultsHtml += `
-                                    <div class="status success">
-                                        <p><strong>Seed ${idx+1}:</strong> ${found.seed}</p>
-                                    </div>
-                                `;
-                                
-                                verificationHtml += `<h4>Verification for seed ${found.seed}</h4>`;
-                                
-                                found.verification.forEach((draw, drawIdx) => {
-                                    verificationHtml += `<div class="lotto-draw">
-                                        <div class="lotto-balls">`;
-                                    
-                                    draw.mainNumbers.sort((a, b) => a - b).forEach(num => {
-                                        verificationHtml += `<div class="ball">${num}</div>`;
-                                    });
-                                    
-                                    if (draw.bonusNumbers.length > 0) {
-                                        verificationHtml += `<div class="ball powerball">${draw.bonusNumbers.sort((a, b) => a - b).join(', ')}</div>`;
-                                    }
-                                    
-                                    verificationHtml += `</div>
-                                        <div><small>Draw ${drawIdx+1} | Expected: ${lines[drawIdx]}</small></div>
-                                    </div>`;
-                                });
+                        // Report progress every 1000 seeds
+                        if (seed % 1000 === 0) {
+                            postMessage({
+                                type: 'progress',
+                                progress: ((seed - minSeed) / (maxSeed - minSeed)) * 100
                             });
-                            
-                            document.getElementById('reverse-results').innerHTML = resultsHtml;
-                            document.getElementById('verification-results').innerHTML = verificationHtml;
-                            
-                            document.getElementById('reverse-status').innerHTML = 
-                                `<div class="status success">Found ${e.data.foundSeeds.length} matching seed(s)!</div>`;
-                        } else {
-                            document.getElementById('reverse-results').innerHTML = 
-                                '<div class="status error">No matching seeds found in the searched range.</div>';
-                            document.getElementById('reverse-status').innerHTML = 
-                                '<div class="status warning">No matching seeds found. Try with more observed draws or a different range.</div>';
                         }
                     }
+                    
+                    postMessage({
+                        type: 'result',
+                        seed: null,
+                        matches: 0
+                    });
                 };
                 
-                // Start with a reasonable range (adjust as needed)
-                const startSeed = 0;
-                const endSeed = 1000000; // 1 million seeds to check
+                function generateUniqueNumbers(generator, poolSize, count) {
+                    const numbers = [];
+                    while (numbers.length < count) {
+                        const num = Math.floor(generator() * poolSize) + 1;
+                        if (!numbers.includes(num)) {
+                            numbers.push(num);
+                        }
+                    }
+                    return numbers.sort((a, b) => a - b);
+                }
                 
-                reverseWorker.postMessage({
-                    startSeed: startSeed,
-                    endSeed: endSeed,
-                    observedDraws: observedDraws,
-                    mainPool: mainPool,
-                    pickCount: pickCount,
-                    bonusPool: bonusPool,
-                    bonusCount: bonusCount
+                function mulberry32(seed) {
+                    return function() {
+                        seed += 0x6D2B79F5;
+                        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+                        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+                        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+                    };
+                }
+            `], { type: 'text/javascript' })));
+            
+            lottoReverseWorker.onmessage = function(e) {
+                const data = e.data;
+                
+                if (data.type === 'progress') {
+                    progressBar.style.width = `${data.progress}%`;
+                    statusElement.textContent = `Analyzing... ${Math.floor(data.progress)}% complete`;
+                } else if (data.type === 'result') {
+                    showLottoReverseResults(data, observedDraws, mainPool, pickCount, bonusPool, bonusCount);
+                }
+            };
+            
+            lottoReverseWorker.postMessage({
+                mainPool,
+                pickCount,
+                bonusPool,
+                bonusCount,
+                observedDraws,
+                minSeed,
+                maxSeed
+            });
+        } else {
+            statusElement.className = 'status error';
+            statusElement.textContent = 'Web Workers not supported in your browser. Reverse engineering requires a modern browser.';
+        }
+    }
+
+    function stopLottoReverseEngineer() {
+        if (lottoReverseWorker) {
+            lottoReverseWorker.terminate();
+            lottoReverseWorker = null;
+        }
+        
+        document.getElementById('lotto-reverse-status').className = 'status warning';
+        document.getElementById('lotto-reverse-status').textContent = 'Reverse engineering stopped by user.';
+        document.getElementById('lotto-stop-button').style.display = 'none';
+    }
+
+    function showLottoReverseResults(result, observedDraws, mainPool, pickCount, bonusPool, bonusCount) {
+        const statusElement = document.getElementById('lotto-reverse-status');
+        const progressContainer = document.getElementById('lotto-reverse-progress');
+        const stopButton = document.getElementById('lotto-stop-button');
+        const resultsElement = document.getElementById('lotto-reverse-results');
+        const verificationElement = document.getElementById('lotto-verification-results');
+        const predictionsElement = document.getElementById('lotto-predictions-content');
+        
+        progressContainer.style.display = 'none';
+        stopButton.style.display = 'none';
+        
+        if (result.seed !== null) {
+            statusElement.className = 'status success';
+            statusElement.textContent = `Success! Found matching seed: ${result.seed}`;
+            
+            resultsElement.innerHTML = `
+                <p><strong>Found Seed:</strong> ${result.seed}</p>
+                <p><strong>Matches:</strong> ${result.matches}/${observedDraws.length} draws matched perfectly</p>
+            `;
+            
+            // Generate next draws for verification
+            const generator = mulberry32(result.seed);
+            const nextDraws = [];
+            
+            // First generate the observed draws (for verification)
+            for (let i = 0; i < observedDraws.length; i++) {
+                const main = generateUniqueNumbers(generator, mainPool, pickCount);
+                const bonus = bonusCount > 0 ? generateUniqueNumbers(generator, bonusPool, bonusCount) : [];
+                nextDraws.push({ main, bonus });
+            }
+            
+            // Then generate some future draws
+            const futureDraws = [];
+            for (let i = 0; i < 5; i++) {
+                const main = generateUniqueNumbers(generator, mainPool, pickCount);
+                const bonus = bonusCount > 0 ? generateUniqueNumbers(generator, bonusPool, bonusCount) : [];
+                futureDraws.push({ main, bonus });
+            }
+            
+            // Display verification
+            verificationElement.innerHTML = '<h4>Verification:</h4>';
+            const verificationContainer = document.createElement('div');
+            
+            observedDraws.forEach((draw, index) => {
+                const drawElement = document.createElement('div');
+                drawElement.className = 'lotto-draw';
+                drawElement.style.marginBottom = '0.5rem';
+                
+                const drawTitle = document.createElement('div');
+                drawTitle.textContent = `Draw ${index + 1}:`;
+                drawTitle.style.fontWeight = '500';
+                
+                const ballsContainer = document.createElement('div');
+                ballsContainer.className = 'lotto-balls';
+                
+                // Observed numbers
+                draw.main.forEach(num => {
+                    const ball = document.createElement('div');
+                    ball.className = 'ball';
+                    ball.textContent = num;
+                    ballsContainer.appendChild(ball);
                 });
-            } else {
-                document.getElementById('reverse-status').innerHTML = 
-                    '<div class="status error">Web Workers not supported in your browser. Reverse engineering requires a modern browser.</div>';
-            }
+                
+                if (draw.bonus.length > 0) {
+                    const separator = document.createElement('span');
+                    separator.textContent = '+';
+                    separator.style.margin = '0 0.5rem';
+                    separator.style.fontWeight = 'bold';
+                    ballsContainer.appendChild(separator);
+                    
+                    draw.bonus.forEach(num => {
+                        const ball = document.createElement('div');
+                        ball.className = 'ball powerball';
+                        ball.textContent = num;
+                        ballsContainer.appendChild(ball);
+                    });
+                }
+                
+                // Generated numbers
+                const generatedDraw = nextDraws[index];
+                const generatedElement = document.createElement('div');
+                generatedElement.className = 'lotto-balls';
+                generatedElement.style.marginTop = '0.25rem';
+                
+                generatedDraw.main.forEach(num => {
+                    const ball = document.createElement('div');
+                    ball.className = 'ball';
+                    ball.textContent = num;
+                    generatedElement.appendChild(ball);
+                });
+                
+                if (generatedDraw.bonus.length > 0) {
+                    const separator = document.createElement('span');
+                    separator.textContent = '+';
+                    separator.style.margin = '0 0.5rem';
+                    separator.style.fontWeight = 'bold';
+                    generatedElement.appendChild(separator);
+                    
+                    generatedDraw.bonus.forEach(num => {
+                        const ball = document.createElement('div');
+                        ball.className = 'ball powerball';
+                        ball.textContent = num;
+                        generatedElement.appendChild(ball);
+                    });
+                }
+                
+                // Check if matches
+                const match = JSON.stringify(draw.main) === JSON.stringify(generatedDraw.main) && 
+                               JSON.stringify(draw.bonus) === JSON.stringify(generatedDraw.bonus);
+                
+                const matchStatus = document.createElement('div');
+                matchStatus.textContent = match ? '✓ Match' : '✗ No match';
+                matchStatus.style.color = match ? 'var(--success)' : 'var(--danger)';
+                matchStatus.style.fontWeight = '500';
+                matchStatus.style.marginTop = '0.25rem';
+                
+                drawElement.appendChild(drawTitle);
+                drawElement.appendChild(ballsContainer);
+                drawElement.appendChild(document.createElement('div').textContent = 'Generated:');
+                drawElement.appendChild(generatedElement);
+                drawElement.appendChild(matchStatus);
+                verificationContainer.appendChild(drawElement);
+            });
+            
+            verificationElement.appendChild(verificationContainer);
+            
+            // Display predictions
+            predictionsElement.innerHTML = `
+                <h4>Predicted Future Draws</h4>
+                <p>Based on the found seed, these are the next predicted draws:</p>
+            `;
+            
+            futureDraws.forEach((draw, index) => {
+                const drawElement = document.createElement('div');
+                drawElement.className = 'lotto-draw';
+                drawElement.style.marginBottom = '1rem';
+                
+                const drawTitle = document.createElement('div');
+                drawTitle.textContent = `Future Draw ${index + 1}:`;
+                drawTitle.style.fontWeight = '500';
+                drawTitle.style.marginBottom = '0.5rem';
+                
+                const ballsContainer = document.createElement('div');
+                ballsContainer.className = 'lotto-balls';
+                
+                // Main numbers
+                draw.main.forEach(num => {
+                    const ball = document.createElement('div');
+                    ball.className = 'ball';
+                    ball.textContent = num;
+                    ballsContainer.appendChild(ball);
+                });
+                
+                // Bonus numbers
+                if (draw.bonus.length > 0) {
+                    const separator = document.createElement('span');
+                    separator.textContent = '+';
+                    separator.style.margin = '0 0.5rem';
+                    separator.style.fontWeight = 'bold';
+                    ballsContainer.appendChild(separator);
+                    
+                    draw.bonus.forEach(num => {
+                        const ball = document.createElement('div');
+                        ball.className = 'ball powerball';
+                        ball.textContent = num;
+                        ballsContainer.appendChild(ball);
+                    });
+                }
+                
+                drawElement.appendChild(drawTitle);
+                drawElement.appendChild(ballsContainer);
+                predictionsElement.appendChild(drawElement);
+            });
+            
+            predictionsElement.innerHTML += `
+                <p class="status warning">Note: These predictions are only valid if the found seed is correct and the lottery uses this exact PRNG algorithm.</p>
+            `;
+        } else {
+            statusElement.className = 'status warning';
+            statusElement.textContent = 'No matching seed found in the specified range. Try expanding the search range or provide more observed draws.';
+            
+            resultsElement.innerHTML = `
+                <p><strong>No seed found</strong> that generates the observed sequence.</p>
+                <p class="status warning">Possible reasons:</p>
+                <ul>
+                    <li>The lottery doesn't use this PRNG algorithm</li>
+                    <li>The search range was too small</li>
+                    <li>Not enough observed draws were provided</li>
+                </ul>
+            `;
+            
+            verificationElement.innerHTML = '';
+            predictionsElement.innerHTML = '';
+        }
+    }
+
+    function clearLottoReverse() {
+        document.getElementById('lotto-observed-numbers').value = '';
+        document.getElementById('lotto-reverse-results').innerHTML = 'Results will appear here after analysis.';
+        document.getElementById('lotto-verification-results').innerHTML = '';
+        document.getElementById('lotto-predictions-content').innerHTML = '';
+        document.getElementById('lotto-reverse-status').className = 'status info';
+        document.getElementById('lotto-reverse-status').textContent = 'Enter observed numbers to begin reverse engineering. More draws increase accuracy.';
+        document.getElementById('lotto-reverse-progress').style.display = 'none';
+        document.getElementById('lotto-progress-bar').style.width = '0%';
+        document.getElementById('lotto-stop-button').style.display = 'none';
+        
+        if (lottoReverseWorker) {
+            lottoReverseWorker.terminate();
+            lottoReverseWorker = null;
+        }
+    }
+
+    function sampleLottoData() {
+        const gameType = document.getElementById('lotto-reverse-game-type').value;
+        let samples = '';
+        
+        switch(gameType) {
+            case 'powerball':
+                samples = `3, 17, 25, 36, 55 | 12\n5, 10, 20, 30, 40 | 5\n7, 14, 21, 28, 35 | 18`;
+                break;
+            case 'megamillions':
+                samples = `4, 18, 26, 37, 56 | 13\n6, 11, 21, 31, 41 | 6\n8, 15, 22, 29, 36 | 19`;
+                break;
+            case 'euromillions':
+                samples = `5, 19, 27, 38, 57 | 3, 8\n7, 12, 22, 32, 42 | 1, 9\n9, 16, 23, 30, 37 | 2, 11`;
+                break;
+            default:
+                samples = `3, 17, 25, 36, 55 | 12\n5, 10, 20, 30, 40 | 5\n7, 14, 21, 28, 35 | 18`;
         }
         
-        function stopReverseEngineer() {
-            stopReverseFlag = true;
-            if (reverseWorker) {
-                reverseWorker.terminate();
-                reverseWorker = null;
-            }
-            document.getElementById('reverse-status').innerHTML = 
-                '<div class="status warning">Reverse engineering stopped by user.</div>';
-            document.getElementById('stop-button').style.display = 'none';
+        document.getElementById('lotto-observed-numbers').value = samples;
+    }
+
+    // Compare Functions
+    function updateCompareFields() {
+        const mode = document.getElementById('compare-mode').value;
+        const prngFields = document.getElementById('prng-compare-fields');
+        const lottoFields = document.getElementById('lotto-compare-fields');
+        
+        if (mode === 'prng') {
+            prngFields.style.display = 'block';
+            lottoFields.style.display = 'none';
+        } else {
+            prngFields.style.display = 'none';
+            lottoFields.style.display = 'block';
+        }
+    }
+
+    function compareSequences() {
+        const mode = document.getElementById('compare-mode').value;
+        
+        if (mode === 'prng') {
+            comparePRNGSequences();
+        } else {
+            compareLottoSequences();
+        }
+    }
+
+    function comparePRNGSequences() {
+        const seed = parseInt(document.getElementById('compare-prng-seed').value);
+        const count = parseInt(document.getElementById('compare-prng-count').value) || 10;
+        const observedText = document.getElementById('compare-prng-observed').value.trim();
+        
+        if (!observedText) {
+            alert('Please enter observed numbers to compare');
+            return;
         }
         
-        function clearReverse() {
-            document.getElementById('observed-numbers').value = '';
-            document.getElementById('reverse-results').innerHTML = 'Results will appear here after analysis.';
-            document.getElementById('verification-results').innerHTML = '';
-            document.getElementById('reverse-status').innerHTML = 
-                'Enter observed numbers to begin reverse engineering.';
-            document.getElementById('reverse-progress').style.display = 'none';
-            document.getElementById('stop-button').style.display = 'none';
+        const observedNumbers = observedText.split('\n').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+        
+        if (observedNumbers.length === 0) {
+            alert('No valid numbers entered for comparison');
+            return;
+        }
+        
+        // Generate sequence from seed
+        const generator = mulberry32(seed);
+        const generatedNumbers = [];
+        
+        for (let i = 0; i < count; i++) {
+            generatedNumbers.push(Math.floor(generator() * 100)); // Scale to similar range
+        }
+        
+        // Compare sequences
+        const minLength = Math.min(observedNumbers.length, generatedNumbers.length);
+        let matches = 0;
+        const comparison = [];
+        
+        for (let i = 0; i < minLength; i++) {
+            const match = observedNumbers[i] === generatedNumbers[i];
+            if (match) matches++;
+            
+            comparison.push({
+                position: i + 1,
+                observed: observedNumbers[i],
+                generated: generatedNumbers[i],
+                match: match ? '✓' : '✗'
+            });
+        }
+        
+        // Display results
+        let resultsHTML = `
+            <p><strong>Observed Sequence:</strong> ${observedNumbers.slice(0, minLength).join(', ')}</p>
+            <p><strong>Generated Sequence:</strong> ${generatedNumbers.slice(0, minLength).join(', ')}</p>
+            <p><strong>Matches:</strong> ${matches}/${minLength} (${((matches / minLength) * 100).toFixed(1)}%)</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Observed</th>
+                        <th>Generated</th>
+                        <th>Match</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        comparison.forEach(item => {
+            resultsHTML += `
+                <tr>
+                    <td>${item.position}</td>
+                    <td>${item.observed}</td>
+                    <td>${item.generated}</td>
+                    <td style="color: ${item.match === '✓' ? 'var(--success)' : 'var(--danger)'}">${item.match}</td>
+                </tr>
+            `;
+        });
+        
+        resultsHTML += `
+                </tbody>
+            </table>
+        `;
+        
+        document.getElementById('compare-results').innerHTML = resultsHTML;
+        
+        // Display stats
+        document.getElementById('compare-stats').innerHTML = `
+            <p><strong>Match Percentage:</strong> ${((matches / minLength) * 100).toFixed(2)}%</p>
+            <p><strong>Chi-Square Test:</strong> ${calculateChiSquare(observedNumbers.slice(0, minLength), generatedNumbers.slice(0, minLength))}</p>
+            <p class="status info">Note: A high match percentage suggests the sequences might be from the same PRNG.</p>
+        `;
+    }
+
+    function compareLottoSequences() {
+        const seed = parseInt(document.getElementById('compare-lotto-seed').value);
+        const drawCount = parseInt(document.getElementById('compare-lotto-draws').value) || 10;
+        const observedText = document.getElementById('compare-lotto-observed').value.trim();
+        
+        if (!observedText) {
+            alert('Please enter observed draws to compare');
+            return;
+        }
+        
+        const observedDraws = observedText.split('\n')
+            .map(line => line.trim())
+            .filter(line => line)
+            .map(line => {
+                const parts = line.split('|').map(part => part.trim());
+                const main = parts[0].split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+                const bonus = parts.length > 1 ? 
+                    parts[1].split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num)) : [];
+                return { main, bonus };
+            });
+        
+        if (observedDraws.length === 0) {
+            alert('No valid draws entered for comparison');
+            return;
+        }
+        
+        // Generate draws from seed
+        const generator = mulberry32(seed);
+        const generatedDraws = [];
+        
+        for (let i = 0; i < drawCount; i++) {
+            const main = generateUniqueNumbers(generator, 69, 5);
+            const bonus = generateUniqueNumbers(generator, 26, 1);
+            generatedDraws.push({ main, bonus });
         }
         
         // Compare draws
-        function compareDraws() {
-            const seed = parseInt(document.getElementById('compare-seed').value);
-            if (isNaN(seed)) {
-                document.getElementById('compare-results').innerHTML = 
-                    '<div class="status error">Please enter a valid seed to compare.</div>';
-                return;
-            }
-            
-            const drawCount = parseInt(document.getElementById('compare-draws').value) || 10;
-            const observedText = document.getElementById('compare-observed').value.trim();
-            
-            if (!observedText) {
-                document.getElementById('compare-results').innerHTML = 
-                    '<div class="status error">Please enter observed numbers to compare.</div>';
-                return;
-            }
-            
-            // Parse observed numbers (simplified parsing for comparison)
-            const observedDraws = [];
-            const lines = observedText.split('\n');
-            
-            for (const line of lines) {
-                const parts = line.split('|').map(p => p.trim());
-                if (parts.length === 0) continue;
-                
-                // Parse all numbers (we don't distinguish main/bonus for comparison)
-                const numbers = [];
-                parts.forEach(part => {
-                    numbers.push(...part.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)));
-                });
-                
-                if (numbers.length > 0) {
-                    observedDraws.push(numbers.sort((a, b) => a - b));
-                }
-            }
-            
-            if (observedDraws.length === 0) {
-                document.getElementById('compare-results').innerHTML = 
-                    '<div class="status error">No valid draws found in input.</div>';
-                return;
-            }
-            
-            // Generate draws from seed
-            const generatedDraws = [];
-            for (let i = 0; i < Math.max(drawCount, observedDraws.length); i++) {
-                const draw = generateDraw(seed + i, 69, 5, 26, 1); // Using Powerball params for comparison
-                const allNumbers = [...draw.mainNumbers, ...draw.bonusNumbers].sort((a, b) => a - b);
-                generatedDraws.push(allNumbers);
-            }
-            
-            // Compare draws
-            let comparisonHtml = '';
-            let matches = 0;
-            let totalNumbers = 0;
-            
-            comparisonHtml += `<table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Draw</th>
-                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Observed</th>
-                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Generated</th>
-                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Matches</th>
-                </tr>`;
-            
-            for (let i = 0; i < observedDraws.length && i < generatedDraws.length; i++) {
-                const observed = observedDraws[i];
-                const generated = generatedDraws[i];
-                
-                // Find matching numbers
-                const matchedNumbers = [];
-                let drawMatches = 0;
-                
-                for (const num of observed) {
-                    if (generated.includes(num)) {
-                        matchedNumbers.push(num);
-                        drawMatches++;
-                    }
-                }
-                
-                matches += drawMatches;
-                totalNumbers += observed.length;
-                
-                comparisonHtml += `<tr>
-                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${i+1}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${observed.join(', ')}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${generated.join(', ')}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">
-                        ${drawMatches > 0 ? `<span style="color: var(--success);">${drawMatches} matches (${matchedNumbers.join(', ')})</span>` : 'No matches'}
-                    </td>
-                </tr>`;
-            }
-            
-            comparisonHtml += `</table>`;
-            
-            document.getElementById('compare-results').innerHTML = comparisonHtml;
-            
-            // Calculate statistics
-            const matchPercentage = totalNumbers > 0 ? (matches / totalNumbers * 100).toFixed(2) : 0;
-            const statsHtml = `
-                <p>Total numbers compared: ${totalNumbers}</p>
-                <p>Matching numbers found: ${matches} (${matchPercentage}%)</p>
-                <p>Average matches per draw: ${(matches / Math.min(observedDraws.length, generatedDraws.length)).toFixed(2)}</p>
-            `;
-            
-            document.getElementById('compare-stats').innerHTML = statsHtml;
-        }
-    </script>
-    <!-- Add this script right before the closing </body> tag, after your existing JavaScript -->
-<script>
-// ====== ENHANCED SEED PATTERN DETECTOR & PREDICTOR ======
-class LotterySeedAnalyzer {
-    constructor() {
-        this.history = [];
-        this.detectedPatterns = [];
-    }
-    
-    // Main analysis function (call this with your historical draws)
-    analyzeHistoricalDraws(draws) {
-        this.history = draws;
-        this.detectedPatterns = this.detectAdvancedPatterns();
-        return {
-            patterns: this.detectedPatterns,
-            predictedSeed: this.predictNextSeed(),
-            predictedNumbers: this.generatePredictedNumbers()
-        };
-    }
-    
-    detectAdvancedPatterns() {
-        const patterns = [];
-        if (this.history.length < 2) return patterns;
+        const minLength = Math.min(observedDraws.length, generatedDraws.length);
+        let mainMatches = 0;
+        let bonusMatches = 0;
+        const comparison = [];
         
-        // 1. Check for consistent differences between numbers
-        const diffPattern = this.checkConsistentDifferences();
-        if (diffPattern) patterns.push(diffPattern);
-        
-        // 2. Check for LCG (PRNG) patterns
-        const lcgPattern = this.detectLCGPattern();
-        if (lcgPattern) patterns.push(lcgPattern);
-        
-        // 3. Check for modulo patterns
-        const modPattern = this.checkModuloPatterns();
-        if (modPattern) patterns.push(modPattern);
-        
-        // 4. Check for arithmetic sequences
-        const seqPattern = this.checkArithmeticSequences();
-        if (seqPattern) patterns.push(seqPattern);
-        
-        return patterns.length > 0 ? patterns : 
-            [{ type: 'random', confidence: 'low', message: 'No strong patterns detected' }];
-    }
-    
-    checkConsistentDifferences() {
-        const diffs = [];
-        const firstDraw = this.history[0];
-        
-        for (let i = 1; i < firstDraw.length; i++) {
-            diffs.push(firstDraw[i] - firstDraw[i-1]);
-        }
-        
-        let isConsistent = true;
-        for (const draw of this.history) {
-            for (let i = 1; i < draw.length; i++) {
-                if (draw[i] - draw[i-1] !== diffs[i-1]) {
-                    isConsistent = false;
-                    break;
-                }
-            }
-            if (!isConsistent) break;
-        }
-        
-        return isConsistent ? {
-            type: 'consistent_differences',
-            values: diffs,
-            confidence: 'high',
-            message: `Consistent differences between numbers: ${diffs.join(', ')}`
-        } : null;
-    }
-    
-    detectLCGPattern() {
-        if (this.history.length < 3) return null;
-        
-        const m = Math.pow(2, 32);
-        const x0 = this.history[0][0];
-        const x1 = this.history[1][0];
-        const x2 = this.history[2][0];
-        
-        for (let a = 1; a < 1000; a++) {
-            const c = (x1 - (a * x0)) % m;
-            if ((a * x1 + c) % m === x2) {
-                return {
-                    type: 'lcg_pattern',
-                    parameters: { a, c, m },
-                    confidence: this.history.length > 5 ? 'high' : 'medium',
-                    message: `Possible LCG generator with multiplier=${a}, increment=${c}`
-                };
-            }
-        }
-        return null;
-    }
-    
-    checkModuloPatterns() {
-        const modTests = [2, 3, 5, 7, 10];
-        const results = [];
-        
-        for (const mod of modTests) {
-            const remainders = new Set();
-            this.history.forEach(draw => {
-                draw.forEach(num => remainders.add(num % mod));
+        for (let i = 0; i < minLength; i++) {
+            const observed = observedDraws[i];
+            const generated = generatedDraws[i];
+            
+            const mainMatch = JSON.stringify(observed.main) === JSON.stringify(generated.main);
+            const bonusMatch = observed.bonus.length > 0 && generated.bonus.length > 0 ? 
+                JSON.stringify(observed.bonus) === JSON.stringify(generated.bonus) : false;
+            
+            if (mainMatch) mainMatches++;
+            if (bonusMatch) bonusMatches++;
+            
+            comparison.push({
+                position: i + 1,
+                observedMain: observed.main.join(', '),
+                observedBonus: observed.bonus.join(', '),
+                generatedMain: generated.main.join(', '),
+                generatedBonus: generated.bonus.join(', '),
+                mainMatch: mainMatch ? '✓' : '✗',
+                bonusMatch: bonusMatch ? '✓' : '✗'
             });
-            
-            if (remainders.size === 1) {
-                results.push({
-                    modulo: mod,
-                    remainder: Array.from(remainders)[0]
-                });
-            }
         }
-        
-        return results.length > 0 ? {
-            type: 'modulo_pattern',
-            values: results,
-            confidence: 'medium',
-            message: `Numbers follow modulo patterns: ${results.map(r => `x ≡ ${r.remainder} mod ${r.modulo}`).join(', ')}`
-        } : null;
-    }
-    
-    checkArithmeticSequences() {
-        const sequences = [];
-        
-        this.history.forEach(draw => {
-            const sorted = [...draw].sort((a, b) => a - b);
-            const diffs = [];
-            for (let i = 1; i < sorted.length; i++) {
-                diffs.push(sorted[i] - sorted[i-1]);
-            }
-            
-            if (new Set(diffs).size === 1) {
-                sequences.push({
-                    draw: draw,
-                    difference: diffs[0]
-                });
-            }
-        });
-        
-        return sequences.length > 0 ? {
-            type: 'arithmetic_sequence',
-            values: sequences,
-            confidence: sequences.length > 1 ? 'high' : 'medium',
-            message: `${sequences.length} draws form arithmetic sequences`
-        } : null;
-    }
-    
-    predictNextSeed() {
-        if (this.detectedPatterns.some(p => p.type === 'lcg_pattern')) {
-            const lcg = this.detectedPatterns.find(p => p.type === 'lcg_pattern');
-            const lastNum = this.history[this.history.length - 1][0];
-            return (lcg.parameters.a * lastNum + lcg.parameters.c) % lcg.parameters.m;
-        }
-        
-        // Fallback prediction methods
-        const lastDraw = this.history[this.history.length - 1];
-        const avg = lastDraw.reduce((sum, num) => sum + num, 0) / lastDraw.length;
-        
-        // Weighted prediction (more weight to recent numbers)
-        let weightedSum = 0;
-        let weightTotal = 0;
-        this.history.forEach((draw, i) => {
-            const weight = i + 1;
-            draw.forEach(num => {
-                weightedSum += num * weight;
-                weightTotal += weight;
-            });
-        });
-        const weightedAvg = weightedSum / weightTotal;
-        
-        return Math.round((avg + weightedAvg) / 2);
-    }
-    
-    generatePredictedNumbers() {
-        const seed = this.predictNextSeed();
-        const numCount = this.history[0].length;
-        const numbers = [];
-        
-        // Generate numbers based on seed and detected patterns
-        if (this.detectedPatterns.some(p => p.type === 'lcg_pattern')) {
-            const lcg = this.detectedPatterns.find(p => p.type === 'lcg_pattern');
-            let current = seed;
-            for (let i = 0; i < numCount * 2; i++) {
-                current = (lcg.parameters.a * current + lcg.parameters.c) % lcg.parameters.m;
-                const num = current % 100;
-                if (!numbers.includes(num)) numbers.push(num);
-                if (numbers.length >= numCount) break;
-            }
-        } else if (this.detectedPatterns.some(p => p.type === 'consistent_differences')) {
-            const diffPattern = this.detectedPatterns.find(p => p.type === 'consistent_differences');
-            let lastNum = this.history[this.history.length - 1][this.history[0].length - 1];
-            numbers.push(lastNum);
-            
-            for (let i = 0; i < diffPattern.values.length && numbers.length < numCount; i++) {
-                lastNum += diffPattern.values[i];
-                numbers.push(lastNum);
-            }
-        } else {
-            // Fallback: simple seeded generation
-            const prng = new SeededPRNG(seed);
-            for (let i = 0; i < numCount * 2; i++) {
-                const num = Math.floor(prng.next() * 100);
-                if (!numbers.includes(num)) numbers.push(num);
-                if (numbers.length >= numCount) break;
-            }
-        }
-        
-        return numbers.slice(0, numCount).sort((a, b) => a - b);
-    }
-}
-
-// ====== INTEGRATION WITH YOUR EXISTING UI ======
-// Add this function to connect the analyzer to your reverse engineering tab
-function analyzeWithSeedDetector() {
-    const observedText = document.getElementById('observed-numbers').value.trim();
-    if (!observedText) {
-        document.getElementById('reverse-status').innerHTML = 
-            '<div class="status error">Please enter observed numbers first.</div>';
-        return;
-    }
-    
-    // Parse observed numbers
-    const draws = [];
-    const lines = observedText.split('\n');
-    for (const line of lines) {
-        const numbers = line.split(/[\s,|]+/).filter(x => x.trim() !== '').map(Number);
-        if (numbers.length > 0) draws.push(numbers);
-    }
-    
-    if (draws.length < 2) {
-        document.getElementById('reverse-status').innerHTML = 
-            '<div class="status error">Need at least 2 draws for pattern detection.</div>';
-        return;
-    }
-    
-    document.getElementById('reverse-status').innerHTML = 
-        '<div class="status info">Analyzing seed patterns...</div>';
-    
-    setTimeout(() => {
-        const analyzer = new LotterySeedAnalyzer();
-        const results = analyzer.analyzeHistoricalDraws(draws);
         
         // Display results
-        let patternsHtml = '<h3>Detected Seed Patterns</h3>';
-        results.patterns.forEach(pattern => {
-            patternsHtml += `
-                <div class="status ${pattern.confidence === 'high' ? 'success' : 'warning'}">
-                    <strong>${pattern.type.replace(/_/g, ' ')}:</strong> ${pattern.message}
-                </div>
-            `;
-        });
-        
-        let predictionHtml = `
-            <h3>Seed Prediction</h3>
-            <div class="status info">
-                Predicted next seed: <strong>${results.predictedSeed}</strong>
-            </div>
-            <h3>Predicted Numbers</h3>
-            <div class="lotto-balls">
+        let resultsHTML = `
+            <p><strong>Main Number Matches:</strong> ${mainMatches}/${minLength} (${((mainMatches / minLength) * 100).toFixed(1)}%)</p>
+            ${observedDraws[0].bonus.length > 0 ? `<p><strong>Bonus Number Matches:</strong> ${bonusMatches}/${minLength} (${((bonusMatches / minLength) * 100).toFixed(1)}%)</p>` : ''}
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Draw</th>
+                        <th>Observed Main</th>
+                        <th>Observed Bonus</th>
+                        <th>Generated Main</th>
+                        <th>Generated Bonus</th>
+                        <th>Main Match</th>
+                        ${observedDraws[0].bonus.length > 0 ? '<th>Bonus Match</th>' : ''}
+                    </tr>
+                </thead>
+                <tbody>
         `;
         
-        results.predictedNumbers.forEach(num => {
-            predictionHtml += `<div class="ball">${num}</div>`;
+        comparison.forEach(item => {
+            resultsHTML += `
+                <tr>
+                    <td>${item.position}</td>
+                    <td>${item.observedMain}</td>
+                    <td>${item.observedBonus}</td>
+                    <td>${item.generatedMain}</td>
+                    <td>${item.generatedBonus}</td>
+                    <td style="color: ${item.mainMatch === '✓' ? 'var(--success)' : 'var(--danger)'}">${item.mainMatch}</td>
+                    ${observedDraws[0].bonus.length > 0 ? `<td style="color: ${item.bonusMatch === '✓' ? 'var(--success)' : 'var(--danger)'}">${item.bonusMatch}</td>` : ''}
+                </tr>
+            `;
         });
         
-        predictionHtml += `</div>`;
+        resultsHTML += `
+                </tbody>
+            </table>
+        `;
         
-        document.getElementById('reverse-results').innerHTML = patternsHtml + predictionHtml;
-        document.getElementById('reverse-status').innerHTML = 
-            '<div class="status success">Pattern analysis completed!</div>';
+        document.getElementById('compare-results').innerHTML = resultsHTML;
         
-    }, 100);
-}
-
-// Add this button next to your "Reverse Engineer Seed" button in the HTML
-// <button onclick="analyzeWithSeedDetector()" class="success">Analyze Seed Patterns</button>
-
-// ====== ENHANCED SEED PREDICTION IN GENERATOR ======
-// Modify your generateLottoNumbers() function to use pattern detection when seed is empty
-const originalGenerateLottoNumbers = generateLottoNumbers;
-generateLottoNumbers = function() {
-    const seedInput = document.getElementById('seed').value.trim();
-    
-    if (!seedInput && document.getElementById('observed-numbers').value.trim()) {
-        // If no seed provided but we have observed numbers, try to predict
-        const observedText = document.getElementById('observed-numbers').value.trim();
-        const draws = observedText.split('\n')
-            .map(line => line.split(/[\s,|]+/).filter(x => x.trim() !== '').map(Number))
-            .filter(arr => arr.length > 0);
-        
-        if (draws.length >= 2) {
-            const analyzer = new LotterySeedAnalyzer();
-            const results = analyzer.analyzeHistoricalDraws(draws);
-            document.getElementById('seed').value = results.predictedSeed;
-            
-            document.getElementById('gen-details').innerHTML = `
-                <div class="status success">
-                    <strong>Auto-generated seed</strong> using detected patterns
-                </div>
-                ${document.getElementById('gen-details').innerHTML}
-            `;
-        }
+        // Display stats
+        document.getElementById('compare-stats').innerHTML = `
+            <p><strong>Main Number Match Percentage:</strong> ${((mainMatches / minLength) * 100).toFixed(2)}%</p>
+            ${observedDraws[0].bonus.length > 0 ? `<p><strong>Bonus Number Match Percentage:</strong> ${((bonusMatches / minLength) * 100).toFixed(2)}%</p>` : ''}
+            <p class="status info">Note: High match percentages suggest the draws might be from the same PRNG seed.</p>
+        `;
     }
-    
-    originalGenerateLottoNumbers();
-};
+
+    function calculateChiSquare(observed, expected) {
+        if (observed.length !== expected.length) return 'N/A';
+        
+        const uniqueValues = [...new Set([...observed, ...expected])];
+        let chiSquare = 0;
+        
+        for (const value of uniqueValues) {
+            const obsCount = observed.filter(x => x === value).length;
+            const expCount = expected.filter(x => x === value).length;
+            chiSquare += Math.pow(obsCount - expCount, 2) / expCount;
+        }
+        
+        return chiSquare.toFixed(2);
+    }
+
+    function clearComparison() {
+        document.getElementById('compare-results').innerHTML = 'Results will appear here after comparison.';
+        document.getElementById('compare-stats').innerHTML = 'Statistics will appear here after comparison.';
+        document.getElementById('compare-prng-observed').value = '';
+        document.getElementById('compare-lotto-observed').value = '';
+    }
+
+    // Visualization Functions
+    function generateVisualization() {
+        const type = document.getElementById('visualization-type').value;
+        const dataText = document.getElementById('visualization-data').value.trim();
+        
+        if (!dataText) {
+            alert('Please enter data to visualize');
+            return;
+        }
+        
+        const data = dataText.split('\n')
+            .map(num => parseFloat(num.trim()))
+            .filter(num => !isNaN(num));
+        
+        if (data.length === 0) {
+            alert('No valid numbers entered for visualization');
+            return;
+        }
+        
+        // Destroy previous chart if it exists
+        if (visualizationChart) {
+            visualizationChart.destroy();
+        }
+        
+        const ctx = document.getElementById('visualization-canvas').getContext('2d');
+        
+        switch(type) {
+            case 'histogram':
+                createHistogram(ctx, data);
+                break;
+            case 'scatter':
+                createScatterPlot(ctx, data);
+                break;
+            case 'autocorrelation':
+                createAutocorrelation(ctx, data);
+                break;
+            case 'frequency':
+                createFrequencyChart(ctx, data);
+                break;
+        }
+        
+        // Calculate and display statistics
+        calculateVisualizationStats(data);
+    }
+
+    function createHistogram(ctx, data) {
+        // Calculate bins
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const range = max - min;
+        const binCount = Math.min(20, Math.ceil(Math.sqrt(data.length)));
+        const binSize = range / binCount;
+        
+        const bins = new Array(binCount).fill(0);
+        
+        data.forEach(value => {
+            const binIndex = Math.min(Math.floor((value - min) / binSize), binCount - 1);
+            bins[binIndex]++;
+        });
+        
+        // Create chart
+        visualizationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: bins.map((_, i) => {
+                    const start = min + i * binSize;
+                    const end = start + binSize;
+                    return `${start.toFixed(1)}-${end.toFixed(1)}`;
+                }),
+                datasets: [{
+                    label: 'Frequency',
+                    data: bins,
+                    backgroundColor: 'rgba(92, 107, 192, 0.7)',
+                    borderColor: 'rgba(92, 107, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Histogram of Number Distribution'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Count: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Value Range'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createScatterPlot(ctx, data) {
+        visualizationChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Value Sequence',
+                    data: data.map((value, index) => ({x: index, y: value})),
+                    backgroundColor: 'rgba(92, 107, 192, 0.7)',
+                    borderColor: 'rgba(92, 107, 192, 1)',
+                    borderWidth: 1,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Scatter Plot of Number Sequence'
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Position in Sequence'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createAutocorrelation(ctx, data) {
+        const maxLag = Math.min(20, Math.floor(data.length / 2));
+        const autocorrelations = [];
+        
+        for (let lag = 0; lag <= maxLag; lag++) {
+            let sum = 0;
+            let count = 0;
+            
+            for (let i = 0; i < data.length - lag; i++) {
+                sum += data[i] * data[i + lag];
+                count++;
+            }
+            
+            autocorrelations.push(sum / count);
+        }
+        
+        // Normalize
+        const max = Math.max(...autocorrelations.map(Math.abs));
+        const normalized = autocorrelations.map(val => val / max);
+        
+        visualizationChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: normalized.map((_, i) => i),
+                datasets: [{
+                    label: 'Autocorrelation',
+                    data: normalized,
+                    backgroundColor: 'rgba(92, 107, 192, 0.2)',
+                    borderColor: 'rgba(92, 107, 192, 1)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Autocorrelation Plot'
+                    }
+                },
+                scales: {
+                    y: {
+                        min: -1,
+                        max: 1,
+                        title: {
+                            display: true,
+                            text: 'Correlation'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Lag'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createFrequencyChart(ctx, data) {
+        const uniqueValues = [...new Set(data)];
+        const counts = {};
+        
+        data.forEach(value => {
+            counts[value] = (counts[value] || 0) + 1;
+        });
+        
+        uniqueValues.sort((a, b) => a - b);
+        
+        visualizationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: uniqueValues,
+                datasets: [{
+                    label: 'Frequency',
+                    data: uniqueValues.map(val => counts[val]),
+                    backgroundColor: 'rgba(92, 107, 192, 0.7)',
+                    borderColor: 'rgba(92, 107, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Frequency Distribution of Values'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Count: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function calculateVisualizationStats(data) {
+        if (data.length === 0) return;
+        
+        const sum = data.reduce((a, b) => a + b, 0);
+        const mean = sum / data.length;
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const range = max - min;
+        
+        // Calculate variance and standard deviation
+        const variance = data.reduce((acc, num) => acc + Math.pow(num - mean, 2), 0) / data.length;
+        const stdDev = Math.sqrt(variance);
+        
+        // Calculate frequency distribution
+        const frequency = {};
+        data.forEach(num => {
+            frequency[num] = (frequency[num] || 0) + 1;
+        });
+        
+        const uniqueCount = Object.keys(frequency).length;
+        const duplicates = data.length - uniqueCount;
+        
+        let statsHTML = `
+            <p>Count: ${data.length}</p>
+            <p>Min: ${min}</p>
+            <p>Max: ${max}</p>
+            <p>Range: ${range}</p>
+            <p>Mean: ${mean.toFixed(2)}</p>
+            <p>Variance: ${variance.toFixed(2)}</p>
+            <p>Standard Deviation: ${stdDev.toFixed(2)}</p>
+            <p>Unique Values: ${uniqueCount} (${duplicates} duplicates)</p>
+        `;
+        
+        document.getElementById('visualization-stats-content').innerHTML = statsHTML;
+    }
+
+    function clearVisualization() {
+        if (visualizationChart) {
+            visualizationChart.destroy();
+            visualizationChart = null;
+        }
+        
+        document.getElementById('visualization-data').value = '';
+        document.getElementById('visualization-stats-content').innerHTML = '';
+    }
+
+    function sampleVisualizationData() {
+        // Generate some sample random data
+        const sampleData = [];
+        for (let i = 0; i < 100; i++) {
+            sampleData.push(Math.floor(Math.random() * 100));
+        }
+        
+        document.getElementById('visualization-data').value = sampleData.join('\n');
+    }
 </script>
 </body>
 </html>
