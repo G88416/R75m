@@ -1027,5 +1027,310 @@
             document.getElementById('compare-stats').innerHTML = statsHtml;
         }
     </script>
+    <!-- Add this script right before the closing </body> tag, after your existing JavaScript -->
+<script>
+// ====== ENHANCED SEED PATTERN DETECTOR & PREDICTOR ======
+class LotterySeedAnalyzer {
+    constructor() {
+        this.history = [];
+        this.detectedPatterns = [];
+    }
+    
+    // Main analysis function (call this with your historical draws)
+    analyzeHistoricalDraws(draws) {
+        this.history = draws;
+        this.detectedPatterns = this.detectAdvancedPatterns();
+        return {
+            patterns: this.detectedPatterns,
+            predictedSeed: this.predictNextSeed(),
+            predictedNumbers: this.generatePredictedNumbers()
+        };
+    }
+    
+    detectAdvancedPatterns() {
+        const patterns = [];
+        if (this.history.length < 2) return patterns;
+        
+        // 1. Check for consistent differences between numbers
+        const diffPattern = this.checkConsistentDifferences();
+        if (diffPattern) patterns.push(diffPattern);
+        
+        // 2. Check for LCG (PRNG) patterns
+        const lcgPattern = this.detectLCGPattern();
+        if (lcgPattern) patterns.push(lcgPattern);
+        
+        // 3. Check for modulo patterns
+        const modPattern = this.checkModuloPatterns();
+        if (modPattern) patterns.push(modPattern);
+        
+        // 4. Check for arithmetic sequences
+        const seqPattern = this.checkArithmeticSequences();
+        if (seqPattern) patterns.push(seqPattern);
+        
+        return patterns.length > 0 ? patterns : 
+            [{ type: 'random', confidence: 'low', message: 'No strong patterns detected' }];
+    }
+    
+    checkConsistentDifferences() {
+        const diffs = [];
+        const firstDraw = this.history[0];
+        
+        for (let i = 1; i < firstDraw.length; i++) {
+            diffs.push(firstDraw[i] - firstDraw[i-1]);
+        }
+        
+        let isConsistent = true;
+        for (const draw of this.history) {
+            for (let i = 1; i < draw.length; i++) {
+                if (draw[i] - draw[i-1] !== diffs[i-1]) {
+                    isConsistent = false;
+                    break;
+                }
+            }
+            if (!isConsistent) break;
+        }
+        
+        return isConsistent ? {
+            type: 'consistent_differences',
+            values: diffs,
+            confidence: 'high',
+            message: `Consistent differences between numbers: ${diffs.join(', ')}`
+        } : null;
+    }
+    
+    detectLCGPattern() {
+        if (this.history.length < 3) return null;
+        
+        const m = Math.pow(2, 32);
+        const x0 = this.history[0][0];
+        const x1 = this.history[1][0];
+        const x2 = this.history[2][0];
+        
+        for (let a = 1; a < 1000; a++) {
+            const c = (x1 - (a * x0)) % m;
+            if ((a * x1 + c) % m === x2) {
+                return {
+                    type: 'lcg_pattern',
+                    parameters: { a, c, m },
+                    confidence: this.history.length > 5 ? 'high' : 'medium',
+                    message: `Possible LCG generator with multiplier=${a}, increment=${c}`
+                };
+            }
+        }
+        return null;
+    }
+    
+    checkModuloPatterns() {
+        const modTests = [2, 3, 5, 7, 10];
+        const results = [];
+        
+        for (const mod of modTests) {
+            const remainders = new Set();
+            this.history.forEach(draw => {
+                draw.forEach(num => remainders.add(num % mod));
+            });
+            
+            if (remainders.size === 1) {
+                results.push({
+                    modulo: mod,
+                    remainder: Array.from(remainders)[0]
+                });
+            }
+        }
+        
+        return results.length > 0 ? {
+            type: 'modulo_pattern',
+            values: results,
+            confidence: 'medium',
+            message: `Numbers follow modulo patterns: ${results.map(r => `x ≡ ${r.remainder} mod ${r.modulo}`).join(', ')}`
+        } : null;
+    }
+    
+    checkArithmeticSequences() {
+        const sequences = [];
+        
+        this.history.forEach(draw => {
+            const sorted = [...draw].sort((a, b) => a - b);
+            const diffs = [];
+            for (let i = 1; i < sorted.length; i++) {
+                diffs.push(sorted[i] - sorted[i-1]);
+            }
+            
+            if (new Set(diffs).size === 1) {
+                sequences.push({
+                    draw: draw,
+                    difference: diffs[0]
+                });
+            }
+        });
+        
+        return sequences.length > 0 ? {
+            type: 'arithmetic_sequence',
+            values: sequences,
+            confidence: sequences.length > 1 ? 'high' : 'medium',
+            message: `${sequences.length} draws form arithmetic sequences`
+        } : null;
+    }
+    
+    predictNextSeed() {
+        if (this.detectedPatterns.some(p => p.type === 'lcg_pattern')) {
+            const lcg = this.detectedPatterns.find(p => p.type === 'lcg_pattern');
+            const lastNum = this.history[this.history.length - 1][0];
+            return (lcg.parameters.a * lastNum + lcg.parameters.c) % lcg.parameters.m;
+        }
+        
+        // Fallback prediction methods
+        const lastDraw = this.history[this.history.length - 1];
+        const avg = lastDraw.reduce((sum, num) => sum + num, 0) / lastDraw.length;
+        
+        // Weighted prediction (more weight to recent numbers)
+        let weightedSum = 0;
+        let weightTotal = 0;
+        this.history.forEach((draw, i) => {
+            const weight = i + 1;
+            draw.forEach(num => {
+                weightedSum += num * weight;
+                weightTotal += weight;
+            });
+        });
+        const weightedAvg = weightedSum / weightTotal;
+        
+        return Math.round((avg + weightedAvg) / 2);
+    }
+    
+    generatePredictedNumbers() {
+        const seed = this.predictNextSeed();
+        const numCount = this.history[0].length;
+        const numbers = [];
+        
+        // Generate numbers based on seed and detected patterns
+        if (this.detectedPatterns.some(p => p.type === 'lcg_pattern')) {
+            const lcg = this.detectedPatterns.find(p => p.type === 'lcg_pattern');
+            let current = seed;
+            for (let i = 0; i < numCount * 2; i++) {
+                current = (lcg.parameters.a * current + lcg.parameters.c) % lcg.parameters.m;
+                const num = current % 100;
+                if (!numbers.includes(num)) numbers.push(num);
+                if (numbers.length >= numCount) break;
+            }
+        } else if (this.detectedPatterns.some(p => p.type === 'consistent_differences')) {
+            const diffPattern = this.detectedPatterns.find(p => p.type === 'consistent_differences');
+            let lastNum = this.history[this.history.length - 1][this.history[0].length - 1];
+            numbers.push(lastNum);
+            
+            for (let i = 0; i < diffPattern.values.length && numbers.length < numCount; i++) {
+                lastNum += diffPattern.values[i];
+                numbers.push(lastNum);
+            }
+        } else {
+            // Fallback: simple seeded generation
+            const prng = new SeededPRNG(seed);
+            for (let i = 0; i < numCount * 2; i++) {
+                const num = Math.floor(prng.next() * 100);
+                if (!numbers.includes(num)) numbers.push(num);
+                if (numbers.length >= numCount) break;
+            }
+        }
+        
+        return numbers.slice(0, numCount).sort((a, b) => a - b);
+    }
+}
+
+// ====== INTEGRATION WITH YOUR EXISTING UI ======
+// Add this function to connect the analyzer to your reverse engineering tab
+function analyzeWithSeedDetector() {
+    const observedText = document.getElementById('observed-numbers').value.trim();
+    if (!observedText) {
+        document.getElementById('reverse-status').innerHTML = 
+            '<div class="status error">Please enter observed numbers first.</div>';
+        return;
+    }
+    
+    // Parse observed numbers
+    const draws = [];
+    const lines = observedText.split('\n');
+    for (const line of lines) {
+        const numbers = line.split(/[\s,|]+/).filter(x => x.trim() !== '').map(Number);
+        if (numbers.length > 0) draws.push(numbers);
+    }
+    
+    if (draws.length < 2) {
+        document.getElementById('reverse-status').innerHTML = 
+            '<div class="status error">Need at least 2 draws for pattern detection.</div>';
+        return;
+    }
+    
+    document.getElementById('reverse-status').innerHTML = 
+        '<div class="status info">Analyzing seed patterns...</div>';
+    
+    setTimeout(() => {
+        const analyzer = new LotterySeedAnalyzer();
+        const results = analyzer.analyzeHistoricalDraws(draws);
+        
+        // Display results
+        let patternsHtml = '<h3>Detected Seed Patterns</h3>';
+        results.patterns.forEach(pattern => {
+            patternsHtml += `
+                <div class="status ${pattern.confidence === 'high' ? 'success' : 'warning'}">
+                    <strong>${pattern.type.replace(/_/g, ' ')}:</strong> ${pattern.message}
+                </div>
+            `;
+        });
+        
+        let predictionHtml = `
+            <h3>Seed Prediction</h3>
+            <div class="status info">
+                Predicted next seed: <strong>${results.predictedSeed}</strong>
+            </div>
+            <h3>Predicted Numbers</h3>
+            <div class="lotto-balls">
+        `;
+        
+        results.predictedNumbers.forEach(num => {
+            predictionHtml += `<div class="ball">${num}</div>`;
+        });
+        
+        predictionHtml += `</div>`;
+        
+        document.getElementById('reverse-results').innerHTML = patternsHtml + predictionHtml;
+        document.getElementById('reverse-status').innerHTML = 
+            '<div class="status success">Pattern analysis completed!</div>';
+        
+    }, 100);
+}
+
+// Add this button next to your "Reverse Engineer Seed" button in the HTML
+// <button onclick="analyzeWithSeedDetector()" class="success">Analyze Seed Patterns</button>
+
+// ====== ENHANCED SEED PREDICTION IN GENERATOR ======
+// Modify your generateLottoNumbers() function to use pattern detection when seed is empty
+const originalGenerateLottoNumbers = generateLottoNumbers;
+generateLottoNumbers = function() {
+    const seedInput = document.getElementById('seed').value.trim();
+    
+    if (!seedInput && document.getElementById('observed-numbers').value.trim()) {
+        // If no seed provided but we have observed numbers, try to predict
+        const observedText = document.getElementById('observed-numbers').value.trim();
+        const draws = observedText.split('\n')
+            .map(line => line.split(/[\s,|]+/).filter(x => x.trim() !== '').map(Number))
+            .filter(arr => arr.length > 0);
+        
+        if (draws.length >= 2) {
+            const analyzer = new LotterySeedAnalyzer();
+            const results = analyzer.analyzeHistoricalDraws(draws);
+            document.getElementById('seed').value = results.predictedSeed;
+            
+            document.getElementById('gen-details').innerHTML = `
+                <div class="status success">
+                    <strong>Auto-generated seed</strong> using detected patterns
+                </div>
+                ${document.getElementById('gen-details').innerHTML}
+            `;
+        }
+    }
+    
+    originalGenerateLottoNumbers();
+};
+</script>
 </body>
 </html>
