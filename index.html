@@ -1250,7 +1250,7 @@
             });
         }
 
-       function openTab(evt, tabName) {
+function openTab(evt, tabName) {
     // Prevent default behavior
     evt.preventDefault();
     
@@ -1261,6 +1261,25 @@
     tabContents.forEach(tab => {
         tab.style.display = 'none';
         tab.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show the current tab and mark button as active
+    const activeTab = document.getElementById(tabName);
+    if (activeTab) {
+        activeTab.style.display = 'block';
+        activeTab.classList.add('active');
+        evt.currentTarget.classList.add('active');
+    } else {
+        console.error('Tab not found:', tabName);
+    }
+}
+      
     });
     
     // Remove active class from all tabs
