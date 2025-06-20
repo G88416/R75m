@@ -618,34 +618,29 @@
         </div>
     </header>
     
-    <div class="container">
-        <div class="card">
-            <h2>PRNG & Lotto Analysis Toolkit</h2>
-            
-            <div class="tabs">
-                <button class="tab active" onclick="openTab(event, 'prng-generate')">
-                    <i class="fas fa-random tab-icon"></i> PRNG Generator
-                </button>
-                <button class="tab" onclick="openTab(event, 'prng-reverse')">
-                    <i class="fas fa-search tab-icon"></i> PRNG Reverse
-                </button>
-                <button class="tab" onclick="openTab(event, 'lotto-generate')">
-                    <i class="fas fa-ticket-alt tab-icon"></i> Lotto Generator
-                </button>
-                <button class="tab" onclick="openTab(event, 'lotto-reverse')">
-                    <i class="fas fa-search-dollar tab-icon"></i> Lotto Reverse
-                </button>
-                <button class="tab" onclick="openTab(event, 'compare')">
-                    <i class="fas fa-not-equal tab-icon"></i> Compare
-                </button>
-                <button class="tab" onclick="openTab(event, 'visualization')">
-                    <i class="fas fa-chart-bar tab-icon"></i> Visualization
-                </button>
-                <button class="tab" onclick="openTab(event, 'crypto-predictor')">
-                    <i class="fas fa-lock tab-icon"></i> Crypto Predictor
-                </button>
-            </div>
-            
+ <div class="tabs">
+    <button class="tab active" onclick="openTab(event, 'prng-generate')">
+        <i class="fas fa-random tab-icon"></i> PRNG Generator
+    </button>
+    <button class="tab" onclick="openTab(event, 'prng-reverse')">
+        <i class="fas fa-search tab-icon"></i> PRNG Reverse
+    </button>
+    <button class="tab" onclick="openTab(event, 'lotto-generate')">
+        <i class="fas fa-ticket-alt tab-icon"></i> Lotto Generator
+    </button>
+    <button class="tab" onclick="openTab(event, 'lotto-reverse')">
+        <i class="fas fa-search-dollar tab-icon"></i> Lotto Reverse
+    </button>
+    <button class="tab" onclick="openTab(event, 'compare')">
+        <i class="fas fa-not-equal tab-icon"></i> Compare
+    </button>
+    <button class="tab" onclick="openTab(event, 'visualization')">
+        <i class="fas fa-chart-bar tab-icon"></i> Visualization
+    </button>
+    <button class="tab" onclick="openTab(event, 'crypto-predictor')">
+        <i class="fas fa-lock tab-icon"></i> Crypto Predictor
+    </button>
+</div> 
             <!-- PRNG Generator Tab -->
             <div id="prng-generate" class="tab-content active">
                 <div class="config-buttons">
@@ -1252,9 +1247,8 @@
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
             });
-        }
-// Tab functionality
-function openTab(evt, tabName) {
+
+ function openTab(evt, tabName) {
     // Prevent default behavior
     evt.preventDefault();
     
@@ -1273,8 +1267,12 @@ function openTab(evt, tabName) {
     // Activate selected tab and button
     document.getElementById(tabName).classList.add('active');
     evt.currentTarget.classList.add('active');
-}
-          
+    
+    // Optional: Force redraw for smooth transitions
+    document.getElementById(tabName).style.display = 'none';
+    document.getElementById(tabName).offsetHeight; // Trigger reflow
+    document.getElementById(tabName).style.display = 'block';
+}         
         // PRNG Generator Functions
         function updateAlgorithmParams() {
             const algorithm = document.getElementById('prng-algorithm').value;
