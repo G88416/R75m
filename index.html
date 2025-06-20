@@ -1253,24 +1253,28 @@
                 localStorage.setItem('theme', newTheme);
             });
         }
-
-          // Tab functionality
+// Tab functionality
 function openTab(evt, tabName) {
+    // Prevent default behavior
+    evt.preventDefault();
+    
     // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach(tab => {
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(tab => {
         tab.classList.remove('active');
     });
     
     // Deactivate all tab buttons
-    document.querySelectorAll('.tab').forEach(tab => {
+    const tabButtons = document.querySelectorAll('.tab');
+    tabButtons.forEach(tab => {
         tab.classList.remove('active');
     });
     
     // Activate selected tab and button
     document.getElementById(tabName).classList.add('active');
     evt.currentTarget.classList.add('active');
-     }
-
+}
+          
         // PRNG Generator Functions
         function updateAlgorithmParams() {
             const algorithm = document.getElementById('prng-algorithm').value;
