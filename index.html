@@ -1251,20 +1251,34 @@
         }
 
        function openTab(evt, tabName) {
-    // Prevent default button behavior
+    // Prevent default behavior
     evt.preventDefault();
     
-    // Hide all tab contents
-    const tabContents = document.getElementsByClassName('tab-content');
-    for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].classList.remove('active');
-    }
+    // Get all tab content elements
+    const tabContents = document.querySelectorAll('.tab-content');
     
-    // Deactivate all tab buttons
-    const tabButtons = document.getElementsByClassName('tab');
-    for (let i = 0; i < tabButtons.length; i++) {
-        tabButtons[i].classList.remove('active');
+    // Hide all tab contents
+    tabContents.forEach(tab => {
+        tab.style.display = 'none';
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show the current tab and mark button as active
+    const activeTab = document.getElementById(tabName);
+    if (activeTab) {
+        activeTab.style.display = 'block';
+        activeTab.classList.add('active');
+        evt.currentTarget.classList.add('active');
+    } else {
+        console.error('Tab not found:', tabName);
     }
+}   
     
     // Activate the current tab
     document.getElementById(tabName).classList.add('active');
