@@ -6,16 +6,19 @@
     <title>Advanced PRNG & Lotto Analyzer Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-/* TAB FIX - Add these lines */
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
 }
     <style>
+ /* TAB FIX - Add these lines */
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    /* Rest of your CSS rules... */
         :root {
             --primary: #5c6bc0;
             --primary-dark: #3949ab;
@@ -628,30 +631,30 @@
     </header>
     
     <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="openTab(event, 'prng-generate')">
-                <i class="fas fa-random tab-icon"></i> PRNG Generator
-            </button>
-            <button class="tab" onclick="openTab(event, 'prng-reverse')">
-                <i class="fas fa-search tab-icon"></i> PRNG Reverse
-            </button>
-            <button class="tab" onclick="openTab(event, 'lotto-generate')">
-                <i class="fas fa-ticket-alt tab-icon"></i> Lotto Generator
-            </button>
-            <button class="tab" onclick="openTab(event, 'lotto-reverse')">
-                <i class="fas fa-search-dollar tab-icon"></i> Lotto Reverse
-            </button>
-            <button class="tab" onclick="openTab(event, 'compare')">
-                <i class="fas fa-not-equal tab-icon"></i> Compare
-            </button>
-            <button class="tab" onclick="openTab(event, 'visualization')">
-                <i class="fas fa-chart-bar tab-icon"></i> Visualization
-            </button>
-            <button class="tab" onclick="openTab(event, 'crypto-predictor')">
-                <i class="fas fa-lock tab-icon"></i> Crypto Predictor
-            </button>
-        </div>
-        
+         <div class="tabs">
+    <button class="tab active" data-tab="prng-generate">
+        <i class="fas fa-random tab-icon"></i> PRNG Generator
+    </button>
+    <button class="tab" data-tab="prng-reverse">
+        <i class="fas fa-search tab-icon"></i> PRNG Reverse
+    </button>
+    <button class="tab" data-tab="lotto-generate">
+        <i class="fas fa-ticket-alt tab-icon"></i> Lotto Generator
+    </button>
+    <button class="tab" data-tab="lotto-reverse">
+        <i class="fas fa-search-dollar tab-icon"></i> Lotto Reverse
+    </button>
+    <button class="tab" data-tab="compare">
+        <i class="fas fa-not-equal tab-icon"></i> Compare
+    </button>
+    <button class="tab" data-tab="visualization">
+        <i class="fas fa-chart-bar tab-icon"></i> Visualization
+    </button>
+    <button class="tab" data-tab="crypto-predictor">
+        <i class="fas fa-lock tab-icon"></i> Crypto Predictor
+    </button>
+</div>
+      
         <!-- PRNG Generator Tab -->
         <div id="prng-generate" class="tab-content active">
             <div class="config-buttons">
@@ -1280,8 +1283,7 @@ function openTab(evt, tabName) {
         activeTab.classList.add('active');
         evt.currentTarget.classList.add('active');
     }
-}
-         
+}         
         // PRNG Generator Functions
         function updateAlgorithmParams() {
             const algorithm = document.getElementById('prng-algorithm').value;
@@ -3007,12 +3009,25 @@ let lottoReverseWorker = null;
 
 // Initialize UI components
 document.addEventListener('DOMContentLoaded', function() {
-// Activate first tab on page load
-document.querySelector('.tab').classList.add('active');
-document.querySelector('.tab-content').classList.add('active');
-    updateLottoParams();
-    updateLottoReverseParams();
+    // Initialize theme
+    initTheme();
     
+    // Set up event listeners
+    document.getElementById('prng-algorithm').addEventListener('change', updateAlgorithmParams);
+    document.getElementById('lotto-game-type').addEventListener('change', updateLottoParams);
+    document.getElementById('lotto-reverse-game-type').addEventListener('change', updateLottoReverseParams);
+    document.getElementById('compare-mode').addEventListener('change', updateCompareFields);
+    
+    // Initialize algorithm info
+    updateAlgorithmParams();
+    
+    // Load sample data for visualization
+    sampleVisualizationData();
+    
+    // Activate first tab on page load
+    document.querySelector('.tab').classList.add('active');
+    document.querySelector('.tab-content').classList.add('active');
+});    
     // Initialize crypto predictor chart
     const ctx = document.getElementById('crypto-predictor-chart').getContext('2d');
     cryptoPredictorChart = new Chart(ctx, {
@@ -3029,6 +3044,36 @@ document.querySelector('.tab-content').classList.add('active');
     });
 });
   
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize theme
+    initTheme();
+    
+    // Set up event listeners
+    document.getElementById('prng-algorithm')?.addEventListener('change', updateAlgorithmParams);
+    document.getElementById('lotto-game-type')?.addEventListener('change', updateLottoParams);
+    document.getElementById('lotto-reverse-game-type')?.addEventListener('change', updateLottoReverseParams);
+    document.getElementById('compare-mode')?.addEventListener('change', updateCompareFields);
+    
+    // Initialize algorithm info
+    updateAlgorithmParams();
+    
+    // Load sample data for visualization
+    sampleVisualizationData();
+    
+    // Activate first tab and its corresponding content on page load
+    const firstTab = document.querySelector('.tabs .tab:first-child');
+    const firstTabId = firstTab?.getAttribute('onclick')?.match(/openTab\(.*?,\s*'([^']+)'/)?.[1];
+    
+    if (firstTab && firstTabId) {
+        // Remove active class from all tabs and contents
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Activate first tab and its content
+        firstTab.classList.add('active');
+        document.getElementById(firstTabId)?.classList.add('active');
+    }
+});
     </script>
 </body>
 </html>
