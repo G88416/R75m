@@ -6,6 +6,15 @@
     <title>Advanced PRNG & Lotto Analyzer Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+/* TAB FIX - Add these lines */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
     <style>
         :root {
             --primary: #5c6bc0;
@@ -1249,61 +1258,29 @@
                 localStorage.setItem('theme', newTheme);
             });
         }
-
 function openTab(evt, tabName) {
-    // Prevent default behavior
+    // Prevent default button behavior
     evt.preventDefault();
     
-    // Get all tab content elements
-    const tabContents = document.querySelectorAll('.tab-content');
-    
     // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(tab => {
-        tab.style.display = 'none';
         tab.classList.remove('active');
     });
     
-    // Remove active class from all tabs
+    // Deactivate all tab buttons
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Show the current tab and mark button as active
+    // Activate clicked tab
     const activeTab = document.getElementById(tabName);
     if (activeTab) {
-        activeTab.style.display = 'block';
         activeTab.classList.add('active');
         evt.currentTarget.classList.add('active');
-    } else {
-        console.error('Tab not found:', tabName);
     }
 }
-      
-    });
-    
-    // Remove active class from all tabs
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Show the current tab and mark button as active
-    const activeTab = document.getElementById(tabName);
-    if (activeTab) {
-        activeTab.style.display = 'block';
-        activeTab.classList.add('active');
-        evt.currentTarget.classList.add('active');
-    } else {
-        console.error('Tab not found:', tabName);
-    }
-}   
-    
-    // Activate the current tab
-    document.getElementById(tabName).classList.add('active');
-    evt.currentTarget.classList.add('active');
-}
-        }
          
         // PRNG Generator Functions
         function updateAlgorithmParams() {
@@ -3030,6 +3007,9 @@ let lottoReverseWorker = null;
 
 // Initialize UI components
 document.addEventListener('DOMContentLoaded', function() {
+// Activate first tab on page load
+document.querySelector('.tab').classList.add('active');
+document.querySelector('.tab-content').classList.add('active');
     updateLottoParams();
     updateLottoReverseParams();
     
