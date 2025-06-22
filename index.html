@@ -595,6 +595,65 @@
         .tab-icon {
             font-size: 0.9em;
         }
+        
+        /* Notification toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Improved number input styling */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* Better table styling */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .data-table th {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.02);
+        }
+        
+        .data-table tr:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body>
@@ -720,6 +779,9 @@
                         </button>
                         <button onclick="exportPRNGNumbers('csv')" class="secondary">
                             <i class="fas fa-file-csv"></i> Export as CSV
+                        </button>
+                        <button onclick="exportPRNGNumbers('json')" class="secondary">
+                            <i class="fas fa-file-code"></i> Export as JSON
                         </button>
                         <button onclick="copyPRNGNumbers()" class="secondary">
                             <i class="fas fa-copy"></i> Copy to Clipboard
@@ -881,6 +943,9 @@
                         <button onclick="exportLottoNumbers('csv')" class="secondary">
                             <i class="fas fa-file-csv"></i> Export as CSV
                         </button>
+                        <button onclick="exportLottoNumbers('json')" class="secondary">
+                            <i class="fas fa-file-code"></i> Export as JSON
+                        </button>
                         <button onclick="copyLottoNumbers()" class="secondary">
                             <i class="fas fa-copy"></i> Copy to Clipboard
                         </button>
@@ -937,7 +1002,7 @@
                     <label for="lotto-observed-numbers">Observed Numbers (one draw per line, format: 1,2,3,4,5|1):</label>
                     <textarea id="lotto-observed-numbers" rows="5" placeholder="Example for Powerball:
 3, 17, 25, 36, 55 | 12
-5, 10, 20, 30, 40 | 5"></textarea>
+5, 10, 20, 30, 40 | 15"></textarea>
                     
                     <label for="lotto-reverse-range">Seed search range:</label>
                     <div class="grid">
@@ -1054,6 +1119,7 @@
                         <option value="scatter">Scatter Plot</option>
                         <option value="autocorrelation">Autocorrelation</option>
                         <option value="frequency">Frequency Chart</option>
+                        <option value="boxplot">Box Plot</option>
                     </select>
                     
                     <label for="visualization-data">Data to visualize:</label>
@@ -1208,7 +1274,10 @@
         </div>
     </div>
     
+    <div id="toast" class="toast"></div>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-boxplot@1.2.0/build/Chart.BoxPlot.min.js"></script>
     <script>
         // Global variables
         let prngReverseWorker;
@@ -1270,6 +1339,18 @@
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
             });
+        }
+        
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show`;
+            toast.style.backgroundColor = `var(--${type})`;
+            
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
         }
          
         // PRNG Generator Functions
@@ -1466,60 +1547,60 @@
             const max = parseInt(document.getElementById('prng-max').value) || 100;
             
             if (min >= max) {
-                alert('Max value must be greater than min value');
+                showToast('Max value must be greater than min value', 'danger');
                 return;
             }
             
             let numbers = [];
             let generator;
             
-            switch(algorithm) {
-                case 'lcg':
-                    const multiplier = parseInt(document.getElementById('lcg-multiplier').value) || 1664525;
-                    const increment = parseInt(document.getElementById('lcg-increment').value) || 1013904223;
-                    const modulus = parseInt(document.getElementById('lcg-modulus').value) || 4294967296;
-                    
-                    generator = lcg(multiplier, increment, modulus, seed);
-                    break;
-                case 'mt':
-                    generator = mersenneTwister(seed);
-                    break;
-                case 'xorshift':
-                    generator = xorshift(seed);
-                    break;
-                case 'pcg':
-                    generator = pcg(seed);
-                    break;
-                case 'mulberry32':
-                    generator = mulberry32(seed);
-                    break;
-                case 'sfc32':
-                    generator = sfc32(seed, seed + 1, seed + 2, seed + 3);
-                    break;
-                case 'jsf32':
-                    generator = jsf32(seed, seed + 1, seed + 2, seed + 3);
-                    break;
-                case 'enhanced-crypto':
-                    const enhancedCrypto = new EnhancedCryptoPRNG(parseInt(document.getElementById('prng-seed').value) || undefined);
-                    generator = enhancedCrypto.createGenerator();
-                    break;
-                case 'aes-ctr':
-                    const aesPrng = new AesCtrPRNG(seed);
-                    generator = () => aesPrng.next();
-                    break;
-                case 'hmac-drbg':
-                    const hmacPrng = new HmacDrbg(seed);
-                    generator = () => hmacPrng.next();
-                    break;
-                default:
-                    generator = lcg(1664525, 1013904223, 4294967296, seed);
-            }
-            
-            // Handle async generators differently
-            if (algorithm === 'enhanced-crypto' || algorithm === 'aes-ctr' || algorithm === 'hmac-drbg') {
-                document.getElementById('prng-generated-numbers').value = 'Generating secure numbers...';
+            try {
+                switch(algorithm) {
+                    case 'lcg':
+                        const multiplier = parseInt(document.getElementById('lcg-multiplier').value) || 1664525;
+                        const increment = parseInt(document.getElementById('lcg-increment').value) || 1013904223;
+                        const modulus = parseInt(document.getElementById('lcg-modulus').value) || 4294967296;
+                        
+                        generator = lcg(multiplier, increment, modulus, seed);
+                        break;
+                    case 'mt':
+                        generator = mersenneTwister(seed);
+                        break;
+                    case 'xorshift':
+                        generator = xorshift(seed);
+                        break;
+                    case 'pcg':
+                        generator = pcg(seed);
+                        break;
+                    case 'mulberry32':
+                        generator = mulberry32(seed);
+                        break;
+                    case 'sfc32':
+                        generator = sfc32(seed, seed + 1, seed + 2, seed + 3);
+                        break;
+                    case 'jsf32':
+                        generator = jsf32(seed, seed + 1, seed + 2, seed + 3);
+                        break;
+                    case 'enhanced-crypto':
+                        const enhancedCrypto = new EnhancedCryptoPRNG(parseInt(document.getElementById('prng-seed').value) || undefined);
+                        generator = enhancedCrypto.createGenerator();
+                        break;
+                    case 'aes-ctr':
+                        const aesPrng = new AesCtrPRNG(seed);
+                        generator = () => aesPrng.next();
+                        break;
+                    case 'hmac-drbg':
+                        const hmacPrng = new HmacDrbg(seed);
+                        generator = () => hmacPrng.next();
+                        break;
+                    default:
+                        generator = lcg(1664525, 1013904223, 4294967296, seed);
+                }
                 
-                try {
+                // Handle async generators differently
+                if (algorithm === 'enhanced-crypto' || algorithm === 'aes-ctr' || algorithm === 'hmac-drbg') {
+                    document.getElementById('prng-generated-numbers').value = 'Generating secure numbers...';
+                    
                     for (let i = 0; i < count; i++) {
                         const randomValue = await generator();
                         const scaledValue = Math.floor(randomValue * (max - min + 1)) + min;
@@ -1533,18 +1614,21 @@
                     }
                     
                     calculatePRNGStats(numbers);
-                } catch (error) {
-                    document.getElementById('prng-generated-numbers').value = 'Error generating numbers: ' + error.message;
+                    showToast('Secure random numbers generated successfully', 'success');
+                } else {
+                    for (let i = 0; i < count; i++) {
+                        const randomValue = generator();
+                        const scaledValue = Math.floor(randomValue * (max - min + 1)) + min;
+                        numbers.push(scaledValue);
+                    }
+                    
+                    document.getElementById('prng-generated-numbers').value = numbers.join('\n');
+                    calculatePRNGStats(numbers);
+                    showToast('Random numbers generated successfully', 'success');
                 }
-            } else {
-                for (let i = 0; i < count; i++) {
-                    const randomValue = generator();
-                    const scaledValue = Math.floor(randomValue * (max - min + 1)) + min;
-                    numbers.push(scaledValue);
-                }
-                
-                document.getElementById('prng-generated-numbers').value = numbers.join('\n');
-                calculatePRNGStats(numbers);
+            } catch (error) {
+                document.getElementById('prng-generated-numbers').value = 'Error generating numbers: ' + error.message;
+                showToast('Error generating numbers: ' + error.message, 'danger');
             }
         }
 
@@ -1816,7 +1900,7 @@
             const knownCount = parseInt(document.getElementById('crypto-predictor-known').value) || 10;
             
             if (knownCount >= count) {
-                alert('Number of known values must be less than total values to generate');
+                showToast('Number of known values must be less than total values to generate', 'danger');
                 return;
             }
             
@@ -1825,53 +1909,59 @@
             let generator;
             const seed = Math.floor(Math.random() * 1000000);
             
-            switch(algorithm) {
-                case 'lcg':
-                    generator = lcg(1664525, 1013904223, 4294967296, seed);
-                    break;
-                case 'xorshift':
-                    generator = xorshift(seed);
-                    break;
-                case 'mt':
-                    generator = mersenneTwister(seed);
-                    break;
-                case 'aes-ctr':
-                    const aesPrng = new AesCtrPRNG(seed);
-                    generator = () => aesPrng.next();
-                    break;
-                case 'hmac-drbg':
-                    const hmacPrng = new HmacDrbg(seed);
-                    generator = () => hmacPrng.next();
-                    break;
-                case 'crypto':
-                    const cryptoPRNG = new EnhancedCryptoPRNG();
-                    generator = cryptoPRNG.createGenerator();
-                    break;
-                default:
-                    generator = lcg(1664525, 1013904223, 4294967296, seed);
-            }
-            
-            // Handle async crypto generator
-            if (algorithm === 'aes-ctr' || algorithm === 'hmac-drbg' || algorithm === 'crypto') {
-                document.getElementById('crypto-predictor-results').innerHTML = '<p>Generating cryptographic random numbers...</p>';
+            try {
+                switch(algorithm) {
+                    case 'lcg':
+                        generator = lcg(1664525, 1013904223, 4294967296, seed);
+                        break;
+                    case 'xorshift':
+                        generator = xorshift(seed);
+                        break;
+                    case 'mt':
+                        generator = mersenneTwister(seed);
+                        break;
+                    case 'aes-ctr':
+                        const aesPrng = new AesCtrPRNG(seed);
+                        generator = () => aesPrng.next();
+                        break;
+                    case 'hmac-drbg':
+                        const hmacPrng = new HmacDrbg(seed);
+                        generator = () => hmacPrng.next();
+                        break;
+                    case 'crypto':
+                        const cryptoPRNG = new EnhancedCryptoPRNG();
+                        generator = cryptoPRNG.createGenerator();
+                        break;
+                    default:
+                        generator = lcg(1664525, 1013904223, 4294967296, seed);
+                }
                 
-                try {
+                // Handle async crypto generator
+                if (algorithm === 'aes-ctr' || algorithm === 'hmac-drbg' || algorithm === 'crypto') {
+                    document.getElementById('crypto-predictor-results').innerHTML = '<p>Generating cryptographic random numbers...</p>';
+                    
                     for (let i = 0; i < count; i++) {
                         const val = await generator();
+                        sequence.push(Math.floor(val * 100));
+                        
+                        // Update progress every 10 numbers
+                        if (i % 10 === 0 || i === count - 1) {
+                            await new Promise(resolve => setTimeout(resolve, 0));
+                        }
+                    }
+                    
+                    runPredictionTest(sequence, knownCount, algorithm);
+                } else {
+                    for (let i = 0; i < count; i++) {
+                        const val = generator();
                         sequence.push(Math.floor(val * 100));
                     }
                     
                     runPredictionTest(sequence, knownCount, algorithm);
-                } catch (error) {
-                    document.getElementById('crypto-predictor-results').innerHTML = '<p class="status error">Error generating numbers: ' + error.message + '</p>';
                 }
-            } else {
-                for (let i = 0; i < count; i++) {
-                    const val = generator();
-                    sequence.push(Math.floor(val * 100));
-                }
-                
-                runPredictionTest(sequence, knownCount, algorithm);
+            } catch (error) {
+                document.getElementById('crypto-predictor-results').innerHTML = '<p class="status error">Error generating numbers: ' + error.message + '</p>';
+                showToast('Error running prediction test: ' + error.message, 'danger');
             }
         }
 
@@ -2277,6 +2367,8 @@
             
             // Perform frequency analysis
             performFrequencyAnalysis(results, mainPool, bonusPool);
+            
+            showToast('Lotto numbers generated successfully', 'success');
         }
 
         function generateUniqueNumbers(generator, poolSize, count) {
@@ -2418,17 +2510,20 @@
 
         function randomizeLottoSeed() {
             document.getElementById('lotto-seed').value = Math.floor(Math.random() * 1000000);
+            showToast('Random seed generated', 'info');
         }
 
         function exportLottoNumbers(format) {
             const results = document.getElementById('lotto-generated-results').innerText;
             if (!results.trim()) {
-                alert('No numbers to export');
+                showToast('No numbers to export', 'warning');
                 return;
             }
             
             if (format === 'csv') {
                 exportToCSV(results, 'lotto_numbers.csv');
+            } else if (format === 'json') {
+                exportToJSON(results, 'lotto_numbers.json');
             } else {
                 exportToFile(results, 'lotto_numbers.txt');
             }
@@ -2437,14 +2532,14 @@
         function copyLottoNumbers() {
             const results = document.getElementById('lotto-generated-results').innerText;
             if (!results.trim()) {
-                alert('No numbers to copy');
+                showToast('No numbers to copy', 'warning');
                 return;
             }
             
             navigator.clipboard.writeText(results).then(() => {
-                alert('Lotto numbers copied to clipboard');
+                showToast('Lotto numbers copied to clipboard', 'success');
             }).catch(err => {
-                alert('Failed to copy: ' + err);
+                showToast('Failed to copy: ' + err, 'danger');
             });
         }
 
@@ -2454,14 +2549,14 @@
             const targetNumbersText = document.getElementById('prng-target-numbers').value.trim();
             
             if (!targetNumbersText) {
-                alert('Please enter observed numbers to analyze');
+                showToast('Please enter observed numbers to analyze', 'warning');
                 return;
             }
             
             const targetNumbers = targetNumbersText.split('\n').map(num => parseFloat(num.trim())).filter(num => !isNaN(num));
             
             if (targetNumbers.length < 3) {
-                alert('Please enter at least 3 numbers for reliable analysis');
+                showToast('Please enter at least 3 numbers for reliable analysis', 'warning');
                 return;
             }
             
@@ -2578,7 +2673,7 @@
                         generated.push(Math.floor(generator() * 100));
                     }
                     
-                    // Check if they match
+                    // Check if they match observed
                     for (let i = 0; i < range; i++) {
                         if (generated[i] !== targetNumbers[i]) {
                             return false;
@@ -2602,6 +2697,7 @@
                     document.getElementById('prng-reverse-status').innerHTML = 'Analysis complete';
                     document.getElementById('prng-stop-button').style.display = 'none';
                     document.getElementById('prng-progress-bar').style.width = '100%';
+                    showToast('PRNG reverse engineering completed', 'success');
                 }
             };
             
@@ -2617,6 +2713,7 @@
             document.getElementById('prng-reverse-status').className = 'status warning';
             document.getElementById('prng-reverse-status').innerHTML = 'Analysis stopped by user';
             document.getElementById('prng-stop-button').style.display = 'none';
+            showToast('PRNG reverse engineering stopped', 'warning');
         }
 
         function clearPRNGReverse() {
@@ -2650,9 +2747,10 @@
             }
             
             document.getElementById('prng-target-numbers').value = sampleData;
+            showToast('Sample data loaded', 'info');
         }
 
-        // Lotto Reverse Engineering Functions
+        // Lotto Reverse Engineer Tab Functions
         function updateLottoReverseParams() {
             const gameType = document.getElementById('lotto-reverse-game-type').value;
             const customParams = document.getElementById('lotto-custom-reverse-params');
@@ -2725,7 +2823,7 @@
             
             const observedText = document.getElementById('lotto-observed-numbers').value.trim();
             if (!observedText) {
-                alert('Please enter observed numbers to analyze');
+                showToast('Please enter observed numbers to analyze', 'warning');
                 return;
             }
             
@@ -2738,7 +2836,7 @@
             }).filter(draw => draw.main.length === pickCount && draw.bonus.length === bonusCount);
             
             if (observedDraws.length < 2) {
-                alert(`Please enter at least 2 complete draws (${pickCount} main + ${bonusCount} bonus numbers each)`);
+                showToast(`Please enter at least 2 complete draws (${pickCount} main + ${bonusCount} bonus numbers each)`, 'warning');
                 return;
             }
             
@@ -2746,7 +2844,7 @@
             const maxSeed = parseInt(document.getElementById('lotto-reverse-max').value) || 100000;
             
             if (minSeed >= maxSeed) {
-                alert('Max seed must be greater than min seed');
+                showToast('Max seed must be greater than min seed', 'danger');
                 return;
             }
             
@@ -2838,6 +2936,7 @@
                     document.getElementById('lotto-reverse-status').innerHTML = 'Analysis complete';
                     document.getElementById('lotto-stop-button').style.display = 'none';
                     document.getElementById('lotto-progress-bar').style.width = '100%';
+                    showToast('Lotto reverse engineering completed', 'success');
                 }
             };
 
@@ -2861,6 +2960,7 @@
             document.getElementById('lotto-reverse-status').className = 'status warning';
             document.getElementById('lotto-reverse-status').innerHTML = 'Analysis stopped by user';
             document.getElementById('lotto-stop-button').style.display = 'none';
+            showToast('Lotto reverse engineering stopped', 'warning');
         }
 
         function clearLottoReverse() {
@@ -2895,12 +2995,13 @@
             }
             
             document.getElementById('lotto-observed-numbers').value = sampleData;
+            showToast('Sample data loaded', 'info');
         }
 
         function verifyLottoSeed() {
             const seed = parseInt(document.getElementById('lotto-seed-verification').value.trim());
             if (isNaN(seed)) {
-                alert('Please enter a valid seed number');
+                showToast('Please enter a valid seed number', 'warning');
                 return;
             }
             
@@ -2977,6 +3078,7 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            showToast(`Exported to ${filename}`, 'success');
         }
 
         function exportToCSV(content, filename) {
@@ -2988,6 +3090,15 @@
                 .join('\n');
             
             exportToFile(csvContent, filename);
+        }
+        
+        function exportToJSON(content, filename) {
+            // Convert to JSON format
+            const jsonContent = JSON.stringify(content.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0), null, 2);
+            
+            exportToFile(jsonContent, filename);
         }
 
         function calculatePRNGStats(numbers) {
@@ -3041,17 +3152,20 @@
             document.getElementById('lcg-multiplier').value = Math.floor(Math.random() * 1000000);
             document.getElementById('lcg-increment').value = Math.floor(Math.random() * 1000000);
             document.getElementById('lcg-modulus').value = Math.floor(Math.random() * 1000000000);
+            showToast('PRNG parameters randomized', 'info');
         }
 
         function exportPRNGNumbers(format) {
             const numbers = document.getElementById('prng-generated-numbers').value;
             if (!numbers.trim()) {
-                alert('No numbers to export');
+                showToast('No numbers to export', 'warning');
                 return;
             }
             
             if (format === 'csv') {
                 exportToCSV(numbers, 'prng_numbers.csv');
+            } else if (format === 'json') {
+                exportToJSON(numbers, 'prng_numbers.json');
             } else {
                 exportToFile(numbers, 'prng_numbers.txt');
             }
@@ -3060,14 +3174,14 @@
         function copyPRNGNumbers() {
             const numbers = document.getElementById('prng-generated-numbers').value;
             if (!numbers.trim()) {
-                alert('No numbers to copy');
+                showToast('No numbers to copy', 'warning');
                 return;
             }
             
             navigator.clipboard.writeText(numbers).then(() => {
-                alert('PRNG numbers copied to clipboard');
+                showToast('PRNG numbers copied to clipboard', 'success');
             }).catch(err => {
-                alert('Failed to copy: ' + err);
+                showToast('Failed to copy: ' + err, 'danger');
             });
         }
 
@@ -3084,13 +3198,13 @@
             };
             
             localStorage.setItem('prngConfig', JSON.stringify(config));
-            alert('PRNG configuration saved');
+            showToast('PRNG configuration saved', 'success');
         }
 
         function loadPRNGConfig() {
             const config = JSON.parse(localStorage.getItem('prngConfig'));
             if (!config) {
-                alert('No saved configuration found');
+                showToast('No saved configuration found', 'warning');
                 return;
             }
             
@@ -3104,7 +3218,7 @@
             document.getElementById('lcg-modulus').value = config.modulus;
             
             updateAlgorithmParams();
-            alert('PRNG configuration loaded');
+            showToast('PRNG configuration loaded', 'success');
         }
 
         function saveLottoConfig() {
@@ -3119,13 +3233,13 @@
             };
             
             localStorage.setItem('lottoConfig', JSON.stringify(config));
-            alert('Lotto configuration saved');
+            showToast('Lotto configuration saved', 'success');
         }
 
         function loadLottoConfig() {
             const config = JSON.parse(localStorage.getItem('lottoConfig'));
             if (!config) {
-                alert('No saved configuration found');
+                showToast('No saved configuration found', 'warning');
                 return;
             }
             
@@ -3138,7 +3252,7 @@
             document.getElementById('lotto-pick-bonus').value = config.pickBonus;
             
             updateLottoParams();
-            alert('Lotto configuration loaded');
+            showToast('Lotto configuration loaded', 'success');
         }
 
         function updateCompareFields() {
@@ -3169,14 +3283,14 @@
             const observedText = document.getElementById('compare-prng-observed').value.trim();
             
             if (!observedText) {
-                alert('Please enter observed numbers to compare');
+                showToast('Please enter observed numbers to compare', 'warning');
                 return;
             }
             
             const observedNumbers = observedText.split('\n').map(num => parseFloat(num.trim())).filter(num => !isNaN(num));
             
             if (observedNumbers.length === 0) {
-                alert('No valid numbers entered for comparison');
+                showToast('No valid numbers entered for comparison', 'warning');
                 return;
             }
             
@@ -3213,6 +3327,8 @@
                 <p><strong>Matches:</strong> ${matches} of ${comparisonLength} (${matchPercentage.toFixed(1)}%)</p>
                 <p><strong>Average Difference:</strong> ${avgDifference.toFixed(2)}</p>
             `;
+            
+            showToast('Sequences compared successfully', 'success');
         }
 
         function compareLottoSequences() {
@@ -3221,7 +3337,7 @@
             const observedText = document.getElementById('compare-lotto-observed').value.trim();
             
             if (!observedText) {
-                alert('Please enter observed draws to compare');
+                showToast('Please enter observed draws to compare', 'warning');
                 return;
             }
             
@@ -3234,7 +3350,7 @@
             });
             
             if (observedDraws.length === 0) {
-                alert('No valid draws entered for comparison');
+                showToast('No valid draws entered for comparison', 'warning');
                 return;
             }
             
@@ -3290,6 +3406,8 @@
                 ${totalBonusNumbers > 0 ? `<p><strong>Bonus Number Matches:</strong> ${bonusMatches} of ${totalBonusNumbers} (${bonusMatchPercentage.toFixed(1)}%)</p>` : ''}
                 <p><strong>Exact Draw Matches:</strong> ${exactMatches} of ${comparisonLength}</p>
             `;
+            
+            showToast('Lotto sequences compared successfully', 'success');
         }
 
         function clearComparison() {
@@ -3306,18 +3424,19 @@
                 sampleData += Math.floor(Math.random() * 100) + '\n';
             }
             document.getElementById('visualization-data').value = sampleData.trim();
+            showToast('Sample visualization data loaded', 'info');
         }
 
         function generateVisualization() {
             const dataText = document.getElementById('visualization-data').value.trim();
             if (!dataText) {
-                alert('Please enter data to visualize');
+                showToast('Please enter data to visualize', 'warning');
                 return;
             }
             
             const numbers = dataText.split('\n').map(num => parseFloat(num.trim())).filter(num => !isNaN(num));
             if (numbers.length === 0) {
-                alert('No valid numbers entered for visualization');
+                showToast('No valid numbers entered for visualization', 'warning');
                 return;
             }
             
@@ -3340,12 +3459,21 @@
             const variance = numbers.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / numbers.length;
             const stdDev = Math.sqrt(variance);
             
+            // Calculate quartiles for box plot
+            const sorted = [...numbers].sort((a, b) => a - b);
+            const q1 = sorted[Math.floor(sorted.length * 0.25)];
+            const median = sorted[Math.floor(sorted.length * 0.5)];
+            const q3 = sorted[Math.floor(sorted.length * 0.75)];
+            const iqr = q3 - q1;
+            
             // Update stats display
             document.getElementById('visualization-stats-content').innerHTML = `
                 <p><strong>Count:</strong> ${numbers.length}</p>
                 <p><strong>Range:</strong> ${min} to ${max} (span: ${range})</p>
                 <p><strong>Mean:</strong> ${mean.toFixed(2)}</p>
+                <p><strong>Median:</strong> ${median.toFixed(2)}</p>
                 <p><strong>Standard Deviation:</strong> ${stdDev.toFixed(2)}</p>
+                <p><strong>Q1:</strong> ${q1.toFixed(2)} | <strong>Q3:</strong> ${q3.toFixed(2)} | <strong>IQR:</strong> ${iqr.toFixed(2)}</p>
             `;
             
             // Create appropriate visualization
@@ -3357,7 +3485,11 @@
                 createAutocorrelationPlot(numbers, ctx);
             } else if (type === 'frequency') {
                 createFrequencyChart(numbers, ctx);
+            } else if (type === 'boxplot') {
+                createBoxPlot(numbers, ctx);
             }
+            
+            showToast('Visualization generated successfully', 'success');
         }
 
         function createHistogram(numbers, ctx) {
@@ -3576,6 +3708,63 @@
                 }
             });
         }
+        
+        function createBoxPlot(numbers, ctx) {
+            // Calculate statistics for box plot
+            const sorted = [...numbers].sort((a, b) => a - b);
+            const q1 = sorted[Math.floor(sorted.length * 0.25)];
+            const median = sorted[Math.floor(sorted.length * 0.5)];
+            const q3 = sorted[Math.floor(sorted.length * 0.75)];
+            const iqr = q3 - q1;
+            const min = Math.min(...numbers);
+            const max = Math.max(...numbers);
+            
+            // Identify outliers (1.5 * IQR rule)
+            const lowerBound = q1 - 1.5 * iqr;
+            const upperBound = q3 + 1.5 * iqr;
+            const outliers = numbers.filter(num => num < lowerBound || num > upperBound);
+            
+            visualizationChart = new Chart(ctx, {
+                type: 'boxplot',
+                data: {
+                    labels: ['Data Distribution'],
+                    datasets: [{
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        itemRadius: 0,
+                        data: [{
+                            min: min,
+                            q1: q1,
+                            median: median,
+                            q3: q3,
+                            max: max,
+                            outliers: outliers
+                        }]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Box Plot of Values'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         function clearVisualization() {
             document.getElementById('visualization-data').value = '';
@@ -3586,6 +3775,95 @@
                 visualizationChart = null;
             }
         }
+
+        // Helper function to check if two arrays are equal
+        function arraysEqual(a, b) {
+            if (a === b) return true;
+            if (a == null || b == null) return false;
+            if (a.length !== b.length) return false;
+
+            for (let i = 0; i < a.length; ++i) {
+                if (a[i] !== b[i]) return false;
+            }
+            return true;
+        }
+
+        // Initialize the application
+        window.onload = function() {
+            // Set up event listeners for tab switching
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs and contents
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Initialize theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            // Initialize algorithm parameters display
+            updateAlgorithmParams();
+            updateLottoParams();
+            updateLottoReverseParams();
+            updateCompareFields();
+        };
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Additional utility functions
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = '<div class="spinner"></div> Processing...';
+            }
+        }
+
+        function hideLoading(elementId, originalContent) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = originalContent || '';
+            }
+        }
+
+        // Add event listener for theme toggle
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Make sure to clean up workers when page unloads
+        window.addEventListener('beforeunload', function() {
+            if (prngReverseWorker) {
+                prngReverseWorker.terminate();
+            }
+            if (lottoReverseWorker) {
+                lottoReverseWorker.terminate();
+            }
+            if (cryptoPredictionWorker) {
+                cryptoPredictionWorker.terminate();
+            }
+        });
     </script>
 </body>
 </html>
