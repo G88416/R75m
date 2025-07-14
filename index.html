@@ -21,7 +21,7 @@
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                    }
+                    },
                 }
             }
         }
@@ -1289,14 +1289,14 @@
         const apiKey = ""; 
 
         // Game Configurations
-        const gameConfigs = {
-            powerball: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } } },
-            megamillions: { mainPool: 70, pickCount: 5, bonusPool: 25, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-70': [0,1] } } },
-            euromillions: { mainPool: 50, pickCount: 5, bonusPool: 12, bonusCount: 2, optimal: { sumRange: [100, 150], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [0,1], '41-50': [0,1] } } },
-            lotto649: { mainPool: 49, pickCount: 6, bonusPool: 49, bonusCount: 1, optimal: { sumRange: [100, 180], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-49': [0,1] } } },
-            lotto645: { mainPool: 45, pickCount: 6, bonusPool: 45, bonusCount: 1, optimal: { sumRange: [90, 170], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-45': [0,1] } } },
-            custom: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } } }
-        };
+const gameConfigs = {
+    powerball: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } },
+    megamillions: { mainPool: 70, pickCount: 5, bonusPool: 25, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-70': [0,1] } },
+    euromillions: { mainPool: 50, pickCount: 5, bonusPool: 12, bonusCount: 2, optimal: { sumRange: [100, 150], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [0,1], '41-50': [0,1] } },
+    lotto649: { mainPool: 49, pickCount: 6, bonusPool: 49, bonusCount: 1, optimal: { sumRange: [100, 180], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-49': [0,1] } },
+    lotto645: { mainPool: 45, pickCount: 6, bonusPool: 45, bonusCount: 1, optimal: { sumRange: [90, 170], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-45': [0,1] } },
+    custom: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } } }
+};
 
         // Application State
         const appState = {
@@ -2191,23 +2191,23 @@
         }
 
         function exportTicketsCsv() {
-            const ticketsDiv = document.getElementById('generatedTickets');
-            if (ticketsDiv.textContent.includes('Generate some numbers')) {
-                showNotification('No tickets to export!');
-                return;
-            }
-            
-            let csvContent = 'Ticket,Numbers,Bonus\n';
-            Array.from(ticketsDiv.querySelectorAll('.p-3')).forEach((div, index) => {
-                const numbers = Array.from(div.querySelectorAll('.number-ball:not(.bonus-ball)')).map(ball => ball.textContent);
-                const bonus = Array.from(div.querySelectorAll('.bonus-ball')).map(ball => ball.textContent);
-                csvContent += `Ticket ${index + 1},"${numbers.join(',')}","${bonus.join(',')}"\n`;
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;');
-            downloadBlob(blob, 'tickets.csv');
-            showNotification('Tickets exported as CSV!');
-        }
+    const ticketsDiv = document.getElementById('generatedTickets');
+    if (ticketsDiv.textContent.includes('Generate some numbers')) {
+        showNotification('No tickets to export!');
+        return;
+    }
+    
+    let csvContent = 'Ticket,Numbers,Bonus\n';
+    Array.from(ticketsDiv.querySelectorAll('.p-3')).forEach((div, index) => {
+        const numbers = Array.from(div.querySelectorAll('.number-ball:not(.bonus-ball)')).map(ball => ball.textContent);
+        const bonus = Array.from(div.querySelectorAll('.bonus-ball')).map(ball => ball.textContent);
+        csvContent += `Ticket ${index + 1},"${numbers.join(',')}","${bonus.join(',')}"\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    downloadBlob(blob, 'tickets.csv');
+    showNotification('Tickets exported as CSV!');
+}
 
         function copyTickets() {
             const ticketsDiv = document.getElementById('generatedTickets');
