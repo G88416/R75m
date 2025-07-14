@@ -220,7 +220,7 @@
                                 <input id="pickCount" type="number" class="w-full p-2 border rounded-lg dark:bg-gray-700" placeholder="e.g., 5">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium">Bonus Pool</labeL>
+                                <label class="block text-sm font-medium">Bonus Pool</label>
                                 <input id="bonusPool" type="number" class="w-full p-2 border rounded-lg dark:bg-gray-700" placeholder="e.g., 26">
                             </div>
                             <div>
@@ -724,16 +724,17 @@
                                 <option value="manual">Manual Input</option> <!-- Added Manual Input option -->
                             </select>
                         </div>
-
+                        
                         <div id="csvUploadContainer" class="hidden">
                             <label class="block text-sm font-medium">Upload CSV File</label>
                             <input id="csvUpload" type="file" accept=".csv" class="w-full p-2 border rounded-lg dark:bg-gray-700">
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">CSV format: Date,Number1,Number2,...,Bonus1,Bonus2</p>
                         </div>
 
+                        <!-- Manual Input Container -->
                         <div id="manualInputContainer" class="hidden">
-                            <label class="block text-sm font-medium">Paste Historical Draws</label>
-                            <textarea id="manualInputArea" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-32" placeholder="Enter historical draws, one per line (e.g., 2023-01-01,5,12,23,34,45,6)"></textarea>
+                            <label class="block text-sm font-medium">Enter Draws Manually</label>
+                            <textarea id="manualDrawsInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-32" placeholder="Enter draws, one per line (e.g., 2023-01-01,5,12,23,34,45,6)"></textarea>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format: Date,Number1,Number2,...,Bonus1,Bonus2</p>
                         </div>
                         
@@ -1560,8 +1561,9 @@
                 mainContent.classList.remove('md:ml-64');
                 mainContent.classList.add('ml-0');
             } else {
-                mainContent.classList.remove('ml-0');
+                sidebar.classList.remove('sidebar-hidden');
                 mainContent.classList.add('md:ml-64');
+                mainContent.classList.remove('ml-0');
             }
         }
 
@@ -1636,11 +1638,11 @@
             const csvUploadContainer = document.getElementById('csvUploadContainer');
             const manualInputContainer = document.getElementById('manualInputContainer'); // Get the new manual input container
             
-            // Hide all data source specific containers first
+            // Hide all input containers first
             csvUploadContainer.classList.add('hidden');
             manualInputContainer.classList.add('hidden');
-
-            // Show the relevant container based on selection
+            
+            // Show the relevant container based on the selected source
             if (source === 'csv') {
                 csvUploadContainer.classList.remove('hidden');
             } else if (source === 'manual') { // Handle manual input
@@ -3357,28 +3359,33 @@
                 
                 reader.readAsText(file);
             } else if (source === 'manual') { // Handle manual input
-                const manualInput = document.getElementById('manualInputArea').value;
-                const lines = manualInput.split('\n').filter(line => line.trim());
+                const input = document.getElementById('manualDrawsInput').value;
+                const lines = input.split('\n').filter(line => line.trim());
 
                 if (lines.length === 0) {
-                    showNotification('Please enter data in the manual input area!');
+                    showNotification('Please enter manual draw data!');
                     return;
                 }
 
                 appState.historicalData = lines.map(line => {
-                    const [date, ...nums] = line.split(',');
-                    const numbers = nums.slice(0, config.pickCount).map(Number).filter(n => !isNaN(n));
-                    const bonus = nums.slice(config.pickCount, config.pickCount + config.bonusCount).map(Number).filter(n => !isNaN(n));
-                    
+                    const parts = line.split(',');
+                    if (parts.length < config.pickCount + config.bonusCount + 1) {
+                        console.warn(`Skipping malformed line: ${line}`);
+                        return null; // Skip invalid lines
+                    }
+                    const date = parts[0].trim();
+                    const numbers = parts.slice(1, 1 + config.pickCount).map(Number).filter(n => !isNaN(n));
+                    const bonus = parts.slice(1 + config.pickCount, 1 + config.pickCount + config.bonusCount).map(Number).filter(n => !isNaN(n));
+
                     return {
                         date: date || new Date().toISOString().split('T')[0],
                         numbers: numbers.sort((a, b) => a - b),
                         bonus: bonus
                     };
-                }).filter(draw => draw.numbers.length === config.pickCount && draw.bonus.length === config.bonusCount);
+                }).filter(draw => draw !== null && draw.numbers.length === config.pickCount && draw.bonus.length === config.bonusCount);
 
                 if (appState.historicalData.length === 0) {
-                    showNotification('No valid draws found in manual input!');
+                    showNotification('No valid draws found in manual input! Ensure format is Date,N1,N2,...,B1,...');
                     return;
                 }
 
@@ -3995,6 +4002,7 @@
             if(charts.predictionVizChart) {
                 charts.predictionVizChart.data.labels = labels;
                 charts.predictionVizChart.data.datasets[0].data = data;
+                charts.predictionVizChart.data.datasets[0].backgroundColor = predictedNumbers.map(num => predictedNumbers.includes(num) ? '#10B981' : '#3B82F6');
                 charts.predictionVizChart.update();
             }
         }
