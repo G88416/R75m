@@ -731,11 +731,11 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">CSV format: Date,Number1,Number2,...,Bonus1,Bonus2</p>
                         </div>
 
-                        <!-- Manual Input Container -->
+                        <!-- New Manual Input Container -->
                         <div id="manualInputContainer" class="hidden">
-                            <label class="block text-sm font-medium">Enter Draws Manually</label>
-                            <textarea id="manualDrawsInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-32" placeholder="Enter draws, one per line (e.g., 2023-01-01,5,12,23,34,45,6)"></textarea>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format: Date,Number1,Number2,...,Bonus1,Bonus2</p>
+                            <label class="block text-sm font-medium">Paste Historical Draws</label>
+                            <textarea id="manualDataInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-40" placeholder="Enter historical draws, one per line (e.g., YYYY-MM-DD,N1,N2,N3,N4,N5,B1)"></textarea>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format: Date,Number1,Number2,...,Bonus1,Bonus2 (one draw per line)</p>
                         </div>
                         
                         <div>
@@ -1289,14 +1289,14 @@
         const apiKey = ""; 
 
         // Game Configurations
-const gameConfigs = {
-    powerball: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } },
-    megamillions: { mainPool: 70, pickCount: 5, bonusPool: 25, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-70': [0,1] } },
-    euromillions: { mainPool: 50, pickCount: 5, bonusPool: 12, bonusCount: 2, optimal: { sumRange: [100, 150], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [0,1], '41-50': [0,1] } },
-    lotto649: { mainPool: 49, pickCount: 6, bonusPool: 49, bonusCount: 1, optimal: { sumRange: [100, 180], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-49': [0,1] } },
-    lotto645: { mainPool: 45, pickCount: 6, bonusPool: 45, bonusCount: 1, optimal: { sumRange: [90, 170], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-45': [0,1] } },
-    custom: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } } }
-};
+        const gameConfigs = {
+            powerball: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } } },
+            megamillions: { mainPool: 70, pickCount: 5, bonusPool: 25, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-70': [0,1] } } },
+            euromillions: { mainPool: 50, pickCount: 5, bonusPool: 12, bonusCount: 2, optimal: { sumRange: [100, 150], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [0,1], '41-50': [0,1] } } },
+            lotto649: { mainPool: 49, pickCount: 6, bonusPool: 49, bonusCount: 1, optimal: { sumRange: [100, 180], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-49': [0,1] } } },
+            lotto645: { mainPool: 45, pickCount: 6, bonusPool: 45, bonusCount: 1, optimal: { sumRange: [90, 170], oddEvenRatio: [3,3], consecutiveMax: 2, primeCount: [1,3], fibCount: [0,2], groupDistribution: { '1-10': [1,2], '11-20': [1,2], '21-30': [1,2], '31-40': [1,2], '41-45': [0,1] } } },
+            custom: { mainPool: 69, pickCount: 5, bonusPool: 26, bonusCount: 1, optimal: { sumRange: [130, 200], oddEvenRatio: [2,3], consecutiveMax: 1, primeCount: [1,2], fibCount: [0,1], groupDistribution: { '1-10': [0,2], '11-20': [1,3], '21-30': [1,3], '31-40': [0,2], '41-50': [0,2], '51-60': [0,2], '61-69': [0,1] } } }
+        };
 
         // Application State
         const appState = {
@@ -1636,13 +1636,12 @@ const gameConfigs = {
         function handleDataSourceChange(e) {
             const source = e.target.value;
             const csvUploadContainer = document.getElementById('csvUploadContainer');
-            const manualInputContainer = document.getElementById('manualInputContainer'); // Get the new manual input container
+            const manualInputContainer = document.getElementById('manualInputContainer'); // Get the new container
             
-            // Hide all input containers first
+            // Hide all containers initially
             csvUploadContainer.classList.add('hidden');
             manualInputContainer.classList.add('hidden');
-            
-            // Show the relevant container based on the selected source
+
             if (source === 'csv') {
                 csvUploadContainer.classList.remove('hidden');
             } else if (source === 'manual') { // Handle manual input
@@ -2191,23 +2190,23 @@ const gameConfigs = {
         }
 
         function exportTicketsCsv() {
-    const ticketsDiv = document.getElementById('generatedTickets');
-    if (ticketsDiv.textContent.includes('Generate some numbers')) {
-        showNotification('No tickets to export!');
-        return;
-    }
-    
-    let csvContent = 'Ticket,Numbers,Bonus\n';
-    Array.from(ticketsDiv.querySelectorAll('.p-3')).forEach((div, index) => {
-        const numbers = Array.from(div.querySelectorAll('.number-ball:not(.bonus-ball)')).map(ball => ball.textContent);
-        const bonus = Array.from(div.querySelectorAll('.bonus-ball')).map(ball => ball.textContent);
-        csvContent += `Ticket ${index + 1},"${numbers.join(',')}","${bonus.join(',')}"\n`;
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    downloadBlob(blob, 'tickets.csv');
-    showNotification('Tickets exported as CSV!');
-}
+            const ticketsDiv = document.getElementById('generatedTickets');
+            if (ticketsDiv.textContent.includes('Generate some numbers')) {
+                showNotification('No tickets to export!');
+                return;
+            }
+            
+            let csvContent = 'Ticket,Numbers,Bonus\n';
+            Array.from(ticketsDiv.querySelectorAll('.p-3')).forEach((div, index) => {
+                const numbers = Array.from(div.querySelectorAll('.number-ball:not(.bonus-ball)')).map(ball => ball.textContent);
+                const bonus = Array.from(div.querySelectorAll('.bonus-ball')).map(ball => ball.textContent);
+                csvContent += `Ticket ${index + 1},"${numbers.join(',')}","${bonus.join(',')}"\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;');
+            downloadBlob(blob, 'tickets.csv');
+            showNotification('Tickets exported as CSV!');
+        }
 
         function copyTickets() {
             const ticketsDiv = document.getElementById('generatedTickets');
@@ -3358,21 +3357,17 @@ const gameConfigs = {
                 };
                 
                 reader.readAsText(file);
-            } else if (source === 'manual') { // Handle manual input
-                const input = document.getElementById('manualDrawsInput').value;
-                const lines = input.split('\n').filter(line => line.trim());
+            } else if (source === 'manual') { // New manual input logic
+                const rawData = document.getElementById('manualDataInput').value;
+                const lines = rawData.split('\n').filter(line => line.trim());
 
                 if (lines.length === 0) {
-                    showNotification('Please enter manual draw data!');
+                    showNotification('Please enter historical data in the manual input field!');
                     return;
                 }
 
                 appState.historicalData = lines.map(line => {
                     const parts = line.split(',');
-                    if (parts.length < config.pickCount + config.bonusCount + 1) {
-                        console.warn(`Skipping malformed line: ${line}`);
-                        return null; // Skip invalid lines
-                    }
                     const date = parts[0].trim();
                     const numbers = parts.slice(1, 1 + config.pickCount).map(Number).filter(n => !isNaN(n));
                     const bonus = parts.slice(1 + config.pickCount, 1 + config.pickCount + config.bonusCount).map(Number).filter(n => !isNaN(n));
@@ -3382,10 +3377,10 @@ const gameConfigs = {
                         numbers: numbers.sort((a, b) => a - b),
                         bonus: bonus
                     };
-                }).filter(draw => draw !== null && draw.numbers.length === config.pickCount && draw.bonus.length === config.bonusCount);
+                }).filter(draw => draw.numbers.length === config.pickCount && draw.bonus.length === config.bonusCount);
 
                 if (appState.historicalData.length === 0) {
-                    showNotification('No valid draws found in manual input! Ensure format is Date,N1,N2,...,B1,...');
+                    showNotification('No valid draws found in manual input! Check format.');
                     return;
                 }
 
@@ -3393,7 +3388,7 @@ const gameConfigs = {
                 if (pastDraws !== 'all') {
                     appState.historicalData = appState.historicalData.slice(-parseInt(pastDraws));
                 }
-                
+
                 appState.currentPage = 1;
                 displayHistoricalData();
                 updateHistoricalCharts();
@@ -4002,7 +3997,6 @@ const gameConfigs = {
             if(charts.predictionVizChart) {
                 charts.predictionVizChart.data.labels = labels;
                 charts.predictionVizChart.data.datasets[0].data = data;
-                charts.predictionVizChart.data.datasets[0].backgroundColor = predictedNumbers.map(num => predictedNumbers.includes(num) ? '#10B981' : '#3B82F6');
                 charts.predictionVizChart.update();
             }
         }
