@@ -118,7 +118,6 @@
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-dark text-gray-900 dark:text-white transition-colors duration-300">
-    <!-- Sidebar -->
     <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg p-4 sidebar z-40 md:translate-x-0 sidebar-hidden">
         <div class="flex items-center mb-6">
             <h1 class="text-2xl font-bold text-primary">Lotto Genius</h1>
@@ -140,7 +139,6 @@
         </nav>
     </aside>
 
-    <!-- Main Content -->
     <div class="ml-0 p-4 main-content-area">
         <header class="flex justify-between items-center mb-6">
             <button id="toggleSidebar" class="md:hidden p-2 bg-primary text-white rounded-lg">☰</button>
@@ -154,7 +152,6 @@
         </header>
 
         <main class="space-y-6">
-            <!-- Dashboard Section -->
             <section id="dashboard" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Dashboard Overview</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -191,11 +188,9 @@
                 </div>
             </section>
 
-            <!-- Smart Generator Section -->
             <section id="generator" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Smart Number Generator</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Game Configuration -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Game Setup</h3>
                         <div class="space-y-2">
@@ -238,7 +233,6 @@
                         </div>
                     </div>
 
-                    <!-- Generation Options -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Generation Method</h3>
                         <div class="space-y-2">
@@ -268,7 +262,6 @@
                         </div>
                     </div>
 
-                    <!-- Advanced Options -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Advanced Options</h3>
                         <div>
@@ -299,7 +292,6 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="mt-6">
                     <h3 class="text-xl font-medium mb-2">Quick Actions</h3>
                     <div class="flex flex-wrap gap-2">
@@ -311,7 +303,6 @@
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Tip: Combine AI-Powered generation with historical data for statistically optimized numbers.</p>
                 </div>
 
-                <!-- Generated Tickets -->
                 <div class="mt-6">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-xl font-medium">Generated Tickets</h3>
@@ -327,7 +318,6 @@
                     </div>
                 </div>
 
-                <!-- Analysis Panels -->
                 <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <h3 class="text-xl font-medium mb-2">Number Frequency</h3>
@@ -344,11 +334,9 @@
                 </div>
             </section>
 
-            <!-- Advanced Analyzer Section -->
             <section id="analyzer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Advanced Number Analyzer</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Analysis Input -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Input Numbers</h3>
                         <div>
@@ -359,11 +347,9 @@
                                 <option value="euromillions">EuroMillions (5/50 + 2/12)</option>
                                 <option value="lotto649">Lotto 6/49</option>
                                 <option value="lotto645">Lotto 6/45</option>
-                                <option value="custom">Custom Game</option> <!-- Added Custom Game option -->
-                            </select>
+                                <option value="custom">Custom Game</option> </select>
                         </div>
                         
-                        <!-- Custom Game Configuration for Analyzer -->
                         <div id="customAnalyzerGameConfig" class="grid grid-cols-2 gap-2 hidden">
                             <div>
                                 <label class="block text-sm font-medium">Main Pool</label>
@@ -405,7 +391,6 @@
                         </div>
                     </div>
 
-                    <!-- Basic Analysis Results -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Basic Analysis</h3>
                         <div id="analysisResults" class="p-4 bg-gray-10- dark:bg-gray-700 rounded-lg">
@@ -423,7 +408,6 @@
                             </div>
                         </div>
                         
-                        <!-- AI Insights Output -->
                         <div id="aiInsightsOutput" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg hidden">
                             <h4 class="font-medium text-sm">AI Insights</h4>
                             <div id="aiInsightsText" class="text-xs mt-1"></div>
@@ -431,7 +415,6 @@
                         </div>
                     </div>
 
-                    <!-- Advanced Analysis -->
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
                             <h3 class="text-xl font-medium">Advanced Metrics</h3>
@@ -447,21 +430,18 @@
                                 <h4 class="font-medium text-sm">Advanced Metrics</h4>
                                 <div id="advancedMetrics" class="text-xs mt-1"></div>
                             </div>
-                            <!-- New section for most used numbers from input -->
                             <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                                 <h4 class="font-medium text-sm">Most Used Numbers (from input)</h4>
                                 <div id="mostUsedNumbersInput" class="text-xs mt-1">
                                     <p>Analyze numbers to see the most frequently entered numbers.</p>
                                 </div>
                             </div>
-                            <!-- New section for least used numbers from input -->
                             <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                                 <h4 class="font-medium text-sm">Least Used Numbers (from input)</h4>
                                 <div id="leastUsedNumbersInput" class="text-xs mt-1">
                                     <p>Analyze numbers to see the least frequently entered numbers.</p>
                                 </div>
                             </div>
-                            <!-- New section for unused numbers and pairs -->
                             <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                                 <h4 class="font-medium text-sm">Unused Numbers & Pairs (from pool)</h4>
                                 <div id="unusedNumbersAndPairs" class="text-xs mt-1">
@@ -477,7 +457,6 @@
                     </div>
                 </div>
                 
-                <!-- Detailed Analysis Charts -->
                 <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                         <h4 class="font-medium text-sm">Last Digit Distribution</h4>
@@ -493,7 +472,6 @@
                     </div>
                 </div>
 
-                <!-- Prediction Engine (Advanced) -->
                 <div class="mt-6">
                     <h3 class="text-xl font-medium">Prediction Engine (Advanced)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -502,8 +480,7 @@
                             <select id="advancedPredictionAlgorithm" class="w-full p-2 border rounded-lg dark:bg-gray-700">
                                 <option value="fisherYatesEnhanced">Fisher-Yates Shuffle Enhanced</option>
                                 <option value="cryptoSecureEnhanced">Cryptographically Secure Enhanced</option>
-                                <option value="primeFilter">Prime Filter</option> <!-- New Prime Filter Option -->
-                            </select>
+                                <option value="primeFilter">Prime Filter</option> </select>
                         </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-medium">Advance Filter</label>
@@ -527,11 +504,9 @@
                 </div>
             </section>
 
-            <!-- Combinatorics Lab Section -->
             <section id="combinatorics" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Combinatorics Lab</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Common Pairs Generator -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-semibold text-primary">Common Pairs Generator</h3>
                         <div>
@@ -556,7 +531,6 @@
                         </div>
                     </div>
 
-                    <!-- Combinations Generator -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-semibold text-accent">Combinations Generator</h3>
                         <div>
@@ -587,11 +561,9 @@
                 </div>
             </section>
 
-            <!-- Reverse Engineer Section -->
             <section id="reverse-engineer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Advanced Lotto Reverse Engineer</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Input Section -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Input Numbers</h3>
                         <div>
@@ -626,7 +598,6 @@
                         </div>
                     </div>
                     
-                    <!-- Results Section -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Reverse Engineering Results</h3>
                         <div id="reverseResults" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-32">
@@ -651,7 +622,6 @@
                             </div>
                         </div>
 
-                        <!-- New AI-powered sections -->
                         <div id="optimalCharacteristics" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hidden">
                             <h4 class="font-medium text-sm">Optimal Game Characteristics ✨</h4>
                             <div id="optimalCharacteristicsText" class="text-xs mt-1"></div>
@@ -676,11 +646,9 @@
                 </div>
             </section>
 
-            <!-- Historical Data Section -->
             <section id="historical" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Historical Data Explorer</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Data Configuration -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Data Source</h3>
                         <div>
@@ -691,11 +659,9 @@
                                 <option value="euromillions">EuroMillions (5/50 + 2/12)</option>
                                 <option value="lotto649">Lotto 6/49</option>
                                 <option value="lotto645">Lotto 6/45</option>
-                                <option value="custom">Custom Game</option> <!-- Added Custom Game option -->
-                            </select>
+                                <option value="custom">Custom Game</option> </select>
                         </div>
 
-                        <!-- Custom Game Configuration for Historical Data -->
                         <div id="customHistoricalGameConfig" class="grid grid-cols-2 gap-2 hidden">
                             <div>
                                 <label class="block text-sm font-medium">Main Pool</label>
@@ -721,8 +687,7 @@
                                 <option value="sample">Sample Data (Built-in)</option>
                                 <option value="api">Live API (Premium)</option>
                                 <option value="csv">Upload CSV</option>
-                                <option value="manual">Manual Input</option> <!-- Added Manual Input option -->
-                            </select>
+                                <option value="manual">Manual Input</option> </select>
                         </div>
                         
                         <div id="csvUploadContainer" class="hidden">
@@ -731,11 +696,10 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">CSV format: Date,Number1,Number2,...,Bonus1,Bonus2</p>
                         </div>
 
-                        <!-- New Manual Input Container -->
                         <div id="manualInputContainer" class="hidden">
-                            <label class="block text-sm font-medium">Paste Historical Draws</label>
-                            <textarea id="manualDataInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-40" placeholder="Enter historical draws, one per line (e.g., YYYY-MM-DD,N1,N2,N3,N4,N5,B1)"></textarea>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format: Date,Number1,Number2,...,Bonus1,Bonus2 (one draw per line)</p>
+                            <label class="block text-sm font-medium">Enter Draws Manually</label>
+                            <textarea id="manualDrawInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-32" placeholder="Enter draws, one per line. Format: YYYY-MM-DD,N1,N2,N3,N4,N5,B1"></textarea>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Example: 2023-01-01,5,12,23,34,45,6</p>
                         </div>
                         
                         <div>
@@ -755,7 +719,6 @@
                         </div>
                     </div>
 
-                    <!-- Data Summary -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Data Summary</h3>
                         <div id="dataSummary" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -779,7 +742,6 @@
                         </div>
                     </div>
 
-                    <!-- Quick Analysis -->
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
                             <h3 class="text-xl font-medium">Quick Analysis</h3>
@@ -803,7 +765,6 @@
                     </div>
                 </div>
                 
-                <!-- Historical Data Table -->
                 <div class="mt-4">
                     <h3 class="text-xl font-medium mb-2">Historical Draws</h3>
                     <div class="overflow-x-auto">
@@ -834,7 +795,6 @@
                     </div>
                 </div>
                 
-                <!-- Historical Analysis Charts -->
                 <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                         <h4 class="font-medium text-sm">Number Frequency Heatmap</h4>
@@ -851,11 +811,9 @@
                 </div>
             </section>
 
-            <!-- AI Strategies Section -->
             <section id="strategies" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">AI-Powered Strategies</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Strategy Cards -->
                     <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-primary">
                         <h3 class="text-xl font-medium">Frequency Analysis</h3>
                         <p class="text-sm mt-2">Identifies hot (frequently drawn) and cold (rarely drawn) numbers based on historical data patterns.</p>
@@ -875,7 +833,6 @@
                     </div>
                 </div>
                 
-                <!-- Custom Strategy Builder -->
                 <div class="mt-6">
                     <h3 class="text-xl font-medium mb-4">Custom Strategy Builder</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -923,7 +880,6 @@
                     </div>
                 </div>
                 
-                <!-- Strategy Results -->
                 <div class="mt-6">
                     <h3 class="text-xl font-medium mb-2">Strategy Results</h3>
                     <div id="strategyResults" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -943,11 +899,9 @@
                 </div>
             </section>
 
-            <!-- Probability Lab Section -->
             <section id="probability" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Probability Laboratory</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Calculator -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Probability Calculator</h3>
                         
@@ -1004,7 +958,6 @@
                         </div>
                     </div>
                     
-                    <!-- Results -->
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
                             <h3 class="text-xl font-medium">Probability Results</h3>
@@ -1038,7 +991,6 @@
                     </div>
                 </div>
                 
-                <!-- Advanced Probability Analysis -->
                 <div class="mt-6">
                     <h3 class="text-xl font-medium mb-2">Advanced Probability Analysis</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1054,11 +1006,9 @@
                 </div>
             </section>
 
-            <!-- Prediction Engine Section -->
             <section id="prediction" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">AI Prediction Engine</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Prediction Cards -->
                     <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-primary">
                         <h3 class="text-xl font-medium">Next Draw Prediction</h3>
                         <p class="text-sm mt-2">Our AI analyzes historical patterns and trends to predict the most likely numbers for the next draw.</p>
@@ -1078,7 +1028,6 @@
                     </div>
                 </div>
                 
-                <!-- Prediction Results -->
                 <div class="mt-6">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-xl font-medium">Prediction Results</h3>
@@ -1106,7 +1055,6 @@
                     </div>
                 </div>
                 
-                <!-- AI Explanation -->
                 <div class="mt-6">
                     <h3 class="text-xl font-medium mb-2">How Our AI Works</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1130,11 +1078,9 @@
                 </div>
             </section>
 
-            <!-- Settings Section -->
             <section id="settings" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Application Settings</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- General Settings -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">General Settings</h3>
                         
@@ -1171,7 +1117,6 @@
                         </div>
                     </div>
                     
-                    <!-- Data Management -->
                     <div class="space-y-4">
                         <h3 class="text-xl font-medium">Data Management</h3>
                         
@@ -1193,7 +1138,6 @@
                     </div>
                 </div>
                 
-                <!-- About Section -->
                 <div class="mt-6">
                     <h3 class="text-xl font-medium mb-2">About Lotto Genius Pro</h3>
                     <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -1206,7 +1150,6 @@
             </section>
         </main>
 
-        <!-- Custom Prediction Modal -->
         <div id="predictionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full mx-4">
                 <h2 class="text-2xl font-semibold mb-4">Custom Prediction Settings</h2>
@@ -1256,12 +1199,10 @@
             </div>
         </div>
 
-        <!-- Success Notification -->
         <div id="successNotification" class="fixed bottom-4 right-4 bg-accent text-white p-4 rounded-lg shadow-lg hidden transition-all duration-300 transform translate-y-4 opacity-0 z-50">
             Operation completed successfully!
         </div>
 
-        <!-- Footer -->
         <footer class="mt-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
             <div class="mb-4">
                 <h3 class="text-xl font-semibold">Lotto Genius Pro</h3>
@@ -1636,16 +1577,18 @@
         function handleDataSourceChange(e) {
             const source = e.target.value;
             const csvUploadContainer = document.getElementById('csvUploadContainer');
-            const manualInputContainer = document.getElementById('manualInputContainer'); // Get the new container
+            const manualInputContainer = document.getElementById('manualInputContainer'); // Get the new manual input container
             
-            // Hide all containers initially
-            csvUploadContainer.classList.add('hidden');
-            manualInputContainer.classList.add('hidden');
-
             if (source === 'csv') {
                 csvUploadContainer.classList.remove('hidden');
-            } else if (source === 'manual') { // Handle manual input
+                manualInputContainer.classList.add('hidden'); // Hide manual input
+            } else if (source === 'manual') { // Show manual input if selected
                 manualInputContainer.classList.remove('hidden');
+                csvUploadContainer.classList.add('hidden'); // Hide CSV upload
+            }
+            else {
+                csvUploadContainer.classList.add('hidden');
+                manualInputContainer.classList.add('hidden'); // Hide both if neither is selected
             }
         }
 
@@ -2203,7 +2146,7 @@
                 csvContent += `Ticket ${index + 1},"${numbers.join(',')}","${bonus.join(',')}"\n`;
             });
             
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             downloadBlob(blob, 'tickets.csv');
             showNotification('Tickets exported as CSV!');
         }
@@ -3357,21 +3300,21 @@
                 };
                 
                 reader.readAsText(file);
-            } else if (source === 'manual') { // New manual input logic
-                const rawData = document.getElementById('manualDataInput').value;
-                const lines = rawData.split('\n').filter(line => line.trim());
+            } else if (source === 'manual') { // Handle manual input
+                const manualInput = document.getElementById('manualDrawInput').value;
+                const lines = manualInput.split('\n').filter(line => line.trim() !== '');
 
                 if (lines.length === 0) {
-                    showNotification('Please enter historical data in the manual input field!');
+                    showNotification('Please enter draw data manually!');
                     return;
                 }
 
                 appState.historicalData = lines.map(line => {
                     const parts = line.split(',');
-                    const date = parts[0].trim();
-                    const numbers = parts.slice(1, 1 + config.pickCount).map(Number).filter(n => !isNaN(n));
-                    const bonus = parts.slice(1 + config.pickCount, 1 + config.pickCount + config.bonusCount).map(Number).filter(n => !isNaN(n));
-
+                    const date = parts[0];
+                    const numbers = parts.slice(1, config.pickCount + 1).map(Number).filter(n => !isNaN(n));
+                    const bonus = parts.slice(config.pickCount + 1, config.pickCount + config.bonusCount + 1).map(Number).filter(n => !isNaN(n));
+                    
                     return {
                         date: date || new Date().toISOString().split('T')[0],
                         numbers: numbers.sort((a, b) => a - b),
@@ -3380,7 +3323,7 @@
                 }).filter(draw => draw.numbers.length === config.pickCount && draw.bonus.length === config.bonusCount);
 
                 if (appState.historicalData.length === 0) {
-                    showNotification('No valid draws found in manual input! Check format.');
+                    showNotification('No valid draws found in manual input! Please check the format.');
                     return;
                 }
 
@@ -3388,7 +3331,7 @@
                 if (pastDraws !== 'all') {
                     appState.historicalData = appState.historicalData.slice(-parseInt(pastDraws));
                 }
-
+                
                 appState.currentPage = 1;
                 displayHistoricalData();
                 updateHistoricalCharts();
@@ -3793,7 +3736,7 @@
             
             document.getElementById('probResults').innerHTML = `<p class="font-medium">Probability Analysis</p><p class="text-sm">Calculated for ${game} with ${tickets} ticket${tickets > 1 ? 's' : ''}</p>`;
             document.getElementById('basicProbs').innerHTML = `<p>Total combinations: ${totalCombinations.toLocaleString()}</p><p>Chance per ticket: 1 in ${totalCombinations.toLocaleString()}</p><p>Chance with ${tickets} ticket${tickets > 1 ? 's' : ''}: ${(chanceWithTickets * 100).toExponential(4)}%</p>`;
-            document.getElementById('winChances').innerHTML = `<p>Match all: 1 in ${totalCombinations.toLocaleString()}</p><p>Match ${config.pickCount - 1} + bonus: ~1 in ${Math.round(totalCombinations / (config.pickCount * config.bonusCount)).toLocaleString()}</p>`;
+            document.getElementById('winChances').innerHTML = `<p>Match ${config.pickCount - 1} + bonus: ~1 in ${Math.round(totalCombinations / (config.pickCount * config.bonusCount)).toLocaleString()}</p>`;
             document.getElementById('expectedValue').textContent = `$${expectedValue.toFixed(2)}`;
             
             updateProbabilityChart(totalCombinations, tickets);
