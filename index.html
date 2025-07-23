@@ -297,7 +297,6 @@
                     <div class="flex flex-wrap gap-2">
                         <button id="generateSmart" class="p-2 bg-primary text-white rounded-lg hover:bg-blue-700">Generate Smart Numbers</button>
                         <button id="quickPick" class="p-2 bg-secondary text-white rounded-lg hover:bg-purple-700">Quick Pick (Random)</button>
-                        <button id="generateWheeling" class="p-2 bg-accent text-white rounded-lg hover:bg-green-700">Generate Wheeling System</button>
                         <button id="clearGenerator" class="p-2 bg-danger text-white rounded-lg hover:bg-red-600">Clear All</button>
                     </div>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Tip: Combine AI-Powered generation with historical data for statistically optimized numbers.</p>
@@ -480,7 +479,8 @@
                             <select id="advancedPredictionAlgorithm" class="w-full p-2 border rounded-lg dark:bg-gray-700">
                                 <option value="fisherYatesEnhanced">Fisher-Yates Shuffle Enhanced</option>
                                 <option value="cryptoSecureEnhanced">Cryptographically Secure Enhanced</option>
-                                <option value="primeFilter">Prime Filter</option> </select>
+                                <option value="primeFilter">Prime Filter</option> 
+                            </select>
                         </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-medium">Advance Filter</label>
@@ -505,62 +505,128 @@
             </section>
 
             <section id="combinatorics" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">Combinatorics Lab</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-semibold text-primary">Common Pairs Generator</h3>
-                        <div>
-                            <label class="block text-sm font-medium">Draw Data Input</label>
-                            <textarea id="pairsDataInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-40" placeholder="Enter historical draws, one per line (e.g., 5 12 23 34 45 6)"></textarea>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tip: Use data from the 'Historical Data' tab for best results.</p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <label class="block text-sm font-medium">Min Frequency</label>
-                            <input id="minPairFrequency" type="number" class="w-24 p-2 border rounded-lg dark:bg-gray-700" value="2">
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <button id="findCommonPairs" class="p-2 bg-primary text-white rounded-lg hover:bg-blue-700 flex-1">Find Common Pairs</button>
-                            <button id="useHistoricalForPairs" class="p-2 bg-secondary text-white rounded-lg hover:bg-purple-700">Use Loaded Data</button>
-                            <button id="clearPairs" class="p-2 bg-danger text-white rounded-lg hover:bg-red-600">Clear</button>
-                        </div>
-                        <div>
-                            <h4 class="text-lg font-medium mb-2">Most Common Pairs</h4>
-                            <div id="commonPairsOutput" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-20">
-                                <p class="text-gray-500 dark:text-gray-400">Find pairs to see results.</p>
-                            </div>
-                        </div>
-                    </div>
+    <h2 class="text-3xl font-bold mb-2 text-primary">Enhanced Combinatorics Lab</h2>
+    <p class="mb-6 text-gray-600 dark:text-gray-400">Explore advanced number relationships, generate strategic ticket sets with guaranteed wins, and analyze the coverage of your number selections.</p>
 
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-semibold text-accent">Combinations Generator</h3>
-                        <div>
-                            <label class="block text-sm font-medium">Your Numbers</label>
-                            <textarea id="comboNumbersInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-24" placeholder="Enter a set of numbers to combine (e.g., 1, 2, 3, 4, 5, 6, 7)"></textarea>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <label class="block text-sm font-medium">Combination Size (r)</label>
-                            <input id="combinationSize" type="number" class="w-24 p-2 border rounded-lg dark:bg-gray-700" value="3">
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <button id="generateCombinations" class="p-2 bg-accent text-white rounded-lg hover:bg-green-700 flex-1">Generate Combinations</button>
-                            <button id="clearCombinations" class="p-2 bg-danger text-white rounded-lg hover:bg-red-600">Clear</button>
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="text-lg font-medium">Generated Combinations (<span id="combinationCount">0</span>)</h4>
-                                <div class="flex gap-2">
-                                    <button id="exportCombinationsTxt" class="p-2 bg-primary text-white rounded-lg hover:bg-blue-700 text-sm">TXT</button>
-                                    <button id="copyCombinations" class="p-2 bg-primary text-white rounded-lg hover:bg-blue-700 text-sm">Copy</button>
-                                </div>
-                            </div>
-                            <div id="combinationsOutput" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-20 max-h-60 overflow-y-auto">
-                                <p class="text-gray-500 dark:text-gray-400">Generate combinations to see results.</p>
-                            </div>
-                        </div>
-                    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="space-y-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <h3 class="text-xl font-semibold text-primary">🔬 Common Group Analyzer</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Find the most frequently drawn pairs, triplets, or quads from historical data.</p>
+            <div>
+                <label for="groupDataInput" class="block text-sm font-medium">Draw Data Input</label>
+                <textarea id="groupDataInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-32" placeholder="Enter historical draws, one per line (e.g., 5 12 23 34 45 6)"></textarea>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tip: Use loaded data from the 'Historical Data' tab for best results.</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="groupSizeSelect" class="block text-sm font-medium">Group Size</label>
+                    <select id="groupSizeSelect" class="w-full p-2 border rounded-lg dark:bg-gray-700">
+                        <option value="2">Pairs</option>
+                        <option value="3">Triplets</option>
+                        <option value="4">Quads</option>
+                    </select>
                 </div>
-            </section>
+                <div>
+                    <label for="minGroupFrequency" class="block text-sm font-medium">Min Frequency</label>
+                    <input id="minGroupFrequency" type="number" class="w-full p-2 border rounded-lg dark:bg-gray-700" value="2">
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button id="findCommonGroups" class="p-2 bg-primary text-white rounded-lg hover:bg-blue-700 flex-1">Find Common Groups</button>
+                <button id="clearGroups" class="p-2 bg-danger text-white rounded-lg hover:bg-red-600">Clear</button>
+            </div>
+            <div>
+                <h4 class="text-lg font-medium mb-2">Most Common Groups (<span id="groupCount">0</span>)</h4>
+                <div id="commonGroupsOutput" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-20 max-h-60 overflow-y-auto">
+                    <p class="text-gray-500 dark:text-gray-400">Find groups to see results.</p>
+                </div>
+            </div>
+        </div>
 
+        <div class="space-y-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <h3 class="text-xl font-semibold text-accent">⚙️ Abbreviated Wheeling System</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Generate a smaller, economical set of tickets that guarantees a specific win if a certain amount of your numbers are drawn.</p>
+            <div>
+                <label for="wheelNumbersInputAdv" class="block text-sm font-medium">Your Numbers to Wheel</label>
+                <textarea id="wheelNumbersInputAdv" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-32" placeholder="Enter 8 to 20 numbers to wheel. More numbers require more tickets."></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="wheelGamePickSize" class="block text-sm font-medium">Game Pick Size (k)</label>
+                    <input id="wheelGamePickSize" type="number" class="w-full p-2 border rounded-lg dark:bg-gray-700" value="6">
+                </div>
+                <div>
+                    <label for="wheelGuaranteeCondition" class="block text-sm font-medium">Guarantee Match (t)</label>
+                    <input id="wheelGuaranteeCondition" type="number" class="w-full p-2 border rounded-lg dark:bg-gray-700" value="3">
+                </div>
+                 <div>
+                    <label for="wheelNumbersToDraw" class="block text-sm font-medium">If 'm' Are Drawn</label>
+                    <input id="wheelNumbersToDraw" type="number" class="w-full p-2 border rounded-lg dark:bg-gray-700" value="4">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Wheeled Numbers (N)</label>
+                     <input id="wheeledNumbersCount" type="text" class="w-full p-2 border rounded-lg dark:bg-gray-700" readonly value="0">
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button id="generateAbbreviatedWheel" class="p-2 bg-accent text-white rounded-lg hover:bg-green-700 flex-1">Generate Abbreviated Wheel</button>
+                <button id="clearWheelAdv" class="p-2 bg-danger text-white rounded-lg hover:bg-red-600">Clear</button>
+            </div>
+            <div>
+                <h4 class="text-lg font-medium mb-2">Generated Wheel Tickets (<span id="wheelTicketCountAdv">0</span>)</h4>
+                <div id="wheelOutputAdv" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-20 max-h-60 overflow-y-auto">
+                    <p class="text-gray-500 dark:text-gray-400">Generate a wheel to see tickets. Note: Optimal abbreviated wheels are complex; this provides a standard, effective set.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <h3 class="text-xl font-semibold text-secondary">🧮 Full Combinations Generator</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Generate every possible combination from a given set of numbers. Best for small sets.</p>
+            <div>
+                <label for="comboNumbersInput" class="block text-sm font-medium">Your Numbers</label>
+                <textarea id="comboNumbersInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-24" placeholder="e.g., 1, 2, 3, 4, 5, 6, 7"></textarea>
+            </div>
+            <div class="flex items-center gap-4">
+                <label for="combinationSize" class="block text-sm font-medium">Combination Size (r)</label>
+                <input id="combinationSize" type="number" class="w-24 p-2 border rounded-lg dark:bg-gray-700" value="3">
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button id="generateCombinations" class="p-2 bg-secondary text-white rounded-lg hover:bg-purple-700 flex-1">Generate Combinations</button>
+                <button id="clearCombinations" class="p-2 bg-danger text-white rounded-lg hover:bg-red-600">Clear</button>
+            </div>
+            <div>
+                <h4 class="text-lg font-medium">Generated Combinations (<span id="combinationCount">0</span>)</h4>
+                <div id="combinationsOutput" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-20 max-h-48 overflow-y-auto">
+                    <p class="text-gray-500 dark:text-gray-400">Generate combinations to see results.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="space-y-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <h3 class="text-xl font-semibold text-warning">📊 Combination Coverage Analyzer</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Analyze your chosen tickets to see how well they cover all possible pairs or triplets from a number set.</p>
+            <div>
+                <label for="coverageNumberSet" class="block text-sm font-medium">Your Master Number Set</label>
+                <textarea id="coverageNumberSet" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-24" placeholder="Enter the set of all numbers you are playing with (e.g., 1, 2, 3, 4, 5, 6, 7, 8)"></textarea>
+            </div>
+            <div>
+                <label for="coverageTicketsInput" class="block text-sm font-medium">Your Tickets (one per line)</label>
+                <textarea id="coverageTicketsInput" class="w-full p-2 border rounded-lg dark:bg-gray-700 h-24" placeholder="e.g.,&#10;1 2 3 4 5 6&#10;1 2 7 8 9 10"></textarea>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button id="analyzeCoverage" class="p-2 bg-warning text-white rounded-lg hover:bg-yellow-600 flex-1">Analyze Coverage</button>
+                <button id="clearCoverage" class="p-2 bg-danger text-white rounded-lg hover:bg-red-600">Clear</button>
+            </div>
+            <div>
+                <h4 class="text-lg font-medium">Coverage Results</h4>
+                <div id="coverageOutput" class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg min-h-20">
+                    <p class="text-gray-500 dark:text-gray-400">Analyze your tickets to see coverage statistics.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
             <section id="reverse-engineer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Advanced Lotto Reverse Engineer</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1337,7 +1403,6 @@
             // Generator Controls
             document.getElementById('generateSmart').addEventListener('click', generateSmartNumbers);
             document.getElementById('quickPick').addEventListener('click', quickPick);
-            document.getElementById('generateWheeling').addEventListener('click', generateWheelingSystem);
             document.getElementById('clearGenerator').addEventListener('click', clearGenerator);
             
             // Export Controls
@@ -1367,6 +1432,11 @@
             document.getElementById('clearCombinations').addEventListener('click', clearCombinationsGenerator);
             document.getElementById('exportCombinationsTxt').addEventListener('click', exportCombinationsTxt);
             document.getElementById('copyCombinations').addEventListener('click', copyAllCombinations);
+            // Wheeling System Controls
+            document.getElementById('generateWheel').addEventListener('click', generateWheelingSystem);
+            document.getElementById('clearWheel').addEventListener('click', clearWheelingSystem);
+            document.getElementById('exportWheelTxt').addEventListener('click', exportWheelTxt);
+            document.getElementById('copyWheelTickets').addEventListener('click', copyWheelTickets);
 
             // Reverse Engineer Controls
             document.getElementById('reverseEngineerBtn').addEventListener('click', reverseEngineerNumbers);
@@ -1741,10 +1811,29 @@
                 if (options.useHistorical && appState.historicalData.length > 0) {
                     const frequency = getNumberFrequency();
                     const gaps = getGapAnalysis();
-                    prompt += ` Consider the following historical data: Most frequent numbers: ${JSON.stringify(frequency)}. Numbers with longest gaps since last appearance: ${JSON.stringify(gaps)}.`;
-                    if (options.favorHot) prompt += ` Favor hot numbers.`;
-                    if (options.includeDue) prompt += ` Include numbers that are statistically due.`;
-                    if (options.avoidRepeats) prompt += ` Avoid numbers that have appeared in the last 5 draws.`;
+
+                    // Determine hot, cold, and due numbers based on historical data
+                    const sortedByFreq = Object.entries(frequency).sort((a, b) => b[1] - a[1]);
+                    const hotNumbers = sortedByFreq.slice(0, Math.ceil(mainPool * 0.1)).map(([num]) => parseInt(num)); // Top 10% most frequent
+                    const coldNumbers = sortedByFreq.slice(-Math.ceil(mainPool * 0.1)).map(([num]) => parseInt(num)); // Bottom 10% least frequent
+
+                    const sortedByGap = Object.entries(gaps).sort((a, b) => b[1] - a[1]);
+                    const dueNumbers = sortedByGap.slice(0, Math.ceil(mainPool * 0.05)).map(([num]) => parseInt(num)); // Top 5% longest gaps
+
+                    let recentNumbers = [];
+                    if (options.avoidRepeats && appState.historicalData.length > 0) {
+                        const last5Draws = appState.historicalData.slice(-5);
+                        recentNumbers = [...new Set(last5Draws.flatMap(draw => draw.numbers))];
+                    }
+
+                    prompt += ` Based on historical data:
+                    - Hot numbers (most frequent): ${hotNumbers.join(', ')}
+                    - Cold numbers (least frequent): ${coldNumbers.join(', ')}
+                    - Due numbers (longest absence): ${dueNumbers.join(', ')}`;
+
+                    if (options.favorHot) prompt += ` Strongly favor selecting from the hot numbers.`;
+                    if (options.includeDue) prompt += ` Ensure some due numbers are included.`;
+                    if (options.avoidRepeats) prompt += ` Avoid numbers that appeared in the last 5 draws: ${recentNumbers.join(', ')}.`;
                 }
                 prompt += ` Provide only the numbers as a comma-separated list, e.g., "1,5,12,23,40". Do not include any other text or explanation.`;
 
@@ -1892,6 +1981,11 @@
                     const randomNum = Math.floor(Math.random() * mainPool) + 1;
                     if (!generatedNumbers.includes(randomNum)) {
                         generatedNumbers.push(randomNum);
+                        attempts++; // Increment attempts even for random fill
+                    }
+                    if (attempts >= maxAttempts * 2) { // Add a safety break for the fill loop
+                        console.warn("Exceeded max attempts to fill numbers with random. Breaking.");
+                        break;
                     }
                 }
 
@@ -1935,20 +2029,6 @@
                 if (sorted[i] - sorted[i - 1] === 1) pairs++;
             }
             return pairs;
-        }
-
-        function generateWheelingSystem(config, numTickets) {
-            const { mainPool, pickCount, bonusCount, bonusPool } = config;
-            const wheel = [];
-            const baseNumbers = Array.from({ length: pickCount + 2 }, () => Math.floor(Math.random() * mainPool) + 1);
-            
-            for (let i = 0; i < numTickets; i++) {
-                const ticket = [...new Set(baseNumbers.map(n => (n + i) % mainPool + 1))].slice(0, pickCount).sort((a, b) => a - b);
-                const bonus = Array.from({ length: bonusCount }, () => Math.floor(Math.random() * bonusPool) + 1);
-                wheel.push({ numbers: ticket, bonus });
-            }
-            
-            return wheel;
         }
 
         // Generator Functions
@@ -2010,24 +2090,6 @@
             updateGeneratorCharts(tickets);
             updateStatsOverview(tickets);
             showNotification('Quick pick generated successfully!');
-        }
-
-        async function generateWheelingSystem() {
-            const game = document.getElementById('lotteryGame').value;
-            const config = game === 'custom' ? {
-                mainPool: parseInt(document.getElementById('mainPool').value) || 69,
-                pickCount: parseInt(document.getElementById('pickCount').value) || 5,
-                bonusPool: parseInt(document.getElementById('bonusPool').value) || 26,
-                bonusCount: parseInt(document.getElementById('bonusCount').value) || 1
-            } : gameConfigs[game];
-            
-            const numTickets = parseInt(document.getElementById('numTickets').value) || 1;
-            const tickets = generateWheelingSystem(config, numTickets);
-            
-            displayTickets(tickets);
-            updateGeneratorCharts(tickets);
-            updateStatsOverview(tickets);
-            showNotification('Wheeling system generated successfully!');
         }
 
         function displayTickets(tickets) {
@@ -2935,6 +2997,96 @@
             showNotification('All combinations copied to clipboard!');
         }
         
+        // Wheeling System Functions
+        function generateWheelingSystem() {
+            const inputNumbers = parseNumbers(document.getElementById('wheelNumbersInput').value);
+            const pickCount = parseInt(document.getElementById('wheelPickCount').value);
+            const guarantee = parseInt(document.getElementById('wheelGuarantee').value);
+
+            if (inputNumbers.length === 0 || isNaN(pickCount) || pickCount <= 0 || isNaN(guarantee) || guarantee <= 0) {
+                showNotification('Please enter valid numbers, pick count, and guarantee for the wheel.');
+                return;
+            }
+
+            if (inputNumbers.length < pickCount) {
+                showNotification('You must select at least as many numbers as the pick count for wheeling.');
+                return;
+            }
+            if (pickCount < guarantee) {
+                showNotification('The guarantee cannot be greater than the pick count.');
+                return;
+            }
+
+            // Simple Full Wheel implementation for demonstration
+            // This generates all combinations of `pickCount` numbers from `inputNumbers`
+            const wheelTickets = getCombinations(inputNumbers.sort((a, b) => a - b), pickCount);
+
+            const wheelOutputDiv = document.getElementById('wheelOutput');
+            const wheelTicketCountSpan = document.getElementById('wheelTicketCount');
+
+            wheelTicketCountSpan.textContent = wheelTickets.length.toLocaleString();
+
+            if (wheelTickets.length === 0) {
+                wheelOutputDiv.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No wheel tickets generated.</p>';
+            } else {
+                wheelOutputDiv.innerHTML = wheelTickets.map((ticket, index) => `
+                    <div class="flex flex-wrap gap-1 p-2 border-b border-gray-200 dark:border-gray-600">
+                        <span class="text-sm font-medium mr-2">Ticket ${index + 1}:</span>
+                        ${ticket.map(num => `<span class="number-ball text-sm w-8 h-8">${num}</span>`).join('')}
+                    </div>
+                `).join('');
+            }
+            showNotification(`Generated ${wheelTickets.length.toLocaleString()} full wheel tickets.`);
+        }
+
+        function clearWheelingSystem() {
+            document.getElementById('wheelNumbersInput').value = '';
+            document.getElementById('wheelPickCount').value = '5';
+            document.getElementById('wheelGuarantee').value = '3';
+            document.getElementById('wheelOutput').innerHTML = '<p class="text-gray-500 dark:text-gray-400">Generate a wheel to see tickets.</p>';
+            document.getElementById('wheelTicketCount').textContent = '0';
+            showNotification('Wheeling System cleared.');
+        }
+
+        function exportWheelTxt() {
+            const wheelOutputDiv = document.getElementById('wheelOutput');
+            const wheelText = Array.from(wheelOutputDiv.querySelectorAll('.flex.flex-wrap.gap-1')).map(div => {
+                const numbers = Array.from(div.querySelectorAll('.number-ball')).map(ball => ball.textContent);
+                return `Ticket: ${numbers.join(',')}`;
+            }).join('\n');
+
+            if (!wheelText) {
+                showNotification('No wheel tickets to export!');
+                return;
+            }
+
+            const blob = new Blob([wheelText], { type: 'text/plain' });
+            downloadBlob(blob, 'wheel_tickets.txt');
+            showNotification('Wheel tickets exported as TXT!');
+        }
+
+        function copyWheelTickets() {
+            const wheelOutputDiv = document.getElementById('wheelOutput');
+            const wheelText = Array.from(wheelOutputDiv.querySelectorAll('.flex.flex-wrap.gap-1')).map(div => {
+                const numbers = Array.from(div.querySelectorAll('.number-ball')).map(ball => ball.textContent);
+                return `Ticket: ${numbers.join(',')}`;
+            }).join('\n');
+
+            if (!wheelText) {
+                showNotification('No wheel tickets to copy!');
+                return;
+            }
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = wheelText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            showNotification('Wheel tickets copied to clipboard!');
+        }
+
         function parseNumbers(inputString) {
             return inputString.split(/[\s,;\-\n]+/).map(Number).filter(n => !isNaN(n) && n > 0);
         }
@@ -4054,6 +4206,7 @@
                     clearReverseEngineer();
                     clearPairsGenerator();
                     clearCombinationsGenerator();
+                    clearWheelingSystem(); // Clear wheeling system data
                     
                     document.getElementById('predictionResults').innerHTML = '<p class="text-gray-500 dark:text-gray-400">Generate predictions to see results</p>';
                     document.getElementById('strategyResults').innerHTML = '<p class="text-gray-500 dark:text-gray-400">Apply a strategy to see recommendations</p>';
