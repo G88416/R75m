@@ -186,7 +186,7 @@
 
         // Global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-cmms-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         // Departments list for BCC
@@ -214,13 +214,13 @@
             allWorkOrders: [],
             currentDepartment: 'all', // New state property
             departments: DEPARTMENTS,
-            ASSETS_COLLECTION: `/artifacts/${appId}/users/`,
-            WO_COLLECTION: `/artifacts/${appId}/users/`,
+            ASSETS_COLLECTION: 'cmms_assets',
+            WO_COLLECTION: 'cmms_work_orders',
+            appId: appId
         };
 
         // Set log level to Debug for visibility in console
         setLogLevel('debug');
-
 
         /* --- UTILITY FUNCTIONS --- */
 
@@ -231,12 +231,12 @@
                 modal.classList.add('flex');
                 // Automatically set the department dropdown in the modal to the current filter
                 if (id === 'new-wo-modal' && window.appState.currentDepartment !== 'all') {
-                     document.getElementById('wo-department').value = window.appState.currentDepartment;
+                    document.getElementById('wo-department').value = window.appState.currentDepartment;
+                    updateWorkOrderModalAssets();
                 }
-                 if (id === 'new-asset-modal' && window.appState.currentDepartment !== 'all') {
-                     document.getElementById('asset-department').value = window.appState.currentDepartment;
+                if (id === 'new-asset-modal' && window.appState.currentDepartment !== 'all') {
+                    document.getElementById('asset-department').value = window.appState.currentDepartment;
                 }
-                updateWorkOrderModalAssets();
             } else {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
@@ -245,8 +245,13 @@
 
         const formatTimestamp = (timestamp) => {
             if (!timestamp) return 'N/A';
-            const date = timestamp.toDate();
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            try {
+                const date = timestamp.toDate();
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch (error) {
+                console.error('Error formatting timestamp:', error);
+                return 'Invalid Date';
+            }
         };
 
         const getStatusBadge = (status) => {
@@ -270,7 +275,10 @@
             );
 
             if (filteredAssets.length === 0) {
-                listEl.innerHTML = `<p class="p-4 text-gray-500 text-center">No assets registered in the selected department (${DEPARTMENTS.find(d => d.id === window.appState.currentDepartment).name}).</p>`;
+                const deptName = window.appState.currentDepartment === 'all' 
+                    ? 'any department' 
+                    : DEPARTMENTS.find(d => d.id === window.appState.currentDepartment)?.name || 'selected department';
+                listEl.innerHTML = `<p class="p-4 text-gray-500 text-center">No assets registered in ${deptName}.</p>`;
                 return;
             }
 
@@ -283,6 +291,7 @@
                         <p class="font-semibold text-gray-800">${asset.name}</p>
                         <p class="text-xs text-indigo-500 font-medium">${departmentName}</p>
                         <p class="text-xs text-gray-500">Location: ${asset.location}</p>
+                        ${asset.serial ? `<p class="text-xs text-gray-500">Serial: ${asset.serial}</p>` : ''}
                     </div>
                     <div class="mt-2 sm:mt-0 text-right">
                         <p class="text-xs text-gray-400">Asset ID: ${asset.id.substring(0, 8)}...</p>
@@ -306,7 +315,10 @@
             const activeWO = filteredWO.filter(wo => wo.status !== 'Completed');
 
             if (activeWO.length === 0) {
-                listEl.innerHTML = '<p class="p-4 text-gray-500 text-center">No active work orders in this department. Everything looks great!</p>';
+                const deptName = window.appState.currentDepartment === 'all' 
+                    ? 'any department' 
+                    : DEPARTMENTS.find(d => d.id === window.appState.currentDepartment)?.name || 'selected department';
+                listEl.innerHTML = `<p class="p-4 text-gray-500 text-center">No active work orders in ${deptName}. Everything looks great!</p>`;
                 return;
             }
 
@@ -353,12 +365,20 @@
                 deptToFilter === 'all' || asset.department === deptToFilter
             );
 
-            assetsForDropdown.forEach(asset => {
+            if (assetsForDropdown.length === 0) {
                 const option = document.createElement('option');
-                option.value = asset.id;
-                option.textContent = `${asset.name} (${asset.location})`;
+                option.value = "";
+                option.textContent = "No assets available for selected department";
+                option.disabled = true;
                 selectEl.appendChild(option);
-            });
+            } else {
+                assetsForDropdown.forEach(asset => {
+                    const option = document.createElement('option');
+                    option.value = asset.id;
+                    option.textContent = `${asset.name} (${asset.location})`;
+                    selectEl.appendChild(option);
+                });
+            }
         };
 
         // Function called when the main department filter changes
@@ -371,30 +391,48 @@
         /* --- FIREBASE LISTENERS --- */
 
         const listenForAssets = () => {
-            if (!window.appState.userId) return;
-            const assetRef = collection(db, window.appState.ASSETS_COLLECTION, window.appState.userId, 'cmms_assets');
+            if (!window.appState.userId) {
+                console.error("Cannot listen for assets: No user ID");
+                return;
+            }
+            
+            try {
+                const assetRef = collection(db, 'artifacts', window.appState.appId, 'users', window.appState.userId, window.appState.ASSETS_COLLECTION);
 
-            onSnapshot(assetRef, (snapshot) => {
-                window.appState.allAssets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAssets();
-                updateWorkOrderModalAssets(); 
-            }, (error) => {
-                console.error("Error listening to assets:", error);
-            });
+                onSnapshot(assetRef, (snapshot) => {
+                    window.appState.allAssets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log(`Loaded ${window.appState.allAssets.length} assets`);
+                    renderAssets();
+                    updateWorkOrderModalAssets(); 
+                }, (error) => {
+                    console.error("Error listening to assets:", error);
+                    document.getElementById('assets-list').innerHTML = `<p class="p-4 text-red-500 text-center">Error loading assets: ${error.message}</p>`;
+                });
+            } catch (error) {
+                console.error("Error setting up assets listener:", error);
+            }
         };
 
         const listenForWorkOrders = () => {
-            if (!window.appState.userId) return;
-            const woRef = collection(db, window.appState.WO_COLLECTION, window.appState.userId, 'cmms_work_orders');
-            // Fetch all work orders for client-side filtering by department
-            const q = query(woRef);
+            if (!window.appState.userId) {
+                console.error("Cannot listen for work orders: No user ID");
+                return;
+            }
+            
+            try {
+                const woRef = collection(db, 'artifacts', window.appState.appId, 'users', window.appState.userId, window.appState.WO_COLLECTION);
 
-            onSnapshot(q, (snapshot) => {
-                window.appState.allWorkOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderWorkOrders();
-            }, (error) => {
-                console.error("Error listening to work orders:", error);
-            });
+                onSnapshot(woRef, (snapshot) => {
+                    window.appState.allWorkOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log(`Loaded ${window.appState.allWorkOrders.length} work orders`);
+                    renderWorkOrders();
+                }, (error) => {
+                    console.error("Error listening to work orders:", error);
+                    document.getElementById('work-orders-list').innerHTML = `<p class="p-4 text-red-500 text-center">Error loading work orders: ${error.message}</p>`;
+                });
+            } catch (error) {
+                console.error("Error setting up work orders listener:", error);
+            }
         };
         
         /* --- FORM HANDLERS --- */
@@ -403,12 +441,16 @@
             event.preventDefault();
             const form = event.target;
             
+            if (!window.appState.userId) {
+                alert("Please wait for authentication to complete.");
+                return;
+            }
+            
             // Validate department selection
             const department = form['asset-department'].value;
             if (department === 'all') {
-                 console.error("Cannot create an asset without assigning a specific department.");
-                 alert("Please select a specific department for the asset."); // Use custom modal in a real app
-                 return;
+                alert("Please select a specific department for the asset.");
+                return;
             }
             
             const assetData = {
@@ -421,12 +463,14 @@
             };
 
             try {
-                const assetsRef = collection(db, window.appState.ASSETS_COLLECTION, window.appState.userId, 'cmms_assets');
+                const assetsRef = collection(db, 'artifacts', window.appState.appId, 'users', window.appState.userId, window.appState.ASSETS_COLLECTION);
                 await addDoc(assetsRef, assetData);
                 form.reset();
                 toggleModal('new-asset-modal');
+                alert("Asset registered successfully!");
             } catch (error) {
                 console.error("Error adding asset:", error);
+                alert("Error registering asset: " + error.message);
             }
         };
 
@@ -434,12 +478,16 @@
             event.preventDefault();
             const form = event.target;
 
-             // Validate department selection
+            if (!window.appState.userId) {
+                alert("Please wait for authentication to complete.");
+                return;
+            }
+
+            // Validate department selection
             const department = form['wo-department'].value;
             if (department === 'all') {
-                 console.error("Cannot create a work order without assigning a specific department.");
-                 alert("Please select a specific department for the work order."); // Use custom modal in a real app
-                 return;
+                alert("Please select a specific department for the work order.");
+                return;
             }
 
             const woData = {
@@ -453,23 +501,24 @@
             };
 
             try {
-                const woRef = collection(db, window.appState.WO_COLLECTION, window.appState.userId, 'cmms_work_orders');
+                const woRef = collection(db, 'artifacts', window.appState.appId, 'users', window.appState.userId, window.appState.WO_COLLECTION);
                 await addDoc(woRef, woData);
                 form.reset();
                 toggleModal('new-wo-modal');
+                alert("Work order created successfully!");
             } catch (error) {
                 console.error("Error adding work order:", error);
+                alert("Error creating work order: " + error.message);
             }
         };
 
         window.updateWorkOrderStatus = async (woId, newStatus) => {
-             // In a real application, replace confirm() with a custom modal
-             if (!confirm(`Are you sure you want to change this Work Order status to: ${newStatus}?`)) {
+            if (!confirm(`Are you sure you want to change this Work Order status to: ${newStatus}?`)) {
                 return;
             }
 
             try {
-                const woDocRef = doc(db, window.appState.WO_COLLECTION, window.appState.userId, 'cmms_work_orders', woId);
+                const woDocRef = doc(db, 'artifacts', window.appState.appId, 'users', window.appState.userId, window.appState.WO_COLLECTION, woId);
                 const updateData = {
                     status: newStatus,
                 };
@@ -478,8 +527,10 @@
                 }
 
                 await updateDoc(woDocRef, updateData);
+                console.log(`Work order ${woId} status updated to ${newStatus}`);
             } catch (error) {
                 console.error("Error updating work order status:", error);
+                alert("Error updating work order: " + error.message);
             }
         };
         
@@ -510,10 +561,9 @@
             populateSelect(assetDeptEl, false);
             populateSelect(woDeptEl, false);
             
-             // Attach event listener for work order asset filtering
+            // Attach event listener for work order asset filtering
             woDeptEl.addEventListener('change', updateWorkOrderModalAssets);
         };
-
 
         /* --- INITIALIZATION --- */
 
@@ -523,13 +573,16 @@
                 // 1. Authenticate the user
                 let user;
                 if (initialAuthToken) {
+                    console.log("Authenticating with custom token...");
                     const userCredential = await signInWithCustomToken(auth, initialAuthToken);
                     user = userCredential.user;
                 } else {
+                    console.log("Authenticating anonymously...");
                     const userCredential = await signInAnonymously(auth);
                     user = userCredential.user;
                 }
                 
+                console.log("Authenticated user:", user.uid);
                 window.appState.userId = user.uid;
                 document.getElementById('user-id-display').textContent = user.uid;
                 
@@ -540,13 +593,20 @@
             } catch (error) {
                 console.error("Firebase Authentication/Initialization Error:", error);
                 document.getElementById('user-id-display').textContent = 'AUTH ERROR';
+                document.getElementById('loading-indicator').innerHTML = `
+                    <div class="text-white text-xl p-4 rounded-lg bg-red-600">
+                        Authentication Failed: ${error.message}
+                    </div>
+                `;
             } finally {
-                 // Hide loading indicator regardless of success or failure
-                document.getElementById('loading-indicator').classList.add('hidden');
+                // Hide loading indicator regardless of success or failure
+                setTimeout(() => {
+                    document.getElementById('loading-indicator').classList.add('hidden');
+                }, 1000);
             }
             
-             // Render lucide icons after initialization is complete
-             lucide.createIcons();
+            // Render lucide icons after initialization is complete
+            lucide.createIcons();
         };
 
         // Start the application after the window loads
@@ -554,4 +614,3 @@
     </script>
 </body>
 </html>
-
