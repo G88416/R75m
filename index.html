@@ -3,587 +3,1480 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCC CMMS Dashboard</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Proactive BCC System Application</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.32/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
     <style>
-        /* Custom styles for better aesthetics */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #9b59b6;
+            --light-bg: #f4f4f4;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 20px rgba(0,0,0,0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --operational-color: #3498db;
+            --learning-color: #27ae60;
+            --culture-color: #f39c12;
+            --dark-blue: #1a5276;
+            --light-blue: #aed6f1;
+            --light-green: #d5f5e3;
+            --light-orange: #fdebd0;
+            --sky-blue: #87CEEB;
+            --sky-blue-light: #B0E0E6;
+            --sky-blue-dark: #5F9EA0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f9fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--sky-blue) 0%, var(--sky-blue-light) 100%);
+            color: #333;
+            line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
         }
-        .card {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+
+        h1, h2, h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
         }
-        .card:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--dark-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .scroll-area {
-            max-height: 400px;
+
+        .intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            padding: 20px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border-left: 5px solid var(--primary-color);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .overall-progress {
+            background: var(--white);
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            border-left: 5px solid var(--primary-color);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .overall-progress .progress {
+            margin: 10px auto;
+            max-width: 300px;
+        }
+
+        .section {
+            background: var(--white);
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-left: 5px solid var(--operational-color);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.4s; }
+        .section:nth-child(3) { animation-delay: 0.6s; }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--operational-color), transparent);
+        }
+
+        .section.operational { 
+            border-left-color: var(--operational-color); 
+            background: linear-gradient(to bottom right, var(--white) 80%, var(--light-blue) 100%);
+        }
+        
+        .section.operational::before {
+            background: linear-gradient(90deg, var(--operational-color), transparent);
+        }
+        
+        .section.learning { 
+            border-left-color: var(--learning-color); 
+            background: linear-gradient(to bottom right, var(--white) 80%, var(--light-green) 100%);
+        }
+        
+        .section.learning::before {
+            background: linear-gradient(90deg, var(--learning-color), transparent);
+        }
+        
+        .section.culture { 
+            border-left-color: var(--culture-color); 
+            background: linear-gradient(to bottom right, var(--white) 80%, var(--light-orange) 100%);
+        }
+        
+        .section.culture::before {
+            background: linear-gradient(90deg, var(--culture-color), transparent);
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .goal {
+            font-style: italic;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #ebf3fd;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 6px 6px 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .import-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px dashed #ddd;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .import-section::after {
+            content: '📁';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--white);
+            padding: 0 10px;
+            font-size: 1.2em;
+        }
+
+        .import-section:hover {
+            border-color: var(--primary-color);
+            background: #e8f4fd;
+            transform: scale(1.02);
+        }
+
+        .import-btn {
+            background: var(--info-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .import-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        #import-file {
+            display: none;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input, textarea, select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: var(--transition);
+            font-family: inherit;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2), inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-blue));
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2980b9, var(--dark-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .log-entry {
+            background: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .log-entry:hover {
+            background: #d5dbdb;
+            transform: translateX(5px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .log-entry::before {
+            content: '•';
+            position: absolute;
+            left: -15px;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.5em;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .logs-container {
+            max-height: 350px;
             overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #f1f1f1;
         }
-        .status-badge {
-            padding: 2px 8px;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+
+        .logs-container::-webkit-scrollbar {
+            width: 8px;
         }
-        /* Custom scrollbar for aesthetics */
-        .scroll-area::-webkit-scrollbar { width: 6px; }
-        .scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .scroll-area::-webkit-scrollbar-track { background: #f1f5f9; }
+
+        .logs-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .logs-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .progress {
+            width: 100%;
+            height: 25px;
+            background: #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--success-color);
+            transition: width 0.5s ease;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .progress-bar.operational { 
+            background: linear-gradient(90deg, var(--operational-color), #5dade2);
+        }
+        
+        .progress-bar.learning { 
+            background: linear-gradient(90deg, var(--learning-color), #58d68d);
+        }
+        
+        .progress-bar.culture { 
+            background: linear-gradient(90deg, var(--culture-color), #f8c471);
+        }
+
+        .progress-bar::after {
+            content: attr(data-label);
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        .stats {
+            font-weight: bold;
+            font-size: 0.95em;
+            margin-top: 15px;
+            text-align: center;
+            color: var(--secondary-color);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            min-width: 120px;
+        }
+
+        .stat-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        #dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #c0392b, var(--danger-color));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Icons for sections */
+        .section-icon {
+            font-size: 2.2em;
+            margin-right: 12px;
+            vertical-align: middle;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+        }
+
+        .operational .section-icon { color: var(--operational-color); }
+        .learning .section-icon { color: var(--learning-color); }
+        .culture .section-icon { color: var(--culture-color); }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--success-color);
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+            max-width: 350px;
+            font-weight: 500;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+        }
+
+        /* Export buttons in overall progress */
+        .export-section {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .export-btn {
+            background: var(--learning-color);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .export-btn:hover {
+            background: #229954;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .export-btn.json { background: var(--info-color); }
+        .export-btn.json:hover { background: #8e44ad; }
+        .export-btn.pdf { background: var(--danger-color); }
+        .export-btn.pdf:hover { background: #c0392b; }
+        .export-btn.word { background: var(--primary-color); }
+        .export-btn.word:hover { background: #2980b9; }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2.4em;
+            }
+            #dashboard {
+                grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+                gap: 25px;
+            }
+            .section {
+                padding: 25px;
+            }
+            input, textarea {
+                padding: 14px;
+            }
+            button {
+                padding: 14px 24px;
+            }
+            .logs-container {
+                max-height: 450px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            #dashboard {
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                gap: 30px;
+            }
+            h1 {
+                font-size: 2.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            .section {
+                padding: 15px;
+                margin: 8px 0;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+            h3 {
+                font-size: 1.2em;
+            }
+            input, textarea {
+                font-size: 16px;
+                padding: 10px;
+            }
+            .log-entry {
+                font-size: 0.88em;
+                padding: 12px;
+            }
+            .stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .stat-item {
+                min-width: auto;
+                text-align: center;
+            }
+            .export-section {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        /* Chart container */
+        .chart-container {
+            margin: 20px auto;
+            max-width: 350px;
+            height: 350px;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: var(--white);
+            padding: 10px;
+        }
+
+        /* Dark mode toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--white);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        body.dark-mode {
+            --white: #2c3e50;
+            --light-bg: #34495e;
+            --sky-blue: #2c3e50;
+            --sky-blue-light: #34495e;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+        }
+
+        body.dark-mode .section,
+        body.dark-mode .overall-progress,
+        body.dark-mode .intro,
+        body.dark-mode .import-section,
+        body.dark-mode .logs-container {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+
+        body.dark-mode .log-entry {
+            background: #3d566e;
+            color: #ecf0f1;
+        }
+
+        body.dark-mode input,
+        body.dark-mode textarea,
+        body.dark-mode select {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-color: #4a6fa5;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
-
-    <header class="mb-8">
-        <h1 class="text-4xl font-extrabold text-indigo-700 mb-2">BCC CMMS Dashboard</h1>
-        <p class="text-gray-500">Manage assets and streamline maintenance operations across all departments.</p>
-        <p class="mt-4 text-sm text-gray-600 p-2 bg-indigo-100 rounded-lg">
-            User ID (for collaboration): <span id="user-id-display" class="font-mono font-semibold text-indigo-800">Authenticating...</span>
-        </p>
-    </header>
-    
-    <!-- Department Filter -->
-    <div class="mb-8 p-4 bg-white rounded-xl shadow-lg flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-4">
-        <label for="department-filter" class="font-semibold text-gray-700 flex items-center">
-            <i data-lucide="building-2" class="w-5 h-5 mr-2 text-indigo-500"></i>
-            Filter by Department:
-        </label>
-        <select id="department-filter" onchange="changeDepartment(this.value)" class="flex-grow max-w-sm border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-            <!-- Options filled by JS -->
-        </select>
-    </div>
-    
-    <!-- STATS ROW (New Feature) -->
-    <div id="stats-row" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Stats will be dynamically inserted here by JS -->
+<body>
+    <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+    <h1>The Proactive BCC System Application</h1>
+    <div class="intro">
+        <p>Based on Jim Rohn's timeless principles of discipline, consistency, and personal growth. This enhanced web app empowers your BCC unit to implement daily and weekly disciplines, fostering Proactive (Score 2) operations. Track progress, visualize achievements, and build a culture of excellence. New: Dark mode support and export functionality for data backup!</p>
     </div>
 
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="overall-progress">
+        <h3>Overall Progress</h3>
+        <div class="chart-container">
+            <canvas id="progress-chart"></canvas>
+        </div>
+        <div class="progress">
+            <div class="progress-bar operational" id="overall-progress" style="width: 0%;" data-label="0%"></div>
+        </div>
+        <div class="stats">
+            <div class="stat-item" id="total-activities">Total Activities: 0</div>
+            <div class="stat-item" id="completion-rate">Completion Rate: 0%</div>
+        </div>
+        <div class="export-section">
+            <button class="export-btn json" onclick="exportAllData()">📊 Export to JSON</button>
+            <button class="export-btn pdf" onclick="exportToPDF()">📄 Export to PDF</button>
+            <button class="export-btn word" onclick="exportToWord()">📝 Export to Word</button>
+        </div>
+        <button class="clear-btn" onclick="clearAllData()">🗑️ Clear All Data</button>
+    </div>
 
-        <!-- WORK ORDERS Section -->
-        <section class="lg:col-span-2 card p-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                <i data-lucide="wrench" class="w-6 h-6 mr-2 text-indigo-500"></i>
-                Active Work Orders
-            </h2>
-            <div id="work-orders-list" class="scroll-area divide-y divide-gray-100">
-                <!-- Work Orders will be dynamically inserted here -->
-                <p class="p-4 text-gray-500 text-center" id="wo-placeholder">Loading work orders...</p>
+    <div id="dashboard">
+        <!-- Section 1: Proactive Operational System -->
+        <div class="section operational">
+            <h2><span class="section-icon">⚙️</span>1. Proactive Operational System (Daily Disciplines)</h2>
+            <div class="goal"><strong>Goal:</strong> Predict and eliminate problems before they arise, ensuring seamless operations.</div>
+
+            <div class="import-section">
+                <label for="import-operational" class="import-btn">
+                    <span>📄 Upload Document</span>
+                </label>
+                <input type="file" id="import-operational" accept=".docx,.pdf">
+                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with today's date.</p>
             </div>
 
-            <!-- New Work Order Form -->
-            <button onclick="toggleModal('new-wo-modal')" class="mt-6 w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-150">
-                <i data-lucide="plus" class="w-5 h-5 inline-block mr-1"></i>
-                Create New Work Order
-            </button>
-        </section>
-
-        <!-- ASSETS Section -->
-        <section class="card p-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                <i data-lucide="hard-hat" class="w-6 h-6 mr-2 text-indigo-500"></i>
-                Registered Assets
-            </h2>
-            <div id="assets-list" class="scroll-area divide-y divide-gray-100">
-                 <!-- Assets will be dynamically inserted here -->
-                <p class="p-4 text-gray-500 text-center" id="asset-placeholder">Loading assets...</p>
-            </div>
-
-            <!-- New Asset Form -->
-            <button onclick="toggleModal('new-asset-modal')" class="mt-6 w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-150">
-                <i data-lucide="factory" class="w-5 h-5 inline-block mr-1"></i>
-                Add New Asset
-            </button>
-        </section>
-    </main>
-
-    <!-- Modal for New Work Order -->
-    <div id="new-wo-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-xl w-full max-w-lg card">
-            <h3 class="text-xl font-bold mb-4">Create Work Order</h3>
-            <form id="new-wo-form" onsubmit="handleNewWorkOrder(event)">
-                 <div class="mb-4">
-                    <label for="wo-department" class="block text-sm font-medium text-gray-700">Department</label>
-                    <select id="wo-department" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <!-- Options filled by JS -->
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="wo-title" class="block text-sm font-medium text-gray-700">Title</label>
-                    <input type="text" id="wo-title" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div class="mb-4">
-                    <label for="wo-asset" class="block text-sm font-medium text-gray-700">Related Asset</label>
-                    <select id="wo-asset" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="">Select an Asset</option>
-                        <!-- Options filled by JS, filtered by selected department -->
-                    </select>
-                </div>
-                 <div class="mb-4">
-                    <label for="wo-priority" class="block text-sm font-medium text-gray-700">Priority</label>
-                    <select id="wo-priority" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="High">High</option>
-                        <option value="Medium" selected>Medium</option>
-                        <option value="Low">Low</option>
-                    </select>
-                </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="toggleModal('new-wo-modal')" class="py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-                    <button type="submit" class="py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">Create Work Order</button>
-                </div>
+            <h3>The "5-Minute Optimization Fix"</h3>
+            <form id="opt-fix-form">
+                <label for="opt-date">📅 Date:</label>
+                <input type="date" id="opt-date" required>
+                <label for="opt-member">👥 Team Member:</label>
+                <input type="text" id="opt-member" required placeholder="Enter name">
+                <label for="opt-desc">🔧 Micro-Change Description:</label>
+                <textarea id="opt-desc" required placeholder="e.g., Adjust laundry sorting to reduce delays by 2 minutes"></textarea>
+                <button type="submit">📝 Log Fix</button>
             </form>
+            <div class="logs-container" id="opt-logs"></div>
+
+            <h3>The "Predictive Planning 30" (P-30)</h3>
+            <form id="p30-form">
+                <label for="p30-date">📅 Date:</label>
+                <input type="date" id="p30-date" required>
+                <label for="p30-issues">⚠️ Potential Issues Flagged:</label>
+                <textarea id="p30-issues" required placeholder="e.g., Inventory low on X, potential staffing overlap on Tuesday"></textarea>
+                <button type="submit">📝 Log P-30</button>
+            </form>
+            <div class="logs-container" id="p30-logs"></div>
+
+            <div class="progress">
+                <div class="progress-bar operational" id="opt-progress" style="width: 0%;" data-label="0%"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item" id="opt-fixes">Daily Fixes: 0</div>
+                <div class="stat-item" id="opt-p30">P-30 Sessions: 0</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Continuous Learning System -->
+        <div class="section learning">
+            <h2><span class="section-icon">📚</span>2. Continuous Learning System (Weekly Disciplines)</h2>
+            <div class="goal"><strong>Goal:</strong> Build essential skills to anticipate and meet future operational needs.</div>
+
+            <div class="import-section">
+                <label for="import-learning" class="import-btn">
+                    <span>📄 Upload Document</span>
+                </label>
+                <input type="file" id="import-learning" accept=".docx,.pdf">
+                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with this week's start date.</p>
+            </div>
+
+            <h3>The "Knowledge Increment Hour" (KIH)</h3>
+            <form id="kih-form">
+                <label for="kih-week">📅 Week Starting:</label>
+                <input type="date" id="kih-week" required>
+                <label for="kih-content">📖 Content Studied:</label>
+                <input type="text" id="kih-content" required placeholder="e.g., New inventory management tech">
+                <label for="kih-takeaways">💡 Key Takeaways:</label>
+                <textarea id="kih-takeaways" required placeholder="Summarize key learnings in 2-3 sentences"></textarea>
+                <button type="submit">📝 Log KIH</button>
+            </form>
+            <div class="logs-container" id="kih-logs"></div>
+
+            <h3>The "Cross-Training Rotation System"</h3>
+            <form id="cross-form">
+                <label for="cross-week">📅 Week Starting:</label>
+                <input type="date" id="cross-week" required>
+                <label for="cross-staff">👥 Staff Member:</label>
+                <input type="text" id="cross-staff" required placeholder="Enter name">
+                <label for="cross-area">🎯 New Area Trained:</label>
+                <input type="text" id="cross-area" required placeholder="e.g., From Cleaning to Cooking">
+                <button type="submit">📝 Log Rotation</button>
+            </form>
+            <div class="logs-container" id="cross-logs"></div>
+
+            <div class="progress">
+                <div class="progress-bar learning" id="learn-progress" style="width: 0%;" data-label="0%"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item" id="learn-kih">KIH Sessions: 0</div>
+                <div class="stat-item" id="learn-cross">Cross-Trainings: 0</div>
+            </div>
+        </div>
+
+        <!-- Section 3: Proactive Culture System -->
+        <div class="section culture">
+            <h2><span class="section-icon">🤝</span>3. Proactive Culture System (Accountability)</h2>
+            <div class="goal"><strong>Goal:</strong> Cultivate discipline, accountability, and a shared vision for proactive excellence.</div>
+
+            <div class="import-section">
+                <label for="import-culture" class="import-btn">
+                    <span>📄 Upload Document</span>
+                </label>
+                <input type="file" id="import-culture" accept=".docx,.pdf">
+                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with this week's start date.</p>
+            </div>
+
+            <h3>The "No-Regrets Huddle"</h3>
+            <form id="huddle-form">
+                <label for="huddle-week">📅 Week Starting:</label>
+                <input type="date" id="huddle-week" required>
+                <label for="huddle-ips">📊 Previous IPS Score:</label>
+                <input type="number" id="huddle-ips" min="0" max="10" required placeholder="0-10">
+                <label for="huddle-commit">🎯 Commitments Made:</label>
+                <textarea id="huddle-commit" required placeholder="e.g., Full team adherence to P-30 and KIH this week"></textarea>
+                <button type="submit">📝 Log Huddle</button>
+            </form>
+            <div class="logs-container" id="huddle-logs"></div>
+
+            <h3>Leadership Discipline: "Readiness Commitment"</h3>
+            <form id="leadership-form">
+                <label for="quarter">📅 Quarter:</label>
+                <input type="text" id="quarter" required placeholder="e.g., Q4 2025">
+                <label for="ips-goal">📊 IPS Reduction Goal:</label>
+                <input type="number" id="ips-goal" min="0" required placeholder="Target score (e.g., 2.0)">
+                <label for="sign-off">✍️ Leadership Sign-Off:</label>
+                <input type="text" id="sign-off" required placeholder="e.g., Manager Name">
+                <button type="submit">✍️ Sign Off</button>
+            </form>
+            <div class="logs-container" id="leadership-logs"></div>
+
+            <div class="progress">
+                <div class="progress-bar culture" id="culture-progress" style="width: 0%;" data-label="0%"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item" id="culture-huddles">Huddles: 0</div>
+                <div class="stat-item" id="culture-signoffs">Sign-Offs: 0</div>
+            </div>
         </div>
     </div>
 
-    <!-- Modal for New Asset -->
-    <div id="new-asset-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-xl w-full max-w-lg card">
-            <h3 class="text-xl font-bold mb-4">Register New Asset</h3>
-            <form id="new-asset-form" onsubmit="handleNewAsset(event)">
-                 <div class="mb-4">
-                    <label for="asset-department" class="block text-sm font-medium text-gray-700">Department</label>
-                    <select id="asset-department" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-green-500 focus:border-green-500">
-                        <!-- Options filled by JS -->
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="asset-name" class="block text-sm font-medium text-gray-700">Asset Name</label>
-                    <input type="text" id="asset-name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-green-500 focus:border-green-500">
-                </div>
-                <div class="mb-4">
-                    <label for="asset-location" class="block text-sm font-medium text-gray-700">Location</label>
-                    <input type="text" id="asset-location" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-green-500 focus:border-green-500">
-                </div>
-                <div class="mb-4">
-                    <label for="asset-serial" class="block text-sm font-medium text-gray-700">Serial/Model</label>
-                    <input type="text" id="asset-serial" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-green-500 focus:border-green-500">
-                </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="toggleModal('new-asset-modal')" class="py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-                    <button type="submit" class="py-2 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition">Register Asset</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <div class="notification" id="notification"></div>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, onSnapshot, collection, query, where, updateDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global variables provided by the environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-cmms-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // Departments list for BCC
-        const DEPARTMENTS = [
-            { id: 'all', name: 'All Departments' },
-            { id: 'orphanage', name: '1) Orphanage' },
-            { id: 'old_age', name: '2) Old Age Home' },
-            { id: 'mental_home', name: '3) Mental Home' },
-            { id: 'hospice', name: '4) Hospice' },
-            { id: 'bci_school', name: '5) BCI School' }
-        ];
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        
-        // Use a global variable to store state and references
-        window.appState = {
-            db: db,
-            auth: auth,
-            userId: null,
-            // Store all fetched assets and work orders for client-side filtering
-            allAssets: [], 
-            allWorkOrders: [],
-            currentDepartment: 'all', // New state property
-            departments: DEPARTMENTS,
-            // ADVANCEMENT: Use public path for collaborative data sharing
-            ASSETS_COLLECTION: `/artifacts/${appId}/public/data/`,
-            WO_COLLECTION: `/artifacts/${appId}/public/data/`,
+    <script>
+        // LocalStorage keys
+        const STORAGE_KEYS = {
+            optFix: 'proactive_bcc_opt_fix',
+            p30: 'proactive_bcc_p30',
+            kih: 'proactive_bcc_kih',
+            cross: 'proactive_bcc_cross',
+            huddle: 'proactive_bcc_huddle',
+            leadership: 'proactive_bcc_leadership'
         };
 
-        // Set log level to Debug for visibility in console
-        setLogLevel('debug');
+        const SECTION_KEYS = {
+            operational: [STORAGE_KEYS.optFix, STORAGE_KEYS.p30],
+            learning: [STORAGE_KEYS.kih, STORAGE_KEYS.cross],
+            culture: [STORAGE_KEYS.huddle, STORAGE_KEYS.leadership]
+        };
 
+        const SECTION_CONFIG = {
+            operational: { name: 'Operational', color: [26, 82, 118], keys: [STORAGE_KEYS.optFix, STORAGE_KEYS.p30], isDaily: true },
+            learning: { name: 'Learning', color: [39, 174, 96], keys: [STORAGE_KEYS.kih, STORAGE_KEYS.cross], isWeekly: true },
+            culture: { name: 'Culture', color: [243, 156, 18], keys: [STORAGE_KEYS.huddle, STORAGE_KEYS.leadership], isWeekly: true }
+        };
 
-        /* --- UTILITY FUNCTIONS --- */
+        let chart;
 
-        window.toggleModal = (id) => {
-            const modal = document.getElementById(id);
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                // Automatically set the department dropdown in the modal to the current filter
-                if (id === 'new-wo-modal' && window.appState.currentDepartment !== 'all') {
-                     document.getElementById('wo-department').value = window.appState.currentDepartment;
-                }
-                 if (id === 'new-asset-modal' && window.appState.currentDepartment !== 'all') {
-                     document.getElementById('asset-department').value = window.appState.currentDepartment;
-                }
-                updateWorkOrderModalAssets();
+        // Dark mode toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Function to show notification
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            if (isError) {
+                notification.classList.add('error');
+            }
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to save to localStorage
+        function saveLog(key, entry) {
+            let logs = JSON.parse(localStorage.getItem(key) || '[]');
+            logs.push({ ...entry, timestamp: Date.now() });
+            localStorage.setItem(key, JSON.stringify(logs));
+            return logs;
+        }
+
+        // Function to export all data to JSON
+        function exportAllData() {
+            const allData = {};
+            Object.keys(STORAGE_KEYS).forEach(key => {
+                allData[key] = JSON.parse(localStorage.getItem(key) || '[]');
+            });
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `bcc-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data exported to JSON successfully!');
+        }
+
+        // Helper to get all data
+        function getAllData() {
+            const data = {};
+            Object.keys(STORAGE_KEYS).forEach(key => {
+                data[key] = JSON.parse(localStorage.getItem(key) || '[]');
+            });
+            return data;
+        }
+
+        // Helper for recent count (used in stats and export)
+        function getRecentCount(key, isDaily = false, isWeekly = false) {
+            const logs = JSON.parse(localStorage.getItem(key) || '[]');
+            const now = new Date();
+            let cutoff;
+            if (isDaily) {
+                cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days
+            } else if (isWeekly) {
+                cutoff = new Date(now.getTime() - 28 * 24 * 60 * 60 * 1000); // 4 weeks
             } else {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+                cutoff = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000); // 90 days
             }
-        };
+            return logs.filter(log => new Date(log.date) > cutoff).length;
+        }
 
-        const formatTimestamp = (timestamp) => {
-            if (!timestamp) return 'N/A';
-            // Check if timestamp is a Firebase Timestamp object before calling toDate()
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        };
+        // Export to PDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let y = 20;
 
-        const getStatusBadge = (status) => {
-            switch (status) {
-                case 'Open': return `<span class="status-badge bg-red-100 text-red-700">Open</span>`;
-                case 'In Progress': return `<span class="status-badge bg-yellow-100 text-yellow-700">In Progress</span>`;
-                case 'Completed': return `<span class="status-badge bg-green-100 text-green-700">Completed</span>`;
-                default: return `<span class="status-badge bg-gray-100 text-gray-700">${status}</span>`;
+            // Title
+            doc.setFontSize(20);
+            doc.text('Proactive BCC System Report', 20, y);
+            y += 15;
+            doc.setFontSize(12);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, y);
+            y += 20;
+
+            const allData = getAllData();
+
+            // Sections
+            Object.keys(SECTION_CONFIG).forEach(sectionKey => {
+                const config = SECTION_CONFIG[sectionKey];
+                const { name, color, keys } = config;
+
+                // Section heading
+                doc.setFontSize(16);
+                doc.setTextColor(...color);
+                doc.text(name, 20, y);
+                doc.setTextColor(0, 0, 0);
+                y += 10;
+
+                // Stats
+                let stat1 = 0, stat2 = 0;
+                if (sectionKey === 'operational') {
+                    stat1 = getRecentCount(STORAGE_KEYS.optFix, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.p30, true);
+                } else if (sectionKey === 'learning') {
+                    stat1 = getRecentCount(STORAGE_KEYS.kih, false, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.cross, false, true);
+                } else if (sectionKey === 'culture') {
+                    stat1 = getRecentCount(STORAGE_KEYS.huddle, false, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.leadership);
+                }
+                doc.text(`${keys[0].replace('proactive_bcc_', '').toUpperCase()}: ${stat1}`, 20, y);
+                y += 7;
+                doc.text(`${keys[1].replace('proactive_bcc_', '').toUpperCase()}: ${stat2}`, 20, y);
+                y += 15;
+
+                // Logs tables
+                keys.forEach(key => {
+                    const logs = allData[key].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    if (logs.length > 0) {
+                        const keyName = key.replace('proactive_bcc_', '').toUpperCase();
+                        doc.setFontSize(14);
+                        doc.text(keyName, 20, y);
+                        y += 8;
+                        doc.setFontSize(10);
+
+                        const tableData = logs.map(log => [new Date(log.date).toLocaleDateString(), log.desc.substring(0, 100) + (log.desc.length > 100 ? '...' : '')]);
+                        doc.autoTable({
+                            startY: y,
+                            head: [['Date', 'Description']],
+                            body: tableData,
+                            theme: 'grid',
+                            styles: { fontSize: 8, cellPadding: 3 },
+                            headStyles: { fillColor: color, textColor: 255 },
+                            columnStyles: { 1: { cellWidth: 140 } },
+                            margin: { left: 20, right: 20 }
+                        });
+                        y = doc.lastAutoTable.finalY + 15;
+
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                    }
+                });
+                y += 5;
+            });
+
+            // Overall
+            doc.setFontSize(16);
+            doc.text('Overall Summary', 20, y);
+            y += 10;
+            // Compute overall (reuse stats logic)
+            const optTotal = getRecentCount(STORAGE_KEYS.optFix, true) + getRecentCount(STORAGE_KEYS.p30, true);
+            const learnTotal = getRecentCount(STORAGE_KEYS.kih, false, true) + getRecentCount(STORAGE_KEYS.cross, false, true);
+            const cultureTotal = getRecentCount(STORAGE_KEYS.huddle, false, true) + (getRecentCount(STORAGE_KEYS.leadership) * 4);
+            const overallTotal = optTotal + learnTotal + cultureTotal;
+            doc.text(`Total Activities: ${overallTotal}`, 20, y);
+            y += 7;
+            const overallPercent = Math.min((overallTotal / 38) * 100, 100); // 14+8+16=38
+            doc.text(`Completion Rate: ${Math.round(overallPercent)}%`, 20, y);
+
+            doc.save(`bcc-report-${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('Data exported to PDF successfully!');
+        }
+
+        // Export to Word (DOCX)
+        function exportToWord() {
+            const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType } = docx;
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new Paragraph({
+                            alignment: AlignmentType.CENTER,
+                            children: [new TextRun({
+                                text: 'Proactive BCC System Report',
+                                size: 32,
+                                bold: true
+                            })]
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({
+                                text: `Generated on: ${new Date().toLocaleDateString()}`,
+                                size: 24
+                            })]
+                        }),
+                        new Paragraph({ children: [new TextRun({ text: '', size: 24, break: 1 })] }) // Spacer
+                    ]
+                }]
+            });
+
+            const allData = getAllData();
+            const sections = Object.keys(SECTION_CONFIG);
+
+            sections.forEach(sectionKey => {
+                const config = SECTION_CONFIG[sectionKey];
+                const { name, keys } = config;
+
+                // Section heading
+                doc.addSection({
+                    children: [
+                        new Paragraph({
+                            children: [new TextRun({ text: name, size: 28, bold: true })]
+                        })
+                    ]
+                });
+
+                // Stats
+                let stat1 = 0, stat2 = 0;
+                if (sectionKey === 'operational') {
+                    stat1 = getRecentCount(STORAGE_KEYS.optFix, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.p30, true);
+                } else if (sectionKey === 'learning') {
+                    stat1 = getRecentCount(STORAGE_KEYS.kih, false, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.cross, false, true);
+                } else if (sectionKey === 'culture') {
+                    stat1 = getRecentCount(STORAGE_KEYS.huddle, false, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.leadership);
+                }
+                doc.addSection({
+                    children: [
+                        new Paragraph({
+                            children: [new TextRun({ text: `${keys[0].replace('proactive_bcc_', '').toUpperCase()}: ${stat1}`, size: 24 })]
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({ text: `${keys[1].replace('proactive_bcc_', '').toUpperCase()}: ${stat2}`, size: 24 })]
+                        }),
+                        new Paragraph({ children: [new TextRun({ text: '', size: 24, break: 1 })] })
+                    ]
+                });
+
+                // Logs tables
+                keys.forEach(key => {
+                    const logs = allData[key].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    if (logs.length > 0) {
+                        const keyName = key.replace('proactive_bcc_', '').toUpperCase();
+                        doc.addSection({
+                            children: [
+                                new Paragraph({
+                                    children: [new TextRun({ text: keyName, size: 26, bold: true })]
+                                })
+                            ]
+                        });
+
+                        const tableRows = [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 30, type: WidthType.PERCENTAGE },
+                                        children: [new Paragraph({ children: [new TextRun({ text: 'Date', bold: true })] })]
+                                    }),
+                                    new TableCell({
+                                        width: { size: 70, type: WidthType.PERCENTAGE },
+                                        children: [new Paragraph({ children: [new TextRun({ text: 'Description', bold: true })] })]
+                                    })
+                                ]
+                            })
+                        ];
+
+                        logs.forEach(log => {
+                            tableRows.push(new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 30, type: WidthType.PERCENTAGE },
+                                        children: [new Paragraph({ children: [new TextRun({ text: new Date(log.date).toLocaleDateString() })] })]
+                                    }),
+                                    new TableCell({
+                                        width: { size: 70, type: WidthType.PERCENTAGE },
+                                        children: [new Paragraph({ children: [new TextRun({ text: log.desc })] })]
+                                    })
+                                ]
+                            }));
+                        });
+
+                        const table = new Table({
+                            width: { size: 100, type: WidthType.PERCENTAGE },
+                            rows: tableRows
+                        });
+
+                        doc.addSection({
+                            children: [table, new Paragraph({ children: [new TextRun({ text: '', size: 24, break: 1 })] })]
+                        });
+                    }
+                });
+            });
+
+            // Overall
+            const optTotal = getRecentCount(STORAGE_KEYS.optFix, true) + getRecentCount(STORAGE_KEYS.p30, true);
+            const learnTotal = getRecentCount(STORAGE_KEYS.kih, false, true) + getRecentCount(STORAGE_KEYS.cross, false, true);
+            const cultureTotal = getRecentCount(STORAGE_KEYS.huddle, false, true) + (getRecentCount(STORAGE_KEYS.leadership) * 4);
+            const overallTotal = optTotal + learnTotal + cultureTotal;
+            const overallPercent = Math.min((overallTotal / 38) * 100, 100);
+            doc.addSection({
+                children: [
+                    new Paragraph({
+                        children: [new TextRun({ text: 'Overall Summary', size: 28, bold: true })]
+                    }),
+                    new Paragraph({
+                        children: [new TextRun({ text: `Total Activities: ${overallTotal}`, size: 24 })]
+                    }),
+                    new Paragraph({
+                        children: [new TextRun({ text: `Completion Rate: ${Math.round(overallPercent)}%`, size: 24 })]
+                    })
+                ]
+            });
+
+            Packer.toBlob(doc).then(blob => {
+                saveAs(blob, `bcc-report-${new Date().toISOString().split('T')[0]}.docx`);
+                showNotification('Data exported to Word successfully!');
+            }).catch(err => {
+                console.error(err);
+                showNotification('Error exporting to Word.', true);
+            });
+        }
+
+        // Function to import data from docx/pdf
+        async function importData(fileInputId, keys, defaultDate) {
+            const fileInput = document.getElementById(fileInputId);
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const buffer = await file.arrayBuffer();
+                let fullText = '';
+
+                try {
+                    if (file.name.endsWith('.docx')) {
+                        const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+                        fullText = result.value;
+                    } else if (file.name.endsWith('.pdf')) {
+                        const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const content = await page.getTextContent();
+                            const pageText = content.items.map(item => item.str).join(' ');
+                            fullText += pageText + '\n\n';
+                        }
+                    } else {
+                        showNotification('Unsupported file type. Please upload .docx or .pdf.', true);
+                        return;
+                    }
+
+                    // Split into paragraphs
+                    const paragraphs = fullText.split('\n\n').filter(p => p.trim().length > 0);
+
+                    // Add to logs (distribute evenly or to first key for simplicity)
+                    const targetKey = keys[0]; // Add to first key for the section
+                    const today = defaultDate || new Date().toISOString().split('T')[0];
+                    paragraphs.forEach(para => {
+                        const entry = { date: today, desc: para.trim() };
+                        saveLog(targetKey, entry);
+                    });
+
+                    // Reload logs for all keys in section
+                    keys.forEach(k => loadLogs(k));
+                    updateStats();
+                    showNotification(`${paragraphs.length} entries imported successfully!`);
+                    fileInput.value = '';
+                } catch (error) {
+                    console.error(error);
+                    showNotification('Error processing file. Please check the file format.', true);
+                }
+            });
+        }
+
+        // Function to load and display logs (recent first)
+        function loadLogs(key) {
+            let logs = JSON.parse(localStorage.getItem(key) || '[]');
+            logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Determine which container to update based on the key
+            let containerId;
+            switch(key) {
+                case STORAGE_KEYS.optFix:
+                    containerId = 'opt-logs';
+                    break;
+                case STORAGE_KEYS.p30:
+                    containerId = 'p30-logs';
+                    break;
+                case STORAGE_KEYS.kih:
+                    containerId = 'kih-logs';
+                    break;
+                case STORAGE_KEYS.cross:
+                    containerId = 'cross-logs';
+                    break;
+                case STORAGE_KEYS.huddle:
+                    containerId = 'huddle-logs';
+                    break;
+                case STORAGE_KEYS.leadership:
+                    containerId = 'leadership-logs';
+                    break;
+                default:
+                    return logs.length;
             }
-        };
-
-        /* --- DATA FILTERING & RENDERING --- */
-        
-        // New function to render the high-level dashboard statistics
-        const renderSummaryStats = () => {
-            const statsRowEl = document.getElementById('stats-row');
-            if (!statsRowEl) return;
-
-            // 1. Filter data based on current department filter
-            const filteredAssets = window.appState.allAssets.filter(asset => 
-                window.appState.currentDepartment === 'all' || asset.department === window.appState.currentDepartment
-            );
             
-            const filteredWOs = window.appState.allWorkOrders.filter(wo => 
-                window.appState.currentDepartment === 'all' || wo.department === window.appState.currentDepartment
-            );
+            const container = document.getElementById(containerId);
+            if (!container) return logs.length;
             
-            // 2. Calculate metrics
-            const activeWOs = filteredWOs.filter(wo => wo.status !== 'Completed');
-            const completedWOs = filteredWOs.filter(wo => wo.status === 'Completed');
-
-            const stats = [
-                { title: "Total Assets", count: filteredAssets.length, icon: "hard-hat", color: "indigo" },
-                { title: "Active Work Orders", count: activeWOs.length, icon: "wrench", color: "red" },
-                { title: "Completed (Lifetime)", count: completedWOs.length, icon: "check-circle", color: "green" },
-            ];
-
-            // 3. Render HTML
-            statsRowEl.innerHTML = stats.map(stat => `
-                <div class="card p-5 border-l-4 border-${stat.color}-500 flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">${stat.title}</p>
-                        <p class="text-3xl font-bold text-gray-900">${stat.count}</p>
-                    </div>
-                    <i data-lucide="${stat.icon}" class="w-8 h-8 text-${stat.color}-400"></i>
+            container.innerHTML = logs.map(log => `
+                <div class="log-entry">
+                    <strong>${new Date(log.date).toLocaleDateString()}:</strong> ${log.desc}
+                    ${log.ips ? ` | IPS: ${log.ips}` : ''}
                 </div>
             `).join('');
             
-            // Re-render lucide icons for the newly added HTML
-            lucide.createIcons(); 
-        };
+            return logs.length;
+        }
 
-        // Filters and renders the assets based on the currentDepartment
-        const renderAssets = () => {
-            const listEl = document.getElementById('assets-list');
-            listEl.innerHTML = '';
-            
-            const filteredAssets = window.appState.allAssets.filter(asset => 
-                window.appState.currentDepartment === 'all' || asset.department === window.appState.currentDepartment
-            );
+        // Function to update progress and stats
+        function updateStats() {
+            // Operational
+            const optCount = getRecentCount(STORAGE_KEYS.optFix, true);
+            const p30Count = getRecentCount(STORAGE_KEYS.p30, true);
+            const optTotal = optCount + p30Count;
+            const optTarget = 14;
+            const optPercent = Math.min((optTotal / optTarget) * 100, 100);
+            document.getElementById('opt-progress').style.width = `${optPercent}%`;
+            document.getElementById('opt-progress').setAttribute('data-label', `${Math.round(optPercent)}%`);
+            document.getElementById('opt-fixes').textContent = `Daily Fixes: ${optCount}`;
+            document.getElementById('opt-p30').textContent = `P-30 Sessions: ${p30Count}`;
 
-            if (filteredAssets.length === 0) {
-                listEl.innerHTML = `<p class="p-4 text-gray-500 text-center">No assets registered in the selected department (${DEPARTMENTS.find(d => d.id === window.appState.currentDepartment).name}).</p>`;
-                renderSummaryStats(); // Update stats even if list is empty
-                return;
-            }
+            // Learning
+            const kihCount = getRecentCount(STORAGE_KEYS.kih, false, true);
+            const crossCount = getRecentCount(STORAGE_KEYS.cross, false, true);
+            const learnTotal = kihCount + crossCount;
+            const learnTarget = 8;
+            const learnPercent = Math.min((learnTotal / learnTarget) * 100, 100);
+            document.getElementById('learn-progress').style.width = `${learnPercent}%`;
+            document.getElementById('learn-progress').setAttribute('data-label', `${Math.round(learnPercent)}%`);
+            document.getElementById('learn-kih').textContent = `KIH Sessions: ${kihCount}`;
+            document.getElementById('learn-cross').textContent = `Cross-Trainings: ${crossCount}`;
 
-            filteredAssets.forEach(asset => {
-                const departmentName = DEPARTMENTS.find(d => d.id === asset.department)?.name || 'Unknown';
-                const item = document.createElement('div');
-                item.className = 'p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-gray-50';
-                item.innerHTML = `
-                    <div>
-                        <p class="font-semibold text-gray-800">${asset.name}</p>
-                        <p class="text-xs text-indigo-500 font-medium">${departmentName}</p>
-                        <p class="text-xs text-gray-500">Location: ${asset.location}</p>
-                    </div>
-                    <div class="mt-2 sm:mt-0 text-right">
-                        <p class="text-xs text-gray-400">Asset ID: ${asset.id.substring(0, 8)}...</p>
-                    </div>
-                `;
-                listEl.appendChild(item);
-            });
-            renderSummaryStats();
-        };
+            // Culture
+            const huddleCount = getRecentCount(STORAGE_KEYS.huddle, false, true);
+            const leadCount = getRecentCount(STORAGE_KEYS.leadership);
+            const cultureTotal = huddleCount + (leadCount * 4);
+            const cultureTarget = 16;
+            const culturePercent = Math.min((cultureTotal / cultureTarget) * 100, 100);
+            document.getElementById('culture-progress').style.width = `${culturePercent}%`;
+            document.getElementById('culture-progress').setAttribute('data-label', `${Math.round(culturePercent)}%`);
+            document.getElementById('culture-huddles').textContent = `Huddles: ${huddleCount}`;
+            document.getElementById('culture-signoffs').textContent = `Sign-Offs: ${leadCount}`;
 
-        // Filters and renders the work orders based on the currentDepartment
-        const renderWorkOrders = () => {
-            const listEl = document.getElementById('work-orders-list');
-            listEl.innerHTML = '';
-            
-            // 1. Filter by Department
-            let filteredWO = window.appState.allWorkOrders.filter(wo => 
-                window.appState.currentDepartment === 'all' || wo.department === window.appState.currentDepartment
-            );
-            
-            // 2. Filter by Active Status (Open or In Progress)
-            const activeWO = filteredWO.filter(wo => wo.status !== 'Completed');
+            // Overall
+            const overallTotal = optTotal + learnTotal + cultureTotal;
+            const overallTarget = optTarget + learnTarget + cultureTarget;
+            const overallPercent = Math.min((overallTotal / overallTarget) * 100, 100);
+            document.getElementById('overall-progress').style.width = `${overallPercent}%`;
+            document.getElementById('overall-progress').setAttribute('data-label', `${Math.round(overallPercent)}%`);
+            document.getElementById('total-activities').textContent = `Total Activities: ${overallTotal}`;
+            document.getElementById('completion-rate').textContent = `Completion Rate: ${Math.round(overallPercent)}%`;
 
-            if (activeWO.length === 0) {
-                listEl.innerHTML = '<p class="p-4 text-gray-500 text-center">No active work orders in this department. Everything looks great!</p>';
-                renderSummaryStats(); // Update stats even if list is empty
-                return;
-            }
+            // Update Chart
+            updateChart(optPercent, learnPercent, culturePercent);
+        }
 
-            activeWO.forEach(wo => {
-                const relatedAsset = window.appState.allAssets.find(a => a.id === wo.assetId);
-                const assetName = relatedAsset ? relatedAsset.name : 'Asset Not Found';
+        // Chart init
+        function initChart() {
+            const ctx = document.getElementById('progress-chart').getContext('2d');
 
-                const item = document.createElement('div');
-                item.className = 'p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-gray-50';
-                item.innerHTML = `
-                    <div class="flex-grow">
-                        <p class="font-semibold text-gray-800 flex items-center">
-                            ${wo.title} 
-                            <span class="ml-3 text-xs font-medium ${wo.priority === 'High' ? 'text-red-600' : wo.priority === 'Medium' ? 'text-yellow-600' : 'text-green-600'}">(${wo.priority})</span>
-                        </p>
-                        <p class="text-sm text-gray-500 mt-1">Asset: ${assetName}</p>
-                        <p class="text-xs text-gray-400">Created: ${formatTimestamp(wo.createdAt)}</p>
-                    </div>
-                    <div class="mt-2 sm:mt-0 flex items-center space-x-2">
-                        ${getStatusBadge(wo.status)}
-                        ${wo.status !== 'Completed' ? 
-                            `<button onclick="updateWorkOrderStatus('${wo.id}', '${wo.status === 'Open' ? 'In Progress' : 'Completed'}')" 
-                                class="py-1 px-3 text-xs rounded-full 
-                                ${wo.status === 'Open' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'} 
-                                transition duration-150">
-                                ${wo.status === 'Open' ? 'Start' : 'Complete'}
-                            </button>`
-                            : ''
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Operational', 'Learning', 'Culture'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            getComputedStyle(document.documentElement).getPropertyValue('--operational-color').trim() || '#3498db',
+                            getComputedStyle(document.documentElement).getPropertyValue('--learning-color').trim() || '#27ae60',
+                            getComputedStyle(document.documentElement).getPropertyValue('--culture-color').trim() || '#f39c12'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#3498db',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${Math.round(context.parsed)}%`;
+                                }
+                            }
                         }
-                    </div>
-                `;
-                listEl.appendChild(item);
+                    },
+                    animation: {
+                        animateRotate: true,
+                        duration: 2000
+                    }
+                }
             });
-            renderSummaryStats();
-        };
-        
-        // Updates the assets dropdown in the New Work Order modal based on the selected department filter
-        const updateWorkOrderModalAssets = () => {
-            const selectEl = document.getElementById('wo-asset');
-            selectEl.innerHTML = '<option value="">Select an Asset</option>';
-            
-            const deptToFilter = document.getElementById('wo-department')?.value || window.appState.currentDepartment;
+        }
 
-            const assetsForDropdown = window.appState.allAssets.filter(asset => 
-                deptToFilter === 'all' || asset.department === deptToFilter
-            );
-
-            assetsForDropdown.forEach(asset => {
-                const option = document.createElement('option');
-                option.value = asset.id;
-                option.textContent = `${asset.name} (${asset.location})`;
-                selectEl.appendChild(option);
-            });
-        };
-
-        // Function called when the main department filter changes
-        window.changeDepartment = (newDeptId) => {
-            window.appState.currentDepartment = newDeptId;
-            renderAssets();
-            renderWorkOrders();
-            renderSummaryStats();
-        };
-        
-        /* --- FIREBASE LISTENERS --- */
-
-        const listenForAssets = () => {
-            if (!window.appState.userId) return;
-            // Fetch from shared public collection
-            const assetRef = collection(db, window.appState.ASSETS_COLLECTION, 'cmms_assets');
-
-            onSnapshot(assetRef, (snapshot) => {
-                window.appState.allAssets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAssets();
-                updateWorkOrderModalAssets(); 
-            }, (error) => {
-                console.error("Error listening to assets:", error);
-            });
-        };
-
-        const listenForWorkOrders = () => {
-            if (!window.appState.userId) return;
-            // Fetch from shared public collection
-            const woRef = collection(db, window.appState.WO_COLLECTION, 'cmms_work_orders');
-            const q = query(woRef);
-
-            onSnapshot(q, (snapshot) => {
-                window.appState.allWorkOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderWorkOrders();
-            }, (error) => {
-                console.error("Error listening to work orders:", error);
-            });
-        };
-        
-        /* --- FORM HANDLERS --- */
-
-        window.handleNewAsset = async (event) => {
-            event.preventDefault();
-            const form = event.target;
-            
-            const department = form['asset-department'].value;
-            if (department === 'all') {
-                 console.error("Cannot create an asset without assigning a specific department.");
-                 return;
+        function updateChart(opt, learn, culture) {
+            if (chart) {
+                chart.data.datasets[0].data = [opt, learn, culture];
+                chart.update('none');
             }
-            
-            const assetData = {
-                department: department,
-                name: form['asset-name'].value,
-                location: form['asset-location'].value,
-                serial: form['asset-serial'].value,
-                createdAt: new Date(),
-                createdBy: window.appState.userId
-            };
+        }
 
-            try {
-                // Add to shared public collection
-                const assetsRef = collection(db, window.appState.ASSETS_COLLECTION, 'cmms_assets');
-                await addDoc(assetsRef, assetData);
-                form.reset();
-                toggleModal('new-asset-modal');
-            } catch (error) {
-                console.error("Error adding asset:", error);
-            }
-        };
-
-        window.handleNewWorkOrder = async (event) => {
-            event.preventDefault();
-            const form = event.target;
-
-            const department = form['wo-department'].value;
-            if (department === 'all') {
-                 console.error("Cannot create a work order without assigning a specific department.");
-                 return;
-            }
-
-            const woData = {
-                department: department,
-                title: form['wo-title'].value,
-                assetId: form['wo-asset'].value,
-                priority: form['wo-priority'].value,
-                status: 'Open',
-                createdAt: new Date(),
-                createdBy: window.appState.userId
-            };
-
-            try {
-                // Add to shared public collection
-                const woRef = collection(db, window.appState.WO_COLLECTION, 'cmms_work_orders');
-                await addDoc(woRef, woData);
-                form.reset();
-                toggleModal('new-wo-modal');
-            } catch (error) {
-                console.error("Error adding work order:", error);
-            }
-        };
-
-        window.updateWorkOrderStatus = async (woId, newStatus) => {
-            try {
-                // Update in shared public collection
-                const woDocRef = doc(db, window.appState.WO_COLLECTION, 'cmms_work_orders', woId);
-                const updateData = {
-                    status: newStatus,
+        // Generic form handler
+        function handleFormSubmit(formId, key, descBuilder) {
+            const form = document.getElementById(formId);
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const entry = {
+                    date: formData.get(formId.replace('-form', '-date') || formId.replace('-form', '-week')),
+                    desc: descBuilder(formData),
+                    ips: formData.get('huddle-ips') || null
                 };
-                if (newStatus === 'Completed') {
-                    updateData.completedAt = new Date();
-                }
-
-                await updateDoc(woDocRef, updateData);
-            } catch (error) {
-                console.error("Error updating work order status:", error);
-            }
-        };
-        
-        /* --- UI POPULATION FUNCTIONS --- */
-        
-        const populateDepartmentDropdowns = () => {
-            const filterEl = document.getElementById('department-filter');
-            const assetDeptEl = document.getElementById('asset-department');
-            const woDeptEl = document.getElementById('wo-department');
-            
-            // Function to populate a single select element
-            const populateSelect = (selectEl, includeAll = true) => {
-                selectEl.innerHTML = '';
-                window.appState.departments.forEach(dept => {
-                    // Skip 'All Departments' for creation modals
-                    if (dept.id === 'all' && !includeAll) return;
-                    
-                    const option = document.createElement('option');
-                    option.value = dept.id;
-                    option.textContent = dept.name;
-                    selectEl.appendChild(option);
-                });
-            };
-
-            // Populate Filter (includes 'All Departments')
-            populateSelect(filterEl, true); 
-            
-            // Populate Modals (does NOT include 'All Departments')
-            populateSelect(assetDeptEl, false);
-            populateSelect(woDeptEl, false);
-            
-             // Attach event listener for work order asset filtering
-            woDeptEl.addEventListener('change', updateWorkOrderModalAssets);
-        };
-
-
-        /* --- INITIALIZATION --- */
-
-        const initApp = async () => {
-            populateDepartmentDropdowns();
-            try {
-                let user;
-                if (initialAuthToken) {
-                    const userCredential = await signInWithCustomToken(auth, initialAuthToken);
-                    user = userCredential.user;
-                } else {
-                    const userCredential = await signInAnonymously(auth);
-                    user = userCredential.user;
+                
+                // Validate date
+                if (!entry.date) {
+                    showNotification('Please select a valid date', true);
+                    return;
                 }
                 
-                window.appState.userId = user.uid;
-                document.getElementById('user-id-display').textContent = user.uid;
+                saveLog(key, entry);
+                loadLogs(key);
+                updateStats();
+                form.reset();
                 
-                // 2. Start listeners once authenticated (will now fetch collaborative data)
-                listenForAssets();
-                listenForWorkOrders();
+                // Set default dates
+                setDefaultDates();
+                
+                const btn = form.querySelector('button');
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Logged!';
+                btn.style.background = 'linear-gradient(135deg, #27ae60, #229954)';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 1500);
+                
+                showNotification('Entry logged successfully!');
+            });
+        }
 
-            } catch (error) {
-                console.error("Firebase Authentication/Initialization Error:", error);
-                document.getElementById('user-id-display').textContent = 'AUTH ERROR';
-            }
+        // Set default dates
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('opt-date').value = today;
+            document.getElementById('p30-date').value = today;
             
-             // Render lucide icons after initialization is complete
-             lucide.createIcons();
-        };
+            // Calculate Monday of current week
+            const now = new Date();
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - now.getDay() + 1);
+            const weekStart = monday.toISOString().split('T')[0];
+            
+            ['kih-week', 'cross-week', 'huddle-week'].forEach(id => {
+                document.getElementById(id).value = weekStart;
+            });
+            
+            // Set quarter
+            const year = now.getFullYear();
+            const quarter = Math.floor((now.getMonth() + 3) / 3);
+            document.getElementById('quarter').value = `Q${quarter} ${year}`;
+        }
 
-        // Start the application after the window loads
-        window.onload = initApp;
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all logged data? This cannot be undone.')) {
+                Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+                updateStats();
+                document.querySelectorAll('.logs-container').forEach(container => container.innerHTML = '');
+                showNotification('All data cleared successfully!');
+            }
+        }
+
+        // Initialize imports
+        function initImports() {
+            importData('import-operational', SECTION_KEYS.operational, new Date().toISOString().split('T')[0]);
+            importData('import-learning', SECTION_KEYS.learning, getWeekStart());
+            importData('import-culture', SECTION_KEYS.culture, getWeekStart());
+        }
+
+        function getWeekStart() {
+            const now = new Date();
+            const monday = new Date(now);
+            monday.setDate(now.getDate() - now.getDay() + 1);
+            return monday.toISOString().split('T')[0];
+        }
+
+        // Initialize form handlers
+        function initForms() {
+            handleFormSubmit('opt-fix-form', STORAGE_KEYS.optFix, (data) => `${data.get('opt-member')}: ${data.get('opt-desc')}`);
+            handleFormSubmit('p30-form', STORAGE_KEYS.p30, (data) => data.get('p30-issues'));
+            handleFormSubmit('kih-form', STORAGE_KEYS.kih, (data) => `${data.get('kih-content')} - ${data.get('kih-takeaways')}`);
+            handleFormSubmit('cross-form', STORAGE_KEYS.cross, (data) => `${data.get('cross-staff')} in ${data.get('cross-area')}`);
+            handleFormSubmit('huddle-form', STORAGE_KEYS.huddle, (data) => `IPS: ${data.get('huddle-ips')} - ${data.get('huddle-commit')}`);
+            handleFormSubmit('leadership-form', STORAGE_KEYS.leadership, (data) => `IPS Goal: ${data.get('ips-goal')} - Signed: ${data.get('sign-off')}`);
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            initImports();
+            initForms();
+            setDefaultDates();
+            
+            // Load existing logs
+            Object.keys(STORAGE_KEYS).forEach(key => loadLogs(STORAGE_KEYS[key]));
+            updateStats();
+        });
     </script>
 </body>
 </html>
