@@ -25,7 +25,7 @@
             --nude-medium: #f0e6d2;
             --nude-dark: #e8d5b7;
             --shadow: 0 2px 10px rgba(0,0,0,0.1);
-            --shadow-lg: 0 4px 20px rgba(0,0,0,0.15);
+            --shadow-lg: 4px 20px rgba(0,0,0,0.15);
             --border-radius: 12px;
             --transition: all 0.3s ease;
             --operational-color: #3498db;
@@ -693,9 +693,6 @@
     <div class="intro">
         <blockquote>"Don't wish it were easier, wish you were better. Don't wish for fewer problems, wish for more skills. Don't wish for less challenge, wish for more wisdom."</blockquote>
         <blockquote>"Work harder on yourself than you do on your job."</blockquote>
-        <blockquote>"Success is nothing more than a few simple disciplines, practiced every day; while failure is simply a few errors in judgment, repeated every day."</blockquote>
-        <blockquote>"Formal education will make you a living; self-education will make you a fortune."</blockquote>
-        <blockquote>"You are the average of the five people you spend the most time with."</blockquote>
     </div>
 
     <div class="overall-progress">
@@ -719,7 +716,6 @@
     </div>
 
     <div id="dashboard">
-        <!-- Section 1: Proactive Operational System -->
         <div class="section operational">
             <h2><span class="section-icon">⚙️</span>1. Proactive Operational System (Daily Disciplines)</h2>
             <div class="goal"><strong>Goal:</strong> Predict and eliminate problems before they arise, ensuring seamless operations.</div>
@@ -763,7 +759,6 @@
             </div>
         </div>
 
-        <!-- Section 2: Continuous Learning System -->
         <div class="section learning">
             <h2><span class="section-icon">📚</span>2. Continuous Learning System (Weekly Disciplines)</h2>
             <div class="goal"><strong>Goal:</strong> Build essential skills to anticipate and meet future operational needs.</div>
@@ -809,7 +804,6 @@
             </div>
         </div>
 
-        <!-- Section 3: Proactive Culture System -->
         <div class="section culture">
             <h2><span class="section-icon">🤝</span>3. Proactive Culture System (Accountability)</h2>
             <div class="goal"><strong>Goal:</strong> Cultivate discipline, accountability, and a shared vision for proactive excellence.</div>
@@ -1040,9 +1034,9 @@
             const learnTotal = getRecentCount(STORAGE_KEYS.kih, false, true) + getRecentCount(STORAGE_KEYS.cross, false, true);
             const cultureTotal = getRecentCount(STORAGE_KEYS.input_review, true) + getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
             const overallTotal = optTotal + learnTotal + cultureTotal;
+            const overallPercent = Math.min((overallTotal / 36) * 100, 100); // 14+8+14=36
             doc.text(`Total Activities: ${overallTotal}`, 20, y);
             y += 7;
-            const overallPercent = Math.min((overallTotal / 36) * 100, 100); // 14+8+14=36
             doc.text(`Completion Rate: ${Math.round(overallPercent)}%`, 20, y);
 
             doc.save(`bcc-report-${new Date().toISOString().split('T')[0]}.pdf`);
