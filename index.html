@@ -802,39 +802,35 @@
                     <span>📄 Upload Document</span>
                 </label>
                 <input type="file" id="import-culture" accept=".docx,.pdf">
-                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with this week's start date.</p>
+                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with today's date.</p>
             </div>
 
-            <h3>The "No-Regrets Huddle"</h3>
-            <form id="huddle-form">
-                <label for="huddle-week">📅 Week Starting:</label>
-                <input type="date" id="huddle-week" required>
-                <label for="huddle-ips">📊 Previous IPS Score:</label>
-                <input type="number" id="huddle-ips" min="0" max="10" required placeholder="0-10">
-                <label for="huddle-commit">🎯 Commitments Made:</label>
-                <textarea id="huddle-commit" required placeholder="e.g., Full team adherence to P-30 and KIH this week"></textarea>
-                <button type="submit">📝 Log Huddle</button>
+            <h3>End of Day Input/Output Review</h3>
+            <form id="input-review-form">
+                <label for="input-date">📅 Date:</label>
+                <input type="date" id="input-date" required>
+                <label for="input-notes">📝 Review Notes:</label>
+                <textarea id="input-notes" required placeholder="Did I complete my MITs? What did I learn? What value did I add today? What input did I receive?"></textarea>
+                <button type="submit">📝 Log Review</button>
             </form>
-            <div class="logs-container" id="huddle-logs"></div>
+            <div class="logs-container" id="input-review-logs"></div>
 
-            <h3>Leadership Discipline: "Readiness Commitment"</h3>
-            <form id="leadership-form">
-                <label for="quarter">📅 Quarter:</label>
-                <input type="text" id="quarter" required placeholder="e.g., Q4 2025">
-                <label for="ips-goal">📊 IPS Reduction Goal:</label>
-                <input type="number" id="ips-goal" min="0" required placeholder="Target score (e.g., 2.0)">
-                <label for="sign-off">✍️ Leadership Sign-Off:</label>
-                <input type="text" id="sign-off" required placeholder="e.g., Manager Name">
-                <button type="submit">✍️ Sign Off</button>
+            <h3>End of Day Prepare for Tomorrow</h3>
+            <form id="prepare-tomorrow-form">
+                <label for="prepare-date">📅 Date:</label>
+                <input type="date" id="prepare-date" required>
+                <label for="prepare-mits">🎯 Tomorrow's MITs:</label>
+                <textarea id="prepare-mits" required placeholder="Set 1-3 Most Important Tasks for tomorrow"></textarea>
+                <button type="submit">📝 Log Preparation</button>
             </form>
-            <div class="logs-container" id="leadership-logs"></div>
+            <div class="logs-container" id="prepare-logs"></div>
 
             <div class="progress">
                 <div class="progress-bar culture" id="culture-progress" style="width: 0%;" data-label="0%"></div>
             </div>
             <div class="stats">
-                <div class="stat-item" id="culture-huddles">Huddles: 0</div>
-                <div class="stat-item" id="culture-signoffs">Sign-Offs: 0</div>
+                <div class="stat-item" id="culture-input">Input/Output Reviews: 0</div>
+                <div class="stat-item" id="culture-prepare">Preparations: 0</div>
             </div>
         </div>
     </div>
@@ -848,20 +844,20 @@
             p30: 'proactive_bcc_p30',
             kih: 'proactive_bcc_kih',
             cross: 'proactive_bcc_cross',
-            huddle: 'proactive_bcc_huddle',
-            leadership: 'proactive_bcc_leadership'
+            input_review: 'proactive_bcc_input_review',
+            prepare_tomorrow: 'proactive_bcc_prepare_tomorrow'
         };
 
         const SECTION_KEYS = {
             operational: [STORAGE_KEYS.optFix, STORAGE_KEYS.p30],
             learning: [STORAGE_KEYS.kih, STORAGE_KEYS.cross],
-            culture: [STORAGE_KEYS.huddle, STORAGE_KEYS.leadership]
+            culture: [STORAGE_KEYS.input_review, STORAGE_KEYS.prepare_tomorrow]
         };
 
         const SECTION_CONFIG = {
             operational: { name: 'Operational', color: [26, 82, 118], keys: [STORAGE_KEYS.optFix, STORAGE_KEYS.p30], isDaily: true },
             learning: { name: 'Learning', color: [39, 174, 96], keys: [STORAGE_KEYS.kih, STORAGE_KEYS.cross], isWeekly: true },
-            culture: { name: 'Culture', color: [243, 156, 18], keys: [STORAGE_KEYS.huddle, STORAGE_KEYS.leadership], isWeekly: true }
+            culture: { name: 'Culture', color: [243, 156, 18], keys: [STORAGE_KEYS.input_review, STORAGE_KEYS.prepare_tomorrow], isDaily: true }
         };
 
         let chart;
@@ -978,8 +974,8 @@
                     stat1 = getRecentCount(STORAGE_KEYS.kih, false, true);
                     stat2 = getRecentCount(STORAGE_KEYS.cross, false, true);
                 } else if (sectionKey === 'culture') {
-                    stat1 = getRecentCount(STORAGE_KEYS.huddle, false, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.leadership);
+                    stat1 = getRecentCount(STORAGE_KEYS.input_review, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
                 }
                 doc.text(`${keys[0].replace('proactive_bcc_', '').toUpperCase()}: ${stat1}`, 20, y);
                 y += 7;
@@ -1025,11 +1021,11 @@
             // Compute overall (reuse stats logic)
             const optTotal = getRecentCount(STORAGE_KEYS.optFix, true) + getRecentCount(STORAGE_KEYS.p30, true);
             const learnTotal = getRecentCount(STORAGE_KEYS.kih, false, true) + getRecentCount(STORAGE_KEYS.cross, false, true);
-            const cultureTotal = getRecentCount(STORAGE_KEYS.huddle, false, true) + (getRecentCount(STORAGE_KEYS.leadership) * 4);
+            const cultureTotal = getRecentCount(STORAGE_KEYS.input_review, true) + getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
             const overallTotal = optTotal + learnTotal + cultureTotal;
             doc.text(`Total Activities: ${overallTotal}`, 20, y);
             y += 7;
-            const overallPercent = Math.min((overallTotal / 38) * 100, 100); // 14+8+16=38
+            const overallPercent = Math.min((overallTotal / 36) * 100, 100); // 14+8+14=36
             doc.text(`Completion Rate: ${Math.round(overallPercent)}%`, 20, y);
 
             doc.save(`bcc-report-${new Date().toISOString().split('T')[0]}.pdf`);
@@ -1087,8 +1083,8 @@
                     stat1 = getRecentCount(STORAGE_KEYS.kih, false, true);
                     stat2 = getRecentCount(STORAGE_KEYS.cross, false, true);
                 } else if (sectionKey === 'culture') {
-                    stat1 = getRecentCount(STORAGE_KEYS.huddle, false, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.leadership);
+                    stat1 = getRecentCount(STORAGE_KEYS.input_review, true);
+                    stat2 = getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
                 }
                 doc.addSection({
                     children: [
@@ -1160,9 +1156,9 @@
             // Overall
             const optTotal = getRecentCount(STORAGE_KEYS.optFix, true) + getRecentCount(STORAGE_KEYS.p30, true);
             const learnTotal = getRecentCount(STORAGE_KEYS.kih, false, true) + getRecentCount(STORAGE_KEYS.cross, false, true);
-            const cultureTotal = getRecentCount(STORAGE_KEYS.huddle, false, true) + (getRecentCount(STORAGE_KEYS.leadership) * 4);
+            const cultureTotal = getRecentCount(STORAGE_KEYS.input_review, true) + getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
             const overallTotal = optTotal + learnTotal + cultureTotal;
-            const overallPercent = Math.min((overallTotal / 38) * 100, 100);
+            const overallPercent = Math.min((overallTotal / 36) * 100, 100);
             doc.addSection({
                 children: [
                     new Paragraph({
@@ -1255,11 +1251,11 @@
                 case STORAGE_KEYS.cross:
                     containerId = 'cross-logs';
                     break;
-                case STORAGE_KEYS.huddle:
-                    containerId = 'huddle-logs';
+                case STORAGE_KEYS.input_review:
+                    containerId = 'input-review-logs';
                     break;
-                case STORAGE_KEYS.leadership:
-                    containerId = 'leadership-logs';
+                case STORAGE_KEYS.prepare_tomorrow:
+                    containerId = 'prepare-logs';
                     break;
                 default:
                     return logs.length;
@@ -1271,7 +1267,6 @@
             container.innerHTML = logs.map(log => `
                 <div class="log-entry">
                     <strong>${new Date(log.date).toLocaleDateString()}:</strong> ${log.desc}
-                    ${log.ips ? ` | IPS: ${log.ips}` : ''}
                 </div>
             `).join('');
             
@@ -1303,15 +1298,15 @@
             document.getElementById('learn-cross').textContent = `Cross-Trainings: ${crossCount}`;
 
             // Culture
-            const huddleCount = getRecentCount(STORAGE_KEYS.huddle, false, true);
-            const leadCount = getRecentCount(STORAGE_KEYS.leadership);
-            const cultureTotal = huddleCount + (leadCount * 4);
-            const cultureTarget = 16;
+            const inputCount = getRecentCount(STORAGE_KEYS.input_review, true);
+            const prepareCount = getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
+            const cultureTotal = inputCount + prepareCount;
+            const cultureTarget = 14;
             const culturePercent = Math.min((cultureTotal / cultureTarget) * 100, 100);
             document.getElementById('culture-progress').style.width = `${culturePercent}%`;
             document.getElementById('culture-progress').setAttribute('data-label', `${Math.round(culturePercent)}%`);
-            document.getElementById('culture-huddles').textContent = `Huddles: ${huddleCount}`;
-            document.getElementById('culture-signoffs').textContent = `Sign-Offs: ${leadCount}`;
+            document.getElementById('culture-input').textContent = `Input/Output Reviews: ${inputCount}`;
+            document.getElementById('culture-prepare').textContent = `Preparations: ${prepareCount}`;
 
             // Overall
             const overallTotal = optTotal + learnTotal + cultureTotal;
@@ -1395,9 +1390,8 @@
                 e.preventDefault();
                 const formData = new FormData(form);
                 const entry = {
-                    date: formData.get(formId.replace('-form', '-date') || formId.replace('-form', '-week')),
-                    desc: descBuilder(formData),
-                    ips: formData.get('huddle-ips') || null
+                    date: formData.get(formId.replace('-form', '-date')),
+                    desc: descBuilder(formData)
                 };
                 
                 // Validate date
@@ -1432,6 +1426,8 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('opt-date').value = today;
             document.getElementById('p30-date').value = today;
+            document.getElementById('input-date').value = today;
+            document.getElementById('prepare-date').value = today;
             
             // Calculate Monday of current week
             const now = new Date();
@@ -1439,14 +1435,9 @@
             monday.setDate(now.getDate() - now.getDay() + 1);
             const weekStart = monday.toISOString().split('T')[0];
             
-            ['kih-week', 'cross-week', 'huddle-week'].forEach(id => {
+            ['kih-week', 'cross-week'].forEach(id => {
                 document.getElementById(id).value = weekStart;
             });
-            
-            // Set quarter
-            const year = now.getFullYear();
-            const quarter = Math.floor((now.getMonth() + 3) / 3);
-            document.getElementById('quarter').value = `Q${quarter} ${year}`;
         }
 
         // Clear all data
@@ -1463,7 +1454,7 @@
         function initImports() {
             importData('import-operational', SECTION_KEYS.operational, new Date().toISOString().split('T')[0]);
             importData('import-learning', SECTION_KEYS.learning, getWeekStart());
-            importData('import-culture', SECTION_KEYS.culture, getWeekStart());
+            importData('import-culture', SECTION_KEYS.culture, new Date().toISOString().split('T')[0]);
         }
 
         function getWeekStart() {
@@ -1479,8 +1470,8 @@
             handleFormSubmit('p30-form', STORAGE_KEYS.p30, (data) => data.get('p30-issues'));
             handleFormSubmit('kih-form', STORAGE_KEYS.kih, (data) => `${data.get('kih-content')} - ${data.get('kih-takeaways')}`);
             handleFormSubmit('cross-form', STORAGE_KEYS.cross, (data) => `${data.get('cross-staff')} in ${data.get('cross-area')}`);
-            handleFormSubmit('huddle-form', STORAGE_KEYS.huddle, (data) => `IPS: ${data.get('huddle-ips')} - ${data.get('huddle-commit')}`);
-            handleFormSubmit('leadership-form', STORAGE_KEYS.leadership, (data) => `IPS Goal: ${data.get('ips-goal')} - Signed: ${data.get('sign-off')}`);
+            handleFormSubmit('input-review-form', STORAGE_KEYS.input_review, (data) => data.get('input-notes'));
+            handleFormSubmit('prepare-tomorrow-form', STORAGE_KEYS.prepare_tomorrow, (data) => `MITs: ${data.get('prepare-mits')}`);
         }
 
         // Initial load
