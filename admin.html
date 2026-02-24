@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard – Bophelong Ola Age Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-house-heart-fill me-2"></i>Bophelong Ola Age Home
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item"><span class="nav-link text-white opacity-75"><i class="bi bi-person-gear me-1"></i>Admin Portal</span></li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm ms-2" onclick="logout()">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4 px-3 px-md-4">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h2 class="mb-1 fw-bold"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</h2>
+                    <p class="mb-0 opacity-75">Manage all home operations from one place</p>
+                </div>
+                <div class="col-auto d-none d-md-block">
+                    <span class="opacity-75 small" id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-xl-3">
+                <div class="stat-card stat-bg-1">
+                    <div class="stat-number" id="statResidents">-</div>
+                    <div class="stat-label"><i class="bi bi-people me-1"></i>Residents</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-3">
+                <div class="stat-card stat-bg-2">
+                    <div class="stat-number" id="statStaff">-</div>
+                    <div class="stat-label"><i class="bi bi-person-badge me-1"></i>Staff Members</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-3">
+                <div class="stat-card stat-bg-3">
+                    <div class="stat-number" id="statVacant">-</div>
+                    <div class="stat-label"><i class="bi bi-door-open me-1"></i>Vacant Rooms</div>
+                </div>
+            </div>
+            <div class="col-6 col-xl-3">
+                <div class="stat-card stat-bg-4">
+                    <div class="stat-number" id="statAppointments">-</div>
+                    <div class="stat-label"><i class="bi bi-calendar-check me-1"></i>Today's Appointments</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-0" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-residents" data-bs-toggle="tab" data-bs-target="#pane-residents" type="button" role="tab">
+                    <i class="bi bi-people me-1"></i><span class="d-none d-sm-inline">Residents</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-staff" data-bs-toggle="tab" data-bs-target="#pane-staff" type="button" role="tab">
+                    <i class="bi bi-person-badge me-1"></i><span class="d-none d-sm-inline">Staff</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-rooms" data-bs-toggle="tab" data-bs-target="#pane-rooms" type="button" role="tab">
+                    <i class="bi bi-door-closed me-1"></i><span class="d-none d-sm-inline">Rooms</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-appointments" data-bs-toggle="tab" data-bs-target="#pane-appointments" type="button" role="tab">
+                    <i class="bi bi-calendar me-1"></i><span class="d-none d-sm-inline">Appointments</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-feedback" data-bs-toggle="tab" data-bs-target="#pane-feedback" type="button" role="tab">
+                    <i class="bi bi-chat-dots me-1"></i><span class="d-none d-sm-inline">Feedback</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-activities" data-bs-toggle="tab" data-bs-target="#pane-activities" type="button" role="tab">
+                    <i class="bi bi-calendar-week me-1"></i><span class="d-none d-sm-inline">Activities</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content bg-white border border-top-0 rounded-bottom p-3 p-md-4" id="adminTabContent">
+
+            <!-- ── Residents ── -->
+            <div class="tab-pane fade show active" id="pane-residents" role="tabpanel">
+                <div class="row g-4">
+                    <!-- Form -->
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-person-plus me-2"></i><span id="residentFormTitle">Add Resident</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="residentForm">
+                                    <input type="hidden" id="residentId">
+                                    <div class="mb-3">
+                                        <label for="residentName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="residentName" placeholder="e.g. Nomsa Dlamini" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="residentAge" class="form-label">Age <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="residentAge" min="60" max="120" placeholder="e.g. 72" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="residentContact" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="residentContact" placeholder="e.g. 011-234-5678" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="residentRoom" class="form-label">Room Number</label>
+                                        <input type="text" class="form-control" id="residentRoom" placeholder="e.g. 101">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="residentEmergency" class="form-label">Emergency Contact</label>
+                                        <input type="text" class="form-control" id="residentEmergency" placeholder="Name & number">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="residentMedical" class="form-label">Medical History</label>
+                                        <textarea class="form-control" id="residentMedical" rows="3" placeholder="Conditions, medications..."></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary flex-fill" onclick="saveResident()">
+                                            <i class="bi bi-save me-1"></i>Save
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearForm('residentForm'); resetFormTitle('residentFormTitle','Add Resident')">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h5 class="mb-0 fw-bold">Residents List</h5>
+                            <div class="search-box" style="min-width:200px">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control form-control-sm ps-4" placeholder="Search residents..." oninput="loadResidents(this.value)">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th><th>Name</th><th>Age</th><th>Room</th><th>Contact</th><th>Medical</th><th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="residentsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Staff ── -->
+            <div class="tab-pane fade" id="pane-staff" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-person-plus me-2"></i><span id="staffFormTitle">Add Staff Member</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="staffForm">
+                                    <input type="hidden" id="staffId">
+                                    <div class="mb-3">
+                                        <label for="staffName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="staffName" placeholder="e.g. Dr. Lerato Mokoena" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="staffRole" class="form-label">Role <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="staffRole" required>
+                                            <option value="">Select role...</option>
+                                            <option>Doctor</option>
+                                            <option>Nurse</option>
+                                            <option>Caregiver</option>
+                                            <option>Physiotherapist</option>
+                                            <option>Social Worker</option>
+                                            <option>Administrator</option>
+                                            <option>Cook</option>
+                                            <option>Cleaner</option>
+                                            <option>Security</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="staffSpec" class="form-label">Specialization</label>
+                                        <input type="text" class="form-control" id="staffSpec" placeholder="e.g. Geriatrics">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="staffShift" class="form-label">Shift</label>
+                                        <select class="form-select" id="staffShift">
+                                            <option value="">Select shift...</option>
+                                            <option>Morning</option>
+                                            <option>Afternoon</option>
+                                            <option>Night</option>
+                                            <option>Rotating</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="staffContact" class="form-label">Contact <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="staffContact" placeholder="e.g. 011-100-2000" required>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary flex-fill" onclick="saveStaff()">
+                                            <i class="bi bi-save me-1"></i>Save
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearForm('staffForm'); resetFormTitle('staffFormTitle','Add Staff Member')">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h5 class="mb-0 fw-bold">Staff List</h5>
+                            <div class="search-box" style="min-width:200px">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control form-control-sm ps-4" placeholder="Search staff..." oninput="loadStaff(this.value)">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr><th>ID</th><th>Name</th><th>Role</th><th>Specialization</th><th>Shift</th><th>Contact</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="staffTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Rooms ── -->
+            <div class="tab-pane fade" id="pane-rooms" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-door-closed me-2"></i><span id="roomFormTitle">Add Room</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="roomForm">
+                                    <input type="hidden" id="roomId">
+                                    <div class="mb-3">
+                                        <label for="roomNumber" class="form-label">Room Number <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="roomNumber" placeholder="e.g. 101" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="roomFloor" class="form-label">Floor</label>
+                                        <input type="text" class="form-control" id="roomFloor" placeholder="e.g. 1">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="roomType" class="form-label">Room Type</label>
+                                        <select class="form-select" id="roomType">
+                                            <option value="">Select type...</option>
+                                            <option>Single</option>
+                                            <option>Double</option>
+                                            <option>Shared</option>
+                                            <option>Suite</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="roomStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="roomStatus">
+                                            <option>Vacant</option>
+                                            <option>Occupied</option>
+                                            <option>Under Maintenance</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="roomResident" class="form-label">Resident ID (if occupied)</label>
+                                        <input type="text" class="form-control" id="roomResident" placeholder="Resident ID">
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary flex-fill" onclick="saveRoom()">
+                                            <i class="bi bi-save me-1"></i>Save
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearForm('roomForm'); resetFormTitle('roomFormTitle','Add Room')">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h5 class="mb-0 fw-bold">Room List</h5>
+                            <div class="search-box" style="min-width:200px">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control form-control-sm ps-4" placeholder="Search rooms..." oninput="loadRooms(this.value)">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr><th>Room #</th><th>Type</th><th>Floor</th><th>Status</th><th>Resident</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="roomsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Appointments ── -->
+            <div class="tab-pane fade" id="pane-appointments" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-calendar-plus me-2"></i><span id="appointmentFormTitle">Schedule Appointment</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="appointmentForm">
+                                    <input type="hidden" id="appointmentId">
+                                    <div class="mb-3">
+                                        <label for="appResident" class="form-label">Resident ID <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="appResident" placeholder="Resident ID" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appDoctor" class="form-label">Staff ID <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="appDoctor" placeholder="Staff ID" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appDate" class="form-label">Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="appDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appTime" class="form-label">Time</label>
+                                        <input type="time" class="form-control" id="appTime">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appType" class="form-label">Type</label>
+                                        <select class="form-select" id="appType">
+                                            <option value="">Select type...</option>
+                                            <option>Check-up</option>
+                                            <option>Follow-up</option>
+                                            <option>Physiotherapy</option>
+                                            <option>Dental</option>
+                                            <option>Optometry</option>
+                                            <option>Counseling</option>
+                                            <option>Emergency</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="appStatus">
+                                            <option>Scheduled</option>
+                                            <option>In Progress</option>
+                                            <option>Completed</option>
+                                            <option>Cancelled</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appNotes" class="form-label">Notes</label>
+                                        <textarea class="form-control" id="appNotes" rows="2"></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary flex-fill" onclick="saveAppointment()">
+                                            <i class="bi bi-save me-1"></i>Save
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearForm('appointmentForm'); resetFormTitle('appointmentFormTitle','Schedule Appointment')">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h5 class="mb-0 fw-bold">Appointments</h5>
+                            <div class="search-box" style="min-width:200px">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control form-control-sm ps-4" placeholder="Search..." oninput="loadAppointments(this.value)">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr><th>Date/Time</th><th>Resident</th><th>Staff</th><th>Type</th><th>Status</th><th>Notes</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="appointmentsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Feedback ── -->
+            <div class="tab-pane fade" id="pane-feedback" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h5 class="mb-0 fw-bold">Feedback & Messages</h5>
+                    <div class="search-box" style="min-width:200px">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control form-control-sm ps-4" placeholder="Search feedback..." oninput="loadFeedback(this.value)">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="feedbackTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── Activities ── -->
+            <div class="tab-pane fade" id="pane-activities" role="tabpanel">
+                <h5 class="mb-3 fw-bold">Activity Schedule</h5>
+                <div id="activitiesList"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-4">
+        <div class="container">
+            <p class="text-center mb-0 small opacity-75">&copy; 2024 Bophelong Ola Age Home. Admin Portal.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            checkRole('admin');
+            seedDemoData();
+            updateStats();
+            loadResidents();
+            loadStaff();
+            loadRooms();
+            loadAppointments();
+            loadFeedback();
+            loadActivities();
+            // Set current date
+            const el = document.getElementById('currentDate');
+            if (el) el.textContent = new Date().toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        });
+    </script>
+</body>
+</html>
