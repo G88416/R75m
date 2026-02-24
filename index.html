@@ -1,928 +1,246 @@
-# Old Age Home Management System in HTML
-
-Based on common features from similar projects on GitHub, I've created a comprehensive static HTML-based Old Age Home Management System. Since it's purely HTML, CSS, and JavaScript (no backend), it uses localStorage to simulate data persistence across pages. This allows for CRUD operations on residents, staff, rooms, medical records, and more.
-
-The system includes:
-- **User Roles**: Admin (manage everything), Doctor/Staff (view and update medical records, appointments), Resident/Guardian (view personal details, request services).
-- **Features**:
-  - Login simulation (no real auth; selects role and redirects).
-  - Dashboards for each role.
-  - Resident management: Add, view, edit, delete residents.
-  - Staff management: Similar for staff.
-  - Room management: Track occupancy.
-  - Medical records and appointments.
-  - Contact/Feedback form (simulates submission).
-  - Search functionality.
-  - About, Services, Rules, Eligibility pages.
-- **Technologies**: HTML5, CSS3 (with Bootstrap 5 for responsive design), JavaScript (for interactivity and localStorage).
-
-To run: Save the files in a folder and open `index.html` in a browser. Data persists in the browser's localStorage.
-
-## File Structure
-- `index.html`: Home/Login page.
-- `admin.html`: Admin dashboard.
-- `doctor.html`: Doctor/Staff dashboard.
-- `resident.html`: Resident/Guardian dashboard.
-- `about.html`, `services.html`, `rules.html`, `eligibility.html`, `contact.html`: Static info pages.
-- `styles.css`: Custom CSS (in addition to Bootstrap).
-- `script.js`: Shared JavaScript for all pages.
-
-Below is the code for each file.
-
-### index.html
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Age Home Management System</title>
+    <title>Bophelong Ola Age Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Old Age Home</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-house-heart-fill me-2"></i>Bophelong Ola Age Home
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
-                    <li class="nav-item"><a class="nav-link" href="rules.html">Rules</a></li>
-                    <li class="nav-item"><a class="nav-link" href="eligibility.html">Eligibility</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="index.html"><i class="bi bi-house me-1"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html"><i class="bi bi-info-circle me-1"></i>About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="services.html"><i class="bi bi-grid me-1"></i>Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="rules.html"><i class="bi bi-journal-text me-1"></i>Rules</a></li>
+                    <li class="nav-item"><a class="nav-link" href="eligibility.html"><i class="bi bi-person-check me-1"></i>Eligibility</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html"><i class="bi bi-envelope me-1"></i>Contact</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <h1>Welcome to Old Age Home Management System</h1>
-        <p>Please select your role to login:</p>
-        <div class="row">
-            <div class="col-md-4">
-                <button class="btn btn-primary btn-lg btn-block" onclick="login('admin')">Admin Login</button>
-            </div>
-            <div class="col-md-4">
-                <button class="btn btn-secondary btn-lg btn-block" onclick="login('doctor')">Doctor/Staff Login</button>
-            </div>
-            <div class="col-md-4">
-                <button class="btn btn-info btn-lg btn-block" onclick="login('resident')">Resident/Guardian Login</button>
+    <!-- Hero -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <i class="bi bi-heart-pulse display-2 mb-3 d-block"></i>
+                    <h1 class="mb-3">Bophelong Ola Age Home</h1>
+                    <p class="lead mb-4">Compassionate care for your loved ones. A warm, nurturing home where every senior lives with dignity, comfort, and joy.</p>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        <a href="about.html" class="btn btn-light btn-lg px-4">
+                            <i class="bi bi-info-circle me-2"></i>Learn More
+                        </a>
+                        <a href="contact.html" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-envelope me-2"></i>Contact Us
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="py-4 bg-white shadow-sm">
+        <div class="container">
+            <div class="row g-3 text-center">
+                <div class="col-6 col-md-3">
+                    <div class="py-3">
+                        <div class="display-6 fw-bold text-success" id="homeStatResidents">-</div>
+                        <div class="text-muted small">Residents</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="py-3">
+                        <div class="display-6 fw-bold text-primary" id="homeStatStaff">-</div>
+                        <div class="text-muted small">Staff Members</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="py-3">
+                        <div class="display-6 fw-bold text-warning" id="homeStatRooms">-</div>
+                        <div class="text-muted small">Total Rooms</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="py-3">
+                        <div class="display-6 fw-bold text-info" id="homeStatYears">15+</div>
+                        <div class="text-muted small">Years of Service</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Portal Login</h2>
+                <p class="text-muted">Select your role to access your dashboard</p>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card login-card login-card-admin h-100" onclick="login('admin')" role="button" tabindex="0"
+                        onkeydown="if(event.key==='Enter') login('admin')">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-lg text-success"><i class="bi bi-person-gear"></i></div>
+                            <h4 class="card-title fw-bold">Admin</h4>
+                            <p class="card-text text-muted">Manage residents, staff, rooms, appointments and reports.</p>
+                            <button class="btn btn-primary w-100 mt-2">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Admin Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card login-card login-card-doctor h-100" onclick="login('doctor')" role="button" tabindex="0"
+                        onkeydown="if(event.key==='Enter') login('doctor')">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-lg text-primary"><i class="bi bi-heart-pulse"></i></div>
+                            <h4 class="card-title fw-bold">Doctor / Staff</h4>
+                            <p class="card-text text-muted">View appointments, update medical records and resident info.</p>
+                            <button class="btn btn-primary w-100 mt-2" style="background:#0077b6;border-color:#0077b6">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Staff Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card login-card login-card-resident h-100" onclick="login('resident')" role="button" tabindex="0"
+                        onkeydown="if(event.key==='Enter') login('resident')">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-lg text-warning"><i class="bi bi-person-heart"></i></div>
+                            <h4 class="card-title fw-bold">Resident / Guardian</h4>
+                            <p class="card-text text-muted">View details, appointments and request services.</p>
+                            <button class="btn btn-warning w-100 mt-2">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Resident Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Why Choose Bophelong Ola?</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-success fs-3"><i class="bi bi-shield-check"></i></div>
+                        <div>
+                            <h5 class="fw-bold">24/7 Care</h5>
+                            <p class="text-muted">Round-the-clock nursing and medical care for every resident.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-success fs-3"><i class="bi bi-people"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Community</h5>
+                            <p class="text-muted">Vibrant activities and social programs to keep spirits high.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-success fs-3"><i class="bi bi-house-heart"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Comfortable Rooms</h5>
+                            <p class="text-muted">Well-furnished, safe and homely rooms for comfortable living.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-success fs-3"><i class="bi bi-egg-fried"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Nutritious Meals</h5>
+                            <p class="text-muted">Balanced, dietitian-approved meals served three times a day.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-success fs-3"><i class="bi bi-activity"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Physiotherapy</h5>
+                            <p class="text-muted">Regular physiotherapy and wellness sessions for mobility.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-success fs-3"><i class="bi bi-telephone"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Family Updates</h5>
+                            <p class="text-muted">Regular updates to families and easy portal access anytime.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="text-white fw-bold mb-2"><i class="bi bi-house-heart-fill me-2"></i>Bophelong Ola Age Home</h5>
+                    <p>Caring for seniors with compassion and dignity since 2009.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-white fw-bold mb-2">Quick Links</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-white fw-bold mb-2">Contact</h6>
+                    <p class="mb-1"><i class="bi bi-geo-alt me-2"></i>123 Care Street, Johannesburg</p>
+                    <p class="mb-1"><i class="bi bi-telephone me-2"></i>011 234 5678</p>
+                    <p class="mb-0"><i class="bi bi-envelope me-2"></i>info@bophelongola.co.za</p>
+                </div>
+            </div>
+            <hr class="border-light opacity-25 mt-4">
+            <p class="text-center mb-0 small opacity-75">&copy; 2024 Bophelong Ola Age Home. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
     <script>
-        function login(role) {
-            localStorage.setItem('role', role);
-            window.location.href = `${role}.html`;
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            seedDemoData();
+            const residents = loadData(KEYS.residents);
+            const staff = loadData(KEYS.staff);
+            const rooms = loadData(KEYS.rooms);
+            document.getElementById('homeStatResidents').textContent = residents.length;
+            document.getElementById('homeStatStaff').textContent = staff.length;
+            document.getElementById('homeStatRooms').textContent = rooms.length;
+        });
     </script>
 </body>
 </html>
-```
-
-### admin.html
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body onload="checkRole('admin'); loadAllData();">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <!-- Same nav as index, with additional Logout -->
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Old Age Home</a>
-            <!-- ... other nav items ... -->
-            <button class="btn btn-danger" onclick="logout()">Logout</button>
-        </div>
-    </nav>
-
-    <div class="container mt-5">
-        <h1>Admin Dashboard</h1>
-        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="residents-tab" data-bs-toggle="tab" data-bs-target="#residents" type="button" role="tab">Residents</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">Staff</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="rooms-tab" data-bs-toggle="tab" data-bs-target="#rooms" type="button" role="tab">Rooms</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab">Appointments</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="feedback-tab" data-bs-toggle="tab" data-bs-target="#feedback" type="button" role="tab">Feedback</button>
-            </li>
-        </ul>
-        <div class="tab-content" id="adminTabContent">
-            <div class="tab-pane fade show active" id="residents" role="tabpanel">
-                <h2>Manage Residents</h2>
-                <form id="residentForm">
-                    <input type="hidden" id="residentId">
-                    <div class="mb-3">
-                        <label for="residentName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="residentName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="residentAge" class="form-label">Age</label>
-                        <input type="number" class="form-control" id="residentAge" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="residentContact" class="form-label">Contact</label>
-                        <input type="text" class="form-control" id="residentContact" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="residentMedical" class="form-label">Medical History</label>
-                        <textarea class="form-control" id="residentMedical"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="saveResident()">Save</button>
-                </form>
-                <table class="table mt-3">
-                    <thead>
-                        <tr><th>ID</th><th>Name</th><th>Age</th><th>Contact</th><th>Medical</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody id="residentsTable"></tbody>
-                </table>
-            </div>
-            <!-- Similar sections for staff, rooms, appointments, feedback -->
-            <div class="tab-pane fade" id="staff" role="tabpanel">
-                <h2>Manage Staff</h2>
-                <!-- Similar form and table for staff -->
-                <form id="staffForm">
-                    <input type="hidden" id="staffId">
-                    <div class="mb-3">
-                        <label for="staffName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="staffName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="staffRole" class="form-label">Role</label>
-                        <input type="text" class="form-control" id="staffRole" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="staffContact" class="form-label">Contact</label>
-                        <input type="text" class="form-control" id="staffContact" required>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="saveStaff()">Save</button>
-                </form>
-                <table class="table mt-3">
-                    <thead>
-                        <tr><th>ID</th><th>Name</th><th>Role</th><th>Contact</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody id="staffTable"></tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade" id="rooms" role="tabpanel">
-                <h2>Manage Rooms</h2>
-                <form id="roomForm">
-                    <input type="hidden" id="roomId">
-                    <div class="mb-3">
-                        <label for="roomNumber" class="form-label">Room Number</label>
-                        <input type="text" class="form-control" id="roomNumber" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="roomStatus" class="form-label">Status</label>
-                        <select class="form-control" id="roomStatus">
-                            <option>Occupied</option>
-                            <option>Vacant</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="roomResident" class="form-label">Assigned Resident ID</label>
-                        <input type="text" class="form-control" id="roomResident">
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="saveRoom()">Save</button>
-                </form>
-                <table class="table mt-3">
-                    <thead>
-                        <tr><th>ID</th><th>Number</th><th>Status</th><th>Resident ID</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody id="roomsTable"></tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade" id="appointments" role="tabpanel">
-                <h2>Manage Appointments</h2>
-                <!-- Form and table for appointments -->
-                <form id="appointmentForm">
-                    <input type="hidden" id="appointmentId">
-                    <div class="mb-3">
-                        <label for="appResident" class="form-label">Resident ID</label>
-                        <input type="text" class="form-control" id="appResident" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="appDoctor" class="form-label">Doctor/Staff ID</label>
-                        <input type="text" class="form-control" id="appDoctor" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="appDate" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="appDate" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="appNotes" class="form-label">Notes</label>
-                        <textarea class="form-control" id="appNotes"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="saveAppointment()">Save</button>
-                </form>
-                <table class="table mt-3">
-                    <thead>
-                        <tr><th>ID</th><th>Resident ID</th><th>Doctor ID</th><th>Date</th><th>Notes</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody id="appointmentsTable"></tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade" id="feedback" role="tabpanel">
-                <h2>View Feedback</h2>
-                <table class="table">
-                    <thead>
-                        <tr><th>ID</th><th>Name</th><th>Email</th><th>Message</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody id="feedbackTable"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
-```
-
-### doctor.html
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body onload="checkRole('doctor'); loadAllData();">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <!-- Nav with Logout -->
-    </nav>
-
-    <div class="container mt-5">
-        <h1>Doctor/Staff Dashboard</h1>
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#docAppointments">Appointments</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#docResidents">Residents</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#docMedical">Medical Records</button>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="docAppointments">
-                <h2>My Appointments</h2>
-                <table class="table">
-                    <thead>
-                        <tr><th>ID</th><th>Resident ID</th><th>Date</th><th>Notes</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody id="docAppointmentsTable"></tbody>
-                </table>
-                <!-- Form to add/update notes -->
-            </div>
-            <div class="tab-pane fade" id="docResidents">
-                <h2>View Residents</h2>
-                <table class="table">
-                    <thead>
-                        <tr><th>ID</th><th>Name</th><th>Age</th><th>Contact</th><th>Medical</th></tr>
-                    </thead>
-                    <tbody id="docResidentsTable"></tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade" id="docMedical">
-                <h2>Update Medical Records</h2>
-                <!-- Form to search resident and update medical -->
-                <form id="medicalForm">
-                    <div class="mb-3">
-                        <label for="medicalResidentId" class="form-label">Resident ID</label>
-                        <input type="text" class="form-control" id="medicalResidentId" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="medicalUpdate" class="form-label">Update Medical History</label>
-                        <textarea class="form-control" id="medicalUpdate"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="updateMedical()">Update</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
-```
-
-### resident.html
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resident Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body onload="checkRole('resident'); loadAllData();">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <!-- Nav with Logout -->
-    </nav>
-
-    <div class="container mt-5">
-        <h1>Resident/Guardian Dashboard</h1>
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#resDetails">My Details</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#resAppointments">Appointments</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#resRequest">Request Service</button>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="resDetails">
-                <h2>My Details</h2>
-                <!-- Form to view/edit own details (simulate with ID input) -->
-                <div class="mb-3">
-                    <label for="resId" class="form-label">Enter Your ID</label>
-                    <input type="text" class="form-control" id="resId">
-                    <button type="button" class="btn btn-primary mt-2" onclick="viewMyDetails()">View</button>
-                </div>
-                <div id="myDetails"></div>
-            </div>
-            <div class="tab-pane fade" id="resAppointments">
-                <h2>My Appointments</h2>
-                <div class="mb-3">
-                    <label for="appResId" class="form-label">Enter Your ID</label>
-                    <input type="text" class="form-control" id="appResId">
-                    <button type="button" class="btn btn-primary mt-2" onclick="viewMyAppointments()">View</button>
-                </div>
-                <table class="table">
-                    <thead>
-                        <tr><th>ID</th><th>Doctor ID</th><th>Date</th><th>Notes</th></tr>
-                    </thead>
-                    <tbody id="myAppointmentsTable"></tbody>
-                </table>
-            </div>
-            <div class="tab-pane fade" id="resRequest">
-                <h2>Request Appointment/Service</h2>
-                <form id="requestForm">
-                    <div class="mb-3">
-                        <label for="reqResident" class="form-label">Your ID</label>
-                        <input type="text" class="form-control" id="reqResident" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reqDoctor" class="form-label">Doctor/Staff ID</label>
-                        <input type="text" class="form-control" id="reqDoctor" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reqDate" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="reqDate" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reqNotes" class="form-label">Notes</label>
-                        <textarea class="form-control" id="reqNotes"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="requestAppointment()">Request</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
-```
-
-### about.html
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <!-- Nav -->
-    </nav>
-    <div class="container mt-5">
-        <h1>About Our Old Age Home</h1>
-        <p>We provide comprehensive care for the elderly, ensuring a nurturing environment with high-quality support and services.</p>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-```
-
-### services.html (Similar static page)
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Services</title>
-    <!-- Links -->
-</head>
-<body>
-    <nav><!-- Nav --></nav>
-    <div class="container mt-5">
-        <h1>Our Services</h1>
-        <ul>
-            <li>Medical Care</li>
-            <li>Room Accommodation</li>
-            <li>Daily Activities</li>
-            <li>Counseling</li>
-        </ul>
-    </div>
-</body>
-</html>
-```
-
-### rules.html (Similar)
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Rules</title>
-    <!-- Links -->
-</head>
-<body>
-    <nav><!-- Nav --></nav>
-    <div class="container mt-5">
-        <h1>Rules and Regulations</h1>
-        <p>1. Respect all residents and staff.</p>
-        <p>2. Follow meal and activity schedules.</p>
-        <!-- More rules -->
-    </div>
-</body>
-</html>
-```
-
-### eligibility.html (Similar)
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Eligibility</title>
-    <!-- Links -->
-</head>
-<body>
-    <nav><!-- Nav --></nav>
-    <div class="container mt-5">
-        <h1>Eligibility Criteria</h1>
-        <p>Age 60+, No contagious diseases, etc.</p>
-    </div>
-</body>
-</html>
-```
-
-### contact.html
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Contact</title>
-    <!-- Links -->
-</head>
-<body onload="loadAllData();">
-    <nav><!-- Nav --></nav>
-    <div class="container mt-5">
-        <h1>Contact Us</h1>
-        <form id="contactForm">
-            <div class="mb-3">
-                <label for="contactName" class="form-label">Name</label>
-                <input type="text" class="form-control" id="contactName" required>
-            </div>
-            <div class="mb-3">
-                <label for="contactEmail" class="form-label">Email</label>
-                <input type="email" class="form-control" id="contactEmail" required>
-            </div>
-            <div class="mb-3">
-                <label for="contactMessage" class="form-label">Message</label>
-                <textarea class="form-control" id="contactMessage" required></textarea>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="saveFeedback()">Submit</button>
-        </form>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
-```
-
-### styles.css
-```css
-body {
-    background-color: #f8f9fa;
-}
-.navbar-brand {
-    font-weight: bold;
-}
-/* Additional custom styles if needed */
-```
-
-### script.js
-```javascript
-// Shared JS for all pages
-
-function checkRole(requiredRole) {
-    const role = localStorage.getItem('role');
-    if (role !== requiredRole) {
-        alert('Access denied. Redirecting to home.');
-        window.location.href = 'index.html';
-    }
-}
-
-function logout() {
-    localStorage.removeItem('role');
-    window.location.href = 'index.html';
-}
-
-// Data storage keys
-const keys = {
-    residents: 'residents',
-    staff: 'staff',
-    rooms: 'rooms',
-    appointments: 'appointments',
-    feedback: 'feedback'
-};
-
-// Load data
-function loadData(key) {
-    return JSON.parse(localStorage.getItem(key)) || [];
-}
-
-function saveData(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
-// General CRUD functions
-function addItem(key, item) {
-    const items = loadData(key);
-    item.id = items.length ? items[items.length - 1].id + 1 : 1;
-    items.push(item);
-    saveData(key, items);
-}
-
-function updateItem(key, updatedItem) {
-    const items = loadData(key);
-    const index = items.findIndex(i => i.id == updatedItem.id);
-    if (index !== -1) {
-        items[index] = updatedItem;
-        saveData(key, items);
-    }
-}
-
-function deleteItem(key, id) {
-    let items = loadData(key);
-    items = items.filter(i => i.id != id);
-    saveData(key, items);
-}
-
-// Load all tables
-function loadAllData() {
-    if (document.getElementById('residentsTable')) loadResidents();
-    if (document.getElementById('staffTable')) loadStaff();
-    if (document.getElementById('roomsTable')) loadRooms();
-    if (document.getElementById('appointmentsTable')) loadAppointments();
-    if (document.getElementById('feedbackTable')) loadFeedback();
-    // For doctor and resident pages too
-    if (document.getElementById('docResidentsTable')) loadDocResidents();
-    if (document.getElementById('docAppointmentsTable')) loadDocAppointments();
-}
-
-// Residents
-function saveResident() {
-    const id = document.getElementById('residentId').value;
-    const resident = {
-        name: document.getElementById('residentName').value,
-        age: document.getElementById('residentAge').value,
-        contact: document.getElementById('residentContact').value,
-        medical: document.getElementById('residentMedical').value
-    };
-    if (id) {
-        resident.id = id;
-        updateItem(keys.residents, resident);
-    } else {
-        addItem(keys.residents, resident);
-    }
-    clearForm('residentForm');
-    loadResidents();
-}
-
-function loadResidents() {
-    const residents = loadData(keys.residents);
-    const table = document.getElementById('residentsTable');
-    table.innerHTML = '';
-    residents.forEach(r => {
-        const row = `<tr>
-            <td>${r.id}</td>
-            <td>${r.name}</td>
-            <td>${r.age}</td>
-            <td>${r.contact}</td>
-            <td>${r.medical}</td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="editResident(${r.id})">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.residents}', ${r.id}); loadResidents();">Delete</button>
-            </td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-function editResident(id) {
-    const residents = loadData(keys.residents);
-    const r = residents.find(r => r.id == id);
-    document.getElementById('residentId').value = r.id;
-    document.getElementById('residentName').value = r.name;
-    document.getElementById('residentAge').value = r.age;
-    document.getElementById('residentContact').value = r.contact;
-    document.getElementById('residentMedical').value = r.medical;
-}
-
-// Similar functions for staff, rooms, appointments, feedback
-
-function saveStaff() {
-    // Similar to saveResident
-    const id = document.getElementById('staffId').value;
-    const staff = {
-        name: document.getElementById('staffName').value,
-        role: document.getElementById('staffRole').value,
-        contact: document.getElementById('staffContact').value
-    };
-    if (id) {
-        staff.id = id;
-        updateItem(keys.staff, staff);
-    } else {
-        addItem(keys.staff, staff);
-    }
-    clearForm('staffForm');
-    loadStaff();
-}
-
-function loadStaff() {
-    // Similar to loadResidents
-    const staff = loadData(keys.staff);
-    const table = document.getElementById('staffTable');
-    table.innerHTML = '';
-    staff.forEach(s => {
-        const row = `<tr>
-            <td>${s.id}</td>
-            <td>${s.name}</td>
-            <td>${s.role}</td>
-            <td>${s.contact}</td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="editStaff(${s.id})">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.staff}', ${s.id}); loadStaff();">Delete</button>
-            </td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-function editStaff(id) {
-    // Similar
-}
-
-function saveRoom() {
-    const id = document.getElementById('roomId').value;
-    const room = {
-        number: document.getElementById('roomNumber').value,
-        status: document.getElementById('roomStatus').value,
-        resident: document.getElementById('roomResident').value
-    };
-    if (id) {
-        room.id = id;
-        updateItem(keys.rooms, room);
-    } else {
-        addItem(keys.rooms, room);
-    }
-    clearForm('roomForm');
-    loadRooms();
-}
-
-function loadRooms() {
-    const rooms = loadData(keys.rooms);
-    const table = document.getElementById('roomsTable');
-    table.innerHTML = '';
-    rooms.forEach(r => {
-        const row = `<tr>
-            <td>${r.id}</td>
-            <td>${r.number}</td>
-            <td>${r.status}</td>
-            <td>${r.resident || 'None'}</td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="editRoom(${r.id})">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.rooms}', ${r.id}); loadRooms();">Delete</button>
-            </td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-function editRoom(id) {
-    // Similar
-}
-
-function saveAppointment() {
-    const id = document.getElementById('appointmentId').value;
-    const app = {
-        resident: document.getElementById('appResident').value,
-        doctor: document.getElementById('appDoctor').value,
-        date: document.getElementById('appDate').value,
-        notes: document.getElementById('appNotes').value
-    };
-    if (id) {
-        app.id = id;
-        updateItem(keys.appointments, app);
-    } else {
-        addItem(keys.appointments, app);
-    }
-    clearForm('appointmentForm');
-    loadAppointments();
-}
-
-function loadAppointments() {
-    const apps = loadData(keys.appointments);
-    const table = document.getElementById('appointmentsTable');
-    table.innerHTML = '';
-    apps.forEach(a => {
-        const row = `<tr>
-            <td>${a.id}</td>
-            <td>${a.resident}</td>
-            <td>${a.doctor}</td>
-            <td>${a.date}</td>
-            <td>${a.notes}</td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="editAppointment(${a.id})">Edit</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.appointments}', ${a.id}); loadAppointments();">Delete</button>
-            </td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-function editAppointment(id) {
-    // Similar
-}
-
-function saveFeedback() {
-    const feedback = {
-        name: document.getElementById('contactName').value,
-        email: document.getElementById('contactEmail').value,
-        message: document.getElementById('contactMessage').value
-    };
-    addItem(keys.feedback, feedback);
-    alert('Feedback submitted!');
-    clearForm('contactForm');
-}
-
-function loadFeedback() {
-    const feedbacks = loadData(keys.feedback);
-    const table = document.getElementById('feedbackTable');
-    table.innerHTML = '';
-    feedbacks.forEach(f => {
-        const row = `<tr>
-            <td>${f.id}</td>
-            <td>${f.name}</td>
-            <td>${f.email}</td>
-            <td>${f.message}</td>
-            <td>
-                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.feedback}', ${f.id}); loadFeedback();">Delete</button>
-            </td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-// For doctor page
-function loadDocAppointments() {
-    // Assume doctor ID is 1 for simulation; in real, would be logged in user
-    const doctorId = 1;
-    const apps = loadData(keys.appointments).filter(a => a.doctor == doctorId);
-    const table = document.getElementById('docAppointmentsTable');
-    table.innerHTML = '';
-    apps.forEach(a => {
-        const row = `<tr>
-            <td>${a.id}</td>
-            <td>${a.resident}</td>
-            <td>${a.date}</td>
-            <td>${a.notes}</td>
-            <td>
-                <button class="btn btn-sm btn-warning" onclick="editAppointment(${a.id})">Edit Notes</button>
-            </td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-function loadDocResidents() {
-    const residents = loadData(keys.residents);
-    const table = document.getElementById('docResidentsTable');
-    table.innerHTML = '';
-    residents.forEach(r => {
-        const row = `<tr>
-            <td>${r.id}</td>
-            <td>${r.name}</td>
-            <td>${r.age}</td>
-            <td>${r.contact}</td>
-            <td>${r.medical}</td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-function updateMedical() {
-    const resId = document.getElementById('medicalResidentId').value;
-    const update = document.getElementById('medicalUpdate').value;
-    const residents = loadData(keys.residents);
-    const index = residents.findIndex(r => r.id == resId);
-    if (index !== -1) {
-        residents[index].medical += '\n' + update;
-        saveData(keys.residents, residents);
-        alert('Medical history updated!');
-    } else {
-        alert('Resident not found.');
-    }
-}
-
-// For resident page
-function viewMyDetails() {
-    const resId = document.getElementById('resId').value;
-    const residents = loadData(keys.residents);
-    const r = residents.find(r => r.id == resId);
-    const details = document.getElementById('myDetails');
-    if (r) {
-        details.innerHTML = `
-            <p><strong>Name:</strong> ${r.name}</p>
-            <p><strong>Age:</strong> ${r.age}</p>
-            <p><strong>Contact:</strong> ${r.contact}</p>
-            <p><strong>Medical History:</strong> ${r.medical}</p>
-        `;
-    } else {
-        details.innerHTML = '<p>Resident not found.</p>';
-    }
-}
-
-function viewMyAppointments() {
-    const resId = document.getElementById('appResId').value;
-    const apps = loadData(keys.appointments).filter(a => a.resident == resId);
-    const table = document.getElementById('myAppointmentsTable');
-    table.innerHTML = '';
-    apps.forEach(a => {
-        const row = `<tr>
-            <td>${a.id}</td>
-            <td>${a.doctor}</td>
-            <td>${a.date}</td>
-            <td>${a.notes}</td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-function requestAppointment() {
-    const app = {
-        resident: document.getElementById('reqResident').value,
-        doctor: document.getElementById('reqDoctor').value,
-        date: document.getElementById('reqDate').value,
-        notes: document.getElementById('reqNotes').value
-    };
-    addItem(keys.appointments, app);
-    alert('Appointment requested!');
-    clearForm('requestForm');
-}
-
-// Clear form
-function clearForm(formId) {
-    document.getElementById(formId).reset();
-}
-```
-
-This is a comprehensive setup. You can extend it by adding more features or integrating with a backend for real functionality. For citations to the inspiring GitHub projects:
