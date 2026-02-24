@@ -72,6 +72,12 @@
                     <div class="stat-label"><i class="bi bi-calendar-check me-1"></i>Today's Appointments</div>
                 </div>
             </div>
+            <div class="col-6 col-xl-3">
+                <div class="stat-card stat-bg-1">
+                    <div class="stat-number" id="statDonations">-</div>
+                    <div class="stat-label"><i class="bi bi-heart me-1"></i>Total Monetary Donations</div>
+                </div>
+            </div>
         </div>
 
         <!-- Tabs -->
@@ -104,6 +110,11 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-activities" data-bs-toggle="tab" data-bs-target="#pane-activities" type="button" role="tab">
                     <i class="bi bi-calendar-week me-1"></i><span class="d-none d-sm-inline">Activities</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-donations" data-bs-toggle="tab" data-bs-target="#pane-donations" type="button" role="tab">
+                    <i class="bi bi-heart me-1"></i><span class="d-none d-sm-inline">Donations</span>
                 </button>
             </li>
         </ul>
@@ -255,6 +266,77 @@
                                     <tr><th>ID</th><th>Name</th><th>Role</th><th>Specialization</th><th>Shift</th><th>Contact</th><th>Actions</th></tr>
                                 </thead>
                                 <tbody id="staffTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leave Management -->
+                <hr class="my-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-calendar2-minus me-2"></i>Leave Management</h5>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-calendar2-plus me-2"></i><span id="leaveFormTitle">Submit Leave Request</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="leaveForm">
+                                    <input type="hidden" id="leaveId">
+                                    <div class="mb-3">
+                                        <label for="leaveStaffId" class="form-label">Staff ID <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="leaveStaffId" placeholder="Staff ID" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="leaveType" class="form-label">Leave Type <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="leaveType" required>
+                                            <option value="">Select type...</option>
+                                            <option>Annual</option>
+                                            <option>Sick</option>
+                                            <option>Unpaid</option>
+                                            <option>Maternity/Paternity</option>
+                                            <option>Study</option>
+                                            <option>Emergency</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="leaveStartDate" class="form-label">Start Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="leaveStartDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="leaveEndDate" class="form-label">End Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="leaveEndDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="leaveReason" class="form-label">Reason</label>
+                                        <textarea class="form-control" id="leaveReason" rows="2" placeholder="Reason for leave..."></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary flex-fill" onclick="saveLeave()">
+                                            <i class="bi bi-save me-1"></i>Save
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearForm('leaveForm'); resetFormTitle('leaveFormTitle','Submit Leave Request')">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h6 class="mb-0 fw-bold">Leave Requests</h6>
+                            <div class="search-box" style="min-width:200px">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control form-control-sm ps-4" placeholder="Search leaves..." oninput="loadLeaves(this.value)">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr><th>Staff</th><th>Type</th><th>Start</th><th>End</th><th>Reason</th><th>Status</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="leavesTable"></tbody>
                             </table>
                         </div>
                     </div>
@@ -444,6 +526,83 @@
                 <div id="activitiesList"></div>
             </div>
 
+            <!-- ── Donations ── -->
+            <div class="tab-pane fade" id="pane-donations" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-heart me-2"></i><span id="donationFormTitle">Record Donation</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="donationForm">
+                                    <input type="hidden" id="donationId">
+                                    <div class="mb-3">
+                                        <label for="donorName" class="form-label">Donor Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="donorName" placeholder="e.g. Thabo Molefe" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="donationAmount" class="form-label">Amount / Description <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="donationAmount" placeholder="e.g. 5000 or Blankets & food" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="donationType" class="form-label">Donation Type</label>
+                                        <select class="form-select" id="donationType">
+                                            <option value="">Select type...</option>
+                                            <option>Cash</option>
+                                            <option>Bank Transfer</option>
+                                            <option>In-Kind</option>
+                                            <option>Online</option>
+                                            <option>Cheque</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="donationDate" class="form-label">Date <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="donationDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="donationNotes" class="form-label">Notes</label>
+                                        <textarea class="form-control" id="donationNotes" rows="2" placeholder="Additional details..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="donationStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="donationStatus">
+                                            <option>Received</option>
+                                            <option>Pending</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary flex-fill" onclick="saveDonation()">
+                                            <i class="bi bi-save me-1"></i>Save
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="clearForm('donationForm'); resetFormTitle('donationFormTitle','Record Donation')">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h5 class="mb-0 fw-bold">Donations List</h5>
+                            <div class="search-box" style="min-width:200px">
+                                <i class="bi bi-search"></i>
+                                <input type="text" class="form-control form-control-sm ps-4" placeholder="Search donations..." oninput="loadDonations(this.value)">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr><th>ID</th><th>Donor</th><th>Amount</th><th>Type</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="donationsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -467,6 +626,8 @@
             loadAppointments();
             loadFeedback();
             loadActivities();
+            loadDonations();
+            loadLeaves();
             // Set current date
             const el = document.getElementById('currentDate');
             if (el) el.textContent = new Date().toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });

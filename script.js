@@ -29,7 +29,9 @@ const KEYS = {
     rooms: 'boph_rooms',
     appointments: 'boph_appointments',
     feedback: 'boph_feedback',
-    activities: 'boph_activities'
+    activities: 'boph_activities',
+    donations: 'boph_donations',
+    leaves: 'boph_leaves'
 };
 
 function loadData(key) {
@@ -125,6 +127,23 @@ function seedDemoData() {
         ];
         activities.forEach(a => addItem(KEYS.activities, a));
     }
+    if (loadData(KEYS.donations).length === 0) {
+        const donations = [
+            { donorName: 'Thabo Molefe', amount: '5000', type: 'Cash', date: new Date().toISOString().split('T')[0], notes: 'Monthly support donation', status: 'Received' },
+            { donorName: 'ABC Foundation', amount: '20000', type: 'Bank Transfer', date: new Date().toISOString().split('T')[0], notes: 'Annual sponsorship', status: 'Received' },
+            { donorName: 'Priya Naidoo', amount: 'Blankets & food', type: 'In-Kind', date: new Date().toISOString().split('T')[0], notes: 'Winter donation drive', status: 'Received' },
+        ];
+        donations.forEach(d => addItem(KEYS.donations, d));
+    }
+    if (loadData(KEYS.leaves).length === 0) {
+        const today = new Date();
+        const fmtDate = (d) => d.toISOString().split('T')[0];
+        const leaves = [
+            { staffId: '2', leaveType: 'Annual', startDate: fmtDate(new Date(today.getTime() + 7 * 86400000)), endDate: fmtDate(new Date(today.getTime() + 14 * 86400000)), reason: 'Family vacation', status: 'Pending' },
+            { staffId: '3', leaveType: 'Sick', startDate: fmtDate(today), endDate: fmtDate(new Date(today.getTime() + 2 * 86400000)), reason: 'Flu recovery', status: 'Approved' },
+        ];
+        leaves.forEach(l => addItem(KEYS.leaves, l));
+    }
 }
 
 // ─── Stats ───────────────────────────────────────────────────────────────────
@@ -134,15 +153,18 @@ function updateStats() {
     const staff = loadData(KEYS.staff);
     const rooms = loadData(KEYS.rooms);
     const appointments = loadData(KEYS.appointments);
+    const donations = loadData(KEYS.donations);
 
     const vacantRooms = rooms.filter(r => r.status === 'Vacant').length;
     const today = new Date().toISOString().split('T')[0];
     const todayApps = appointments.filter(a => a.date === today).length;
+    const totalDonations = donations.filter(d => d.status === 'Received' && !isNaN(Number(d.amount))).reduce((sum, d) => sum + Number(d.amount), 0);
 
     setEl('statResidents', residents.length);
     setEl('statStaff', staff.length);
     setEl('statVacant', vacantRooms);
     setEl('statAppointments', todayApps);
+    setEl('statDonations', 'R ' + totalDonations.toLocaleString());
 }
 
 function setEl(id, val) {
@@ -554,6 +576,201 @@ function loadActivities() {
                 </div>
             </div>
         </div>`).join('');
+}
+
+// ─── Donations CRUD ───────────────────────────────────────────────────────────
+
+function saveDonation() {
+    const id = document.getElementById('donationId').value.trim();
+    const donorName = document.getElementById('donorName').value.trim();
+    const amount = document.getElementById('donationAmount').value.trim();
+    const type = document.getElementById('donationType').value.trim();
+    const date = document.getElementById('donationDate').value.trim();
+    const notes = document.getElementById('donationNotes').value.trim();
+    const status = document.getElementById('donationStatus').value.trim();
+
+    if (!donorName || !amount || !date) {
+        showToast('Please fill in all required fields.', 'warning');
+        return;
+    }
+
+    const donation = { donorName, amount, type, date, notes, status };
+
+    if (id) {
+        donation.id = id;
+        updateItem(KEYS.donations, donation);
+        showToast('Donation updated successfully!', 'success');
+    } else {
+        addItem(KEYS.donations, donation);
+        showToast('Donation recorded successfully!', 'success');
+    }
+    clearForm('donationForm');
+    resetFormTitle('donationFormTitle', 'Record Donation');
+    loadDonations();
+    updateStats();
+}
+
+function loadDonations(filter) {
+    const donations = loadData(KEYS.donations);
+    const table = document.getElementById('donationsTable');
+    if (!table) return;
+
+    const list = filter
+        ? donations.filter(d =>
+            d.donorName.toLowerCase().includes(filter.toLowerCase()) ||
+            (d.type || '').toLowerCase().includes(filter.toLowerCase()) ||
+            (d.status || '').toLowerCase().includes(filter.toLowerCase()))
+        : donations;
+
+    if (list.length === 0) {
+        table.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No donations found.</td></tr>`;
+        return;
+    }
+
+    const statusColors = { Received: 'bg-success', Pending: 'bg-warning text-dark' };
+
+    table.innerHTML = list.map(d => {
+        const badgeClass = statusColors[d.status] || 'bg-secondary';
+        return `
+        <tr>
+            <td data-label="ID">${d.id}</td>
+            <td data-label="Donor"><strong>${esc(d.donorName)}</strong></td>
+            <td data-label="Amount">${esc(d.amount)}</td>
+            <td data-label="Type"><span class="badge bg-info text-dark">${esc(d.type || '-')}</span></td>
+            <td data-label="Date">${esc(d.date)}</td>
+            <td data-label="Status"><span class="badge ${badgeClass}">${esc(d.status || 'Pending')}</span></td>
+            <td data-label="Actions">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editDonation(${d.id})" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('${KEYS.donations}', ${d.id}, loadDonations)" title="Delete">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function editDonation(id) {
+    const d = loadData(KEYS.donations).find(d => String(d.id) === String(id));
+    if (!d) return;
+    document.getElementById('donationId').value = d.id;
+    document.getElementById('donorName').value = d.donorName;
+    document.getElementById('donationAmount').value = d.amount;
+    document.getElementById('donationType').value = d.type || '';
+    document.getElementById('donationDate').value = d.date;
+    document.getElementById('donationNotes').value = d.notes || '';
+    document.getElementById('donationStatus').value = d.status || 'Received';
+    document.getElementById('donationFormTitle').textContent = 'Edit Donation';
+    document.getElementById('donationForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ─── Leave Management CRUD ────────────────────────────────────────────────────
+
+function saveLeave() {
+    const id = document.getElementById('leaveId').value.trim();
+    const staffId = document.getElementById('leaveStaffId').value.trim();
+    const leaveType = document.getElementById('leaveType').value.trim();
+    const startDate = document.getElementById('leaveStartDate').value.trim();
+    const endDate = document.getElementById('leaveEndDate').value.trim();
+    const reason = document.getElementById('leaveReason').value.trim();
+
+    if (!staffId || !leaveType || !startDate || !endDate) {
+        showToast('Please fill in all required fields.', 'warning');
+        return;
+    }
+
+    const leave = { staffId, leaveType, startDate, endDate, reason, status: 'Pending' };
+
+    if (id) {
+        const existing = loadData(KEYS.leaves).find(l => String(l.id) === String(id));
+        if (existing) leave.status = existing.status;
+        leave.id = id;
+        updateItem(KEYS.leaves, leave);
+        showToast('Leave request updated!', 'success');
+    } else {
+        addItem(KEYS.leaves, leave);
+        showToast('Leave request submitted!', 'success');
+    }
+    clearForm('leaveForm');
+    resetFormTitle('leaveFormTitle', 'Submit Leave Request');
+    loadLeaves();
+}
+
+function loadLeaves(filter) {
+    const leaves = loadData(KEYS.leaves);
+    const staff = loadData(KEYS.staff);
+    const table = document.getElementById('leavesTable');
+    if (!table) return;
+
+    const list = filter
+        ? leaves.filter(l =>
+            (l.leaveType || '').toLowerCase().includes(filter.toLowerCase()) ||
+            (l.status || '').toLowerCase().includes(filter.toLowerCase()) ||
+            String(l.staffId).includes(filter))
+        : leaves;
+
+    if (list.length === 0) {
+        table.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No leave requests found.</td></tr>`;
+        return;
+    }
+
+    const statusColors = { Pending: 'bg-warning text-dark', Approved: 'bg-success', Rejected: 'bg-danger' };
+
+    table.innerHTML = list.map(l => {
+        const s = staff.find(s => String(s.id) === String(l.staffId));
+        const badgeClass = statusColors[l.status] || 'bg-secondary';
+        const isPending = l.status === 'Pending';
+        return `
+        <tr>
+            <td data-label="Staff">${s ? esc(s.name) : '#' + l.staffId}</td>
+            <td data-label="Type"><span class="badge bg-secondary">${esc(l.leaveType)}</span></td>
+            <td data-label="Start">${esc(l.startDate)}</td>
+            <td data-label="End">${esc(l.endDate)}</td>
+            <td data-label="Reason"><small>${esc(l.reason || '-')}</small></td>
+            <td data-label="Status"><span class="badge ${badgeClass}">${esc(l.status)}</span></td>
+            <td data-label="Actions">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editLeave(${l.id})" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                ${isPending ? `
+                <button class="btn btn-sm btn-outline-success me-1" onclick="updateLeaveStatus(${l.id}, 'Approved')" title="Approve">
+                    <i class="bi bi-check-lg"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger me-1" onclick="updateLeaveStatus(${l.id}, 'Rejected')" title="Reject">
+                    <i class="bi bi-x-lg"></i>
+                </button>` : ''}
+                <button class="btn btn-sm btn-outline-secondary" onclick="confirmDelete('${KEYS.leaves}', ${l.id}, loadLeaves)" title="Delete">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function editLeave(id) {
+    const l = loadData(KEYS.leaves).find(l => String(l.id) === String(id));
+    if (!l) return;
+    document.getElementById('leaveId').value = l.id;
+    document.getElementById('leaveStaffId').value = l.staffId;
+    document.getElementById('leaveType').value = l.leaveType || '';
+    document.getElementById('leaveStartDate').value = l.startDate;
+    document.getElementById('leaveEndDate').value = l.endDate;
+    document.getElementById('leaveReason').value = l.reason || '';
+    document.getElementById('leaveFormTitle').textContent = 'Edit Leave Request';
+    document.getElementById('leaveForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateLeaveStatus(id, status) {
+    const leaves = loadData(KEYS.leaves);
+    const index = leaves.findIndex(l => String(l.id) === String(id));
+    if (index !== -1) {
+        leaves[index].status = status;
+        leaves[index].updatedAt = new Date().toISOString();
+        saveData(KEYS.leaves, leaves);
+        showToast('Leave request ' + status.toLowerCase() + '!', status === 'Approved' ? 'success' : 'danger');
+        loadLeaves();
+    }
 }
 
 // ─── Doctor Page Helpers ──────────────────────────────────────────────────────
