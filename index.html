@@ -1,1501 +1,928 @@
+# Old Age Home Management System in HTML
+
+Based on common features from similar projects on GitHub, I've created a comprehensive static HTML-based Old Age Home Management System. Since it's purely HTML, CSS, and JavaScript (no backend), it uses localStorage to simulate data persistence across pages. This allows for CRUD operations on residents, staff, rooms, medical records, and more.
+
+The system includes:
+- **User Roles**: Admin (manage everything), Doctor/Staff (view and update medical records, appointments), Resident/Guardian (view personal details, request services).
+- **Features**:
+  - Login simulation (no real auth; selects role and redirects).
+  - Dashboards for each role.
+  - Resident management: Add, view, edit, delete residents.
+  - Staff management: Similar for staff.
+  - Room management: Track occupancy.
+  - Medical records and appointments.
+  - Contact/Feedback form (simulates submission).
+  - Search functionality.
+  - About, Services, Rules, Eligibility pages.
+- **Technologies**: HTML5, CSS3 (with Bootstrap 5 for responsive design), JavaScript (for interactivity and localStorage).
+
+To run: Save the files in a folder and open `index.html` in a browser. Data persists in the browser's localStorage.
+
+## File Structure
+- `index.html`: Home/Login page.
+- `admin.html`: Admin dashboard.
+- `doctor.html`: Doctor/Staff dashboard.
+- `resident.html`: Resident/Guardian dashboard.
+- `about.html`, `services.html`, `rules.html`, `eligibility.html`, `contact.html`: Static info pages.
+- `styles.css`: Custom CSS (in addition to Bootstrap).
+- `script.js`: Shared JavaScript for all pages.
+
+Below is the code for each file.
+
+### index.html
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proactive BCC System Application</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.32/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
-            --info-color: #9b59b6;
-            --light-bg: #f4f4f4;
-            --white: #ffffff;
-            --nude-light: #fdf6e3;
-            --nude-medium: #f0e6d2;
-            --nude-dark: #e8d5b7;
-            --shadow: 0 2px 10px rgba(0,0,0,0.1);
-            --shadow-lg: 4px 20px rgba(0,0,0,0.15);
-            --border-radius: 12px;
-            --transition: all 0.3s ease;
-            --operational-color: #3498db;
-            --learning-color: #27ae60;
-            --culture-color: #f39c12;
-            --dark-blue: #1a5276;
-            --light-blue: #aed6f1;
-            --light-green: #d5f5e3;
-            --light-orange: #fdebd0;
-            --navy-blue: #001f3f;
-            --navy-blue-light: #0a4d68;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 10px;
-            background: linear-gradient(135deg, var(--navy-blue) 0%, var(--navy-blue-light) 100%);
-            color: #333;
-            line-height: 1.6;
-            transition: var(--transition);
-            min-height: 100vh;
-        }
-
-        h1, h2, h3 {
-            color: var(--secondary-color);
-            margin-top: 0;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.8em;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, var(--primary-color), var(--dark-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            padding: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .intro {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 20px;
-            padding: 20px;
-            background: var(--nude-light);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            border-left: 5px solid var(--primary-color);
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .intro blockquote {
-            font-style: italic;
-            color: var(--secondary-color);
-            margin: 15px 0;
-            padding: 15px;
-            background: #ebf3fd;
-            border-left: 4px solid var(--primary-color);
-            border-radius: 0 8px 8px 0;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-            font-size: 1.1em;
-            line-height: 1.5;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .overall-progress {
-            background: var(--nude-light);
-            margin: 10px 0;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            text-align: center;
-            border-left: 5px solid var(--primary-color);
-            animation: fadeInUp 0.6s ease-out 0.2s both;
-        }
-
-        .overall-progress .progress {
-            margin: 10px auto;
-            max-width: 300px;
-        }
-
-        .section {
-            background: var(--nude-light);
-            margin: 10px 0;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border-left: 5px solid var(--operational-color);
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.6s ease-out both;
-        }
-
-        .section:nth-child(2) { animation-delay: 0.4s; }
-        .section:nth-child(3) { animation-delay: 0.6s; }
-
-        .section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--operational-color), transparent);
-        }
-
-        .section.operational { 
-            border-left-color: var(--operational-color); 
-            background: linear-gradient(to bottom right, var(--nude-light) 80%, var(--light-blue) 100%);
-        }
-        
-        .section.operational::before {
-            background: linear-gradient(90deg, var(--operational-color), transparent);
-        }
-        
-        .section.learning { 
-            border-left-color: var(--learning-color); 
-            background: linear-gradient(to bottom right, var(--nude-light) 80%, var(--light-green) 100%);
-        }
-        
-        .section.learning::before {
-            background: linear-gradient(90deg, var(--learning-color), transparent);
-        }
-        
-        .section.culture { 
-            border-left-color: var(--culture-color); 
-            background: linear-gradient(to bottom right, var(--nude-light) 80%, var(--light-orange) 100%);
-        }
-        
-        .section.culture::before {
-            background: linear-gradient(90deg, var(--culture-color), transparent);
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .goal {
-            font-style: italic;
-            color: var(--secondary-color);
-            margin-bottom: 15px;
-            padding: 12px;
-            background: #ebf3fd;
-            border-left: 4px solid var(--primary-color);
-            border-radius: 0 6px 6px 0;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .import-section {
-            background: var(--nude-medium);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 2px dashed #ddd;
-            text-align: center;
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .import-section::after {
-            content: '📁';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--nude-light);
-            padding: 0 10px;
-            font-size: 1.2em;
-        }
-
-        .import-section:hover {
-            border-color: var(--primary-color);
-            background: var(--nude-medium);
-            transform: scale(1.02);
-        }
-
-        .import-btn {
-            background: var(--info-color);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .import-btn:hover {
-            background: #8e44ad;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        #import-file {
-            display: none;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-weight: bold;
-            color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        input, textarea, select {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1em;
-            transition: var(--transition);
-            font-family: inherit;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-            background: var(--nude-light);
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2), inset 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        button {
-            background: linear-gradient(135deg, var(--primary-color), var(--dark-blue));
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        button:hover {
-            background: linear-gradient(135deg, #2980b9, var(--dark-blue));
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .log-entry {
-            background: var(--nude-medium);
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            font-size: 0.9em;
-            border-left: 4px solid var(--primary-color);
-            transition: var(--transition);
-            position: relative;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .log-entry:hover {
-            background: var(--nude-dark);
-            transform: translateX(5px);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        }
-
-        .log-entry::before {
-            content: '•';
-            position: absolute;
-            left: -15px;
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 1.5em;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .logs-container {
-            max-height: 350px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            background: var(--nude-medium);
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-color) var(--nude-light);
-        }
-
-        .logs-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .logs-container::-webkit-scrollbar-track {
-            background: var(--nude-light);
-        }
-
-        .logs-container::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 4px;
-        }
-
-        .progress {
-            width: 100%;
-            height: 25px;
-            background: var(--nude-medium);
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 15px 0;
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--success-color);
-            transition: width 0.5s ease;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .progress-bar.operational { 
-            background: linear-gradient(90deg, var(--operational-color), #5dade2);
-        }
-        
-        .progress-bar.learning { 
-            background: linear-gradient(90deg, var(--learning-color), #58d68d);
-        }
-        
-        .progress-bar.culture { 
-            background: linear-gradient(90deg, var(--culture-color), #f8c471);
-        }
-
-        .progress-bar::after {
-            content: attr(data-label);
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 0.85em;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-        }
-
-        .stats {
-            font-weight: bold;
-            font-size: 0.95em;
-            margin-top: 15px;
-            text-align: center;
-            color: var(--secondary-color);
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .stat-item {
-            background: linear-gradient(135deg, var(--nude-medium), var(--nude-dark));
-            padding: 10px 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: var(--transition);
-            min-width: 120px;
-        }
-
-        .stat-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        #dashboard {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .clear-btn {
-            background: linear-gradient(135deg, var(--danger-color), #c0392b);
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 0.9em;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .clear-btn:hover {
-            background: linear-gradient(135deg, #c0392b, var(--danger-color));
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        /* Icons for sections */
-        .section-icon {
-            font-size: 2.2em;
-            margin-right: 12px;
-            vertical-align: middle;
-            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
-        }
-
-        .operational .section-icon { color: var(--operational-color); }
-        .learning .section-icon { color: var(--learning-color); }
-        .culture .section-icon { color: var(--culture-color); }
-
-        /* Notification styles */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: var(--success-color);
-            color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            z-index: 1000;
-            transform: translateX(150%);
-            transition: transform 0.4s ease;
-            max-width: 350px;
-            font-weight: 500;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.error {
-            background: linear-gradient(135deg, var(--danger-color), #c0392b);
-        }
-
-        /* Export buttons in overall progress */
-        .export-section {
-            margin-top: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .export-btn {
-            background: var(--learning-color);
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .export-btn:hover {
-            background: #229954;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        .export-btn.json { background: var(--info-color); }
-        .export-btn.json:hover { background: #8e44ad; }
-        .export-btn.pdf { background: var(--danger-color); }
-        .export-btn.pdf:hover { background: #c0392b; }
-        .export-btn.word { background: var(--primary-color); }
-        .export-btn.word:hover { background: #2980b9; }
-
-        /* Responsive Design */
-        @media (min-width: 768px) {
-            body {
-                padding: 20px;
-            }
-            h1 {
-                font-size: 2.4em;
-            }
-            #dashboard {
-                grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-                gap: 25px;
-            }
-            .section {
-                padding: 25px;
-            }
-            input, textarea {
-                padding: 14px;
-            }
-            button {
-                padding: 14px 24px;
-            }
-            .logs-container {
-                max-height: 450px;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            #dashboard {
-                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-                gap: 30px;
-            }
-            h1 {
-                font-size: 2.8em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 8px;
-            }
-            .section {
-                padding: 15px;
-                margin: 8px 0;
-            }
-            h2 {
-                font-size: 1.3em;
-            }
-            h3 {
-                font-size: 1.2em;
-            }
-            input, textarea {
-                font-size: 16px;
-                padding: 10px;
-            }
-            .log-entry {
-                font-size: 0.88em;
-                padding: 12px;
-            }
-            .stats {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-            .stat-item {
-                min-width: auto;
-                text-align: center;
-            }
-            .export-section {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition: none !important;
-                animation: none !important;
-            }
-        }
-
-        /* Chart container */
-        .chart-container {
-            margin: 20px auto;
-            max-width: 350px;
-            height: 350px;
-            box-shadow: var(--shadow);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            background: var(--nude-light);
-            padding: 10px;
-        }
-
-        /* Dark mode toggle */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: var(--nude-light);
-            border: none;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-lg);
-        }
-
-        body.dark-mode {
-            --nude-light: #3d3b36;
-            --nude-medium: #4a463f;
-            --nude-dark: #5a5548;
-            --light-bg: #34495e;
-            --navy-blue: #001f3f;
-            --navy-blue-light: #0a4d68;
-            background: linear-gradient(135deg, var(--navy-blue) 0%, var(--navy-blue-light) 100%);
-            color: #ecf0f1;
-        }
-
-        body.dark-mode .section,
-        body.dark-mode .overall-progress,
-        body.dark-mode .intro,
-        body.dark-mode .import-section,
-        body.dark-mode .logs-container {
-            background: var(--nude-light);
-            color: #ecf0f1;
-        }
-
-        body.dark-mode .log-entry {
-            background: var(--nude-medium);
-            color: #ecf0f1;
-        }
-
-        body.dark-mode input,
-        body.dark-mode textarea,
-        body.dark-mode select {
-            background: var(--nude-light);
-            color: #ecf0f1;
-            border-color: #4a6fa5;
-        }
-
-        body.dark-mode .progress {
-            background: var(--nude-medium);
-        }
-
-        body.dark-mode .logs-container::-webkit-scrollbar-track {
-            background: var(--nude-light);
-        }
-
-        body.dark-mode .stat-item {
-            background: linear-gradient(135deg, var(--nude-medium), var(--nude-dark));
-        }
-    </style>
+    <title>Old Age Home Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
-    <h1>The Proactive BCC System Application</h1>
-    <div class="intro">
-        <blockquote>"Don't wish it were easier, wish you were better. Don't wish for fewer problems, wish for more skills. Don't wish for less challenge, wish for more wisdom."</blockquote>
-        <blockquote>"Work harder on yourself than you do on your job."</blockquote>
-    </div>
-
-    <div class="overall-progress">
-        <h3>Overall Progress</h3>
-        <div class="chart-container">
-            <canvas id="progress-chart"></canvas>
-        </div>
-        <div class="progress">
-            <div class="progress-bar operational" id="overall-progress" style="width: 0%;" data-label="0%"></div>
-        </div>
-        <div class="stats">
-            <div class="stat-item" id="total-activities">Total Activities: 0</div>
-            <div class="stat-item" id="completion-rate">Completion Rate: 0%</div>
-        </div>
-        <div class="export-section">
-            <button class="export-btn json" onclick="exportAllData()">📊 Export to JSON</button>
-            <button class="export-btn pdf" onclick="exportToPDF()">📄 Export to PDF</button>
-            <button class="export-btn word" onclick="exportToWord()">📝 Export to Word</button>
-        </div>
-        <button class="clear-btn" onclick="clearAllData()">🗑️ Clear All Data</button>
-    </div>
-
-    <div id="dashboard">
-        <div class="section operational">
-            <h2><span class="section-icon">⚙️</span>1. Proactive Operational System (Daily Disciplines)</h2>
-            <div class="goal"><strong>Goal:</strong> Predict and eliminate problems before they arise, ensuring seamless operations.</div>
-
-            <div class="import-section">
-                <label for="import-operational" class="import-btn">
-                    <span>📄 Upload Document</span>
-                </label>
-                <input type="file" id="import-operational" accept=".docx,.pdf">
-                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with today's date.</p>
-            </div>
-
-            <h3>The "5-Minute Optimization Fix"</h3>
-            <form id="opt-fix-form">
-                <label for="opt-date">📅 Date:</label>
-                <input type="date" id="opt-date" required>
-                <label for="opt-member">👥 Team Member:</label>
-                <input type="text" id="opt-member" required placeholder="Enter name">
-                <label for="opt-desc">🔧 Micro-Change Description:</label>
-                <textarea id="opt-desc" required placeholder="e.g., Adjust laundry sorting to reduce delays by 2 minutes"></textarea>
-                <button type="submit">📝 Log Fix</button>
-            </form>
-            <div class="logs-container" id="opt-logs"></div>
-
-            <h3>The "Predictive Planning 30" (P-30)</h3>
-            <form id="p30-form">
-                <label for="p30-date">📅 Date:</label>
-                <input type="date" id="p30-date" required>
-                <label for="p30-issues">⚠️ Potential Issues Flagged:</label>
-                <textarea id="p30-issues" required placeholder="e.g., Inventory low on X, potential staffing overlap on Tuesday"></textarea>
-                <button type="submit">📝 Log P-30</button>
-            </form>
-            <div class="logs-container" id="p30-logs"></div>
-
-            <div class="progress">
-                <div class="progress-bar operational" id="opt-progress" style="width: 0%;" data-label="0%"></div>
-            </div>
-            <div class="stats">
-                <div class="stat-item" id="opt-fixes">Daily Fixes: 0</div>
-                <div class="stat-item" id="opt-p30">P-30 Sessions: 0</div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">Old Age Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="rules.html">Rules</a></li>
+                    <li class="nav-item"><a class="nav-link" href="eligibility.html">Eligibility</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                </ul>
             </div>
         </div>
+    </nav>
 
-        <div class="section learning">
-            <h2><span class="section-icon">📚</span>2. Continuous Learning System (Weekly Disciplines)</h2>
-            <div class="goal"><strong>Goal:</strong> Build essential skills to anticipate and meet future operational needs.</div>
-
-            <div class="import-section">
-                <label for="import-learning" class="import-btn">
-                    <span>📄 Upload Document</span>
-                </label>
-                <input type="file" id="import-learning" accept=".docx,.pdf">
-                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with this week's start date.</p>
+    <div class="container mt-5">
+        <h1>Welcome to Old Age Home Management System</h1>
+        <p>Please select your role to login:</p>
+        <div class="row">
+            <div class="col-md-4">
+                <button class="btn btn-primary btn-lg btn-block" onclick="login('admin')">Admin Login</button>
             </div>
-
-            <h3>The "Knowledge Increment Hour" (KIH)</h3>
-            <form id="kih-form">
-                <label for="kih-week">📅 Week Starting:</label>
-                <input type="date" id="kih-week" required>
-                <label for="kih-content">📖 Content Studied:</label>
-                <input type="text" id="kih-content" required placeholder="e.g., New inventory management tech">
-                <label for="kih-takeaways">💡 Key Takeaways:</label>
-                <textarea id="kih-takeaways" required placeholder="Summarize key learnings in 2-3 sentences"></textarea>
-                <button type="submit">📝 Log KIH</button>
-            </form>
-            <div class="logs-container" id="kih-logs"></div>
-
-            <h3>The "Cross-Training Rotation System"</h3>
-            <form id="cross-form">
-                <label for="cross-week">📅 Week Starting:</label>
-                <input type="date" id="cross-week" required>
-                <label for="cross-staff">👥 Staff Member:</label>
-                <input type="text" id="cross-staff" required placeholder="Enter name">
-                <label for="cross-area">🎯 New Area Trained:</label>
-                <input type="text" id="cross-area" required placeholder="e.g., From Cleaning to Cooking">
-                <button type="submit">📝 Log Rotation</button>
-            </form>
-            <div class="logs-container" id="cross-logs"></div>
-
-            <div class="progress">
-                <div class="progress-bar learning" id="learn-progress" style="width: 0%;" data-label="0%"></div>
+            <div class="col-md-4">
+                <button class="btn btn-secondary btn-lg btn-block" onclick="login('doctor')">Doctor/Staff Login</button>
             </div>
-            <div class="stats">
-                <div class="stat-item" id="learn-kih">KIH Sessions: 0</div>
-                <div class="stat-item" id="learn-cross">Cross-Trainings: 0</div>
-            </div>
-        </div>
-
-        <div class="section culture">
-            <h2><span class="section-icon">🤝</span>3. Proactive Culture System (Accountability)</h2>
-            <div class="goal"><strong>Goal:</strong> Cultivate discipline, accountability, and a shared vision for proactive excellence.</div>
-
-            <div class="import-section">
-                <label for="import-culture" class="import-btn">
-                    <span>📄 Upload Document</span>
-                </label>
-                <input type="file" id="import-culture" accept=".docx,.pdf">
-                <p style="font-size: 0.85em; margin: 8px 0 0 0; color: #666;">Upload a Word (.docx) or PDF file. Paragraphs will be extracted and added as log descriptions with today's date.</p>
-            </div>
-
-            <h3>End of Day Input/Output Review</h3>
-            <form id="input-review-form">
-                <label for="input-date">📅 Date:</label>
-                <input type="date" id="input-date" required>
-                <label for="input-notes">📝 Review Notes:</label>
-                <textarea id="input-notes" required placeholder="Did I complete my MITs? What did I learn? What value did I add today? What input did I receive?"></textarea>
-                <button type="submit">📝 Log Review</button>
-            </form>
-            <div class="logs-container" id="input-review-logs"></div>
-
-            <h3>End of Day Prepare for Tomorrow</h3>
-            <form id="prepare-tomorrow-form">
-                <label for="prepare-date">📅 Date:</label>
-                <input type="date" id="prepare-date" required>
-                <label for="prepare-mits">🎯 Tomorrow's MITs:</label>
-                <textarea id="prepare-mits" required placeholder="Set 1-3 Most Important Tasks for tomorrow"></textarea>
-                <button type="submit">📝 Log Preparation</button>
-            </form>
-            <div class="logs-container" id="prepare-logs"></div>
-
-            <div class="progress">
-                <div class="progress-bar culture" id="culture-progress" style="width: 0%;" data-label="0%"></div>
-            </div>
-            <div class="stats">
-                <div class="stat-item" id="culture-input">Input/Output Reviews: 0</div>
-                <div class="stat-item" id="culture-prepare">Preparations: 0</div>
+            <div class="col-md-4">
+                <button class="btn btn-info btn-lg btn-block" onclick="login('resident')">Resident/Guardian Login</button>
             </div>
         </div>
     </div>
 
-    <div class="notification" id="notification"></div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
     <script>
-        // LocalStorage keys
-        const STORAGE_KEYS = {
-            optFix: 'proactive_bcc_opt_fix',
-            p30: 'proactive_bcc_p30',
-            kih: 'proactive_bcc_kih',
-            cross: 'proactive_bcc_cross',
-            input_review: 'proactive_bcc_input_review',
-            prepare_tomorrow: 'proactive_bcc_prepare_tomorrow'
-        };
-
-        const SECTION_KEYS = {
-            operational: [STORAGE_KEYS.optFix, STORAGE_KEYS.p30],
-            learning: [STORAGE_KEYS.kih, STORAGE_KEYS.cross],
-            culture: [STORAGE_KEYS.input_review, STORAGE_KEYS.prepare_tomorrow]
-        };
-
-        const SECTION_CONFIG = {
-            operational: { name: 'Operational', color: [26, 82, 118], keys: [STORAGE_KEYS.optFix, STORAGE_KEYS.p30], isDaily: true },
-            learning: { name: 'Learning', color: [39, 174, 96], keys: [STORAGE_KEYS.kih, STORAGE_KEYS.cross], isWeekly: true },
-            culture: { name: 'Culture', color: [243, 156, 18], keys: [STORAGE_KEYS.input_review, STORAGE_KEYS.prepare_tomorrow], isDaily: true }
-        };
-
-        let chart;
-
-        // Dark mode toggle
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        function login(role) {
+            localStorage.setItem('role', role);
+            window.location.href = `${role}.html`;
         }
-
-        // Load dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-        }
-
-        // Function to show notification
-        function showNotification(message, isError = false) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = 'notification';
-            if (isError) {
-                notification.classList.add('error');
-            }
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-
-        // Function to save to localStorage
-        function saveLog(key, entry) {
-            let logs = JSON.parse(localStorage.getItem(key) || '[]');
-            logs.push({ ...entry, timestamp: Date.now() });
-            localStorage.setItem(key, JSON.stringify(logs));
-            return logs;
-        }
-
-        // Function to export all data to JSON
-        function exportAllData() {
-            const allData = {};
-            Object.keys(STORAGE_KEYS).forEach(key => {
-                allData[key] = JSON.parse(localStorage.getItem(key) || '[]');
-            });
-            const dataStr = JSON.stringify(allData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `bcc-data-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-            showNotification('Data exported to JSON successfully!');
-        }
-
-        // Helper to get all data
-        function getAllData() {
-            const data = {};
-            Object.keys(STORAGE_KEYS).forEach(key => {
-                data[key] = JSON.parse(localStorage.getItem(key) || '[]');
-            });
-            return data;
-        }
-
-        // Helper for recent count (used in stats and export)
-        function getRecentCount(key, isDaily = false, isWeekly = false) {
-            const logs = JSON.parse(localStorage.getItem(key) || '[]');
-            const now = new Date();
-            let cutoff;
-            if (isDaily) {
-                cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days
-            } else if (isWeekly) {
-                cutoff = new Date(now.getTime() - 28 * 24 * 60 * 60 * 1000); // 4 weeks
-            } else {
-                cutoff = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000); // 90 days
-            }
-            return logs.filter(log => new Date(log.date) > cutoff).length;
-        }
-
-        // Export to PDF
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            let y = 20;
-
-            // Title
-            doc.setFontSize(20);
-            doc.text('Proactive BCC System Report', 20, y);
-            y += 15;
-            doc.setFontSize(12);
-            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, y);
-            y += 20;
-
-            const allData = getAllData();
-
-            // Sections
-            Object.keys(SECTION_CONFIG).forEach(sectionKey => {
-                const config = SECTION_CONFIG[sectionKey];
-                const { name, color, keys } = config;
-
-                // Section heading
-                doc.setFontSize(16);
-                doc.setTextColor(...color);
-                doc.text(name, 20, y);
-                doc.setTextColor(0, 0, 0);
-                y += 10;
-
-                // Stats
-                let stat1 = 0, stat2 = 0;
-                if (sectionKey === 'operational') {
-                    stat1 = getRecentCount(STORAGE_KEYS.optFix, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.p30, true);
-                } else if (sectionKey === 'learning') {
-                    stat1 = getRecentCount(STORAGE_KEYS.kih, false, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.cross, false, true);
-                } else if (sectionKey === 'culture') {
-                    stat1 = getRecentCount(STORAGE_KEYS.input_review, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
-                }
-                doc.text(`${keys[0].replace('proactive_bcc_', '').toUpperCase()}: ${stat1}`, 20, y);
-                y += 7;
-                doc.text(`${keys[1].replace('proactive_bcc_', '').toUpperCase()}: ${stat2}`, 20, y);
-                y += 15;
-
-                // Logs tables
-                keys.forEach(key => {
-                    const logs = allData[key].sort((a, b) => new Date(b.date) - new Date(a.date));
-                    if (logs.length > 0) {
-                        const keyName = key.replace('proactive_bcc_', '').toUpperCase();
-                        doc.setFontSize(14);
-                        doc.text(keyName, 20, y);
-                        y += 8;
-                        doc.setFontSize(10);
-
-                        const tableData = logs.map(log => [new Date(log.date).toLocaleDateString(), log.desc.substring(0, 100) + (log.desc.length > 100 ? '...' : '')]);
-                        doc.autoTable({
-                            startY: y,
-                            head: [['Date', 'Description']],
-                            body: tableData,
-                            theme: 'grid',
-                            styles: { fontSize: 8, cellPadding: 3 },
-                            headStyles: { fillColor: color, textColor: 255 },
-                            columnStyles: { 1: { cellWidth: 140 } },
-                            margin: { left: 20, right: 20 }
-                        });
-                        y = doc.lastAutoTable.finalY + 15;
-
-                        if (y > 270) {
-                            doc.addPage();
-                            y = 20;
-                        }
-                    }
-                });
-                y += 5;
-            });
-
-            // Overall
-            doc.setFontSize(16);
-            doc.text('Overall Summary', 20, y);
-            y += 10;
-            // Compute overall (reuse stats logic)
-            const optTotal = getRecentCount(STORAGE_KEYS.optFix, true) + getRecentCount(STORAGE_KEYS.p30, true);
-            const learnTotal = getRecentCount(STORAGE_KEYS.kih, false, true) + getRecentCount(STORAGE_KEYS.cross, false, true);
-            const cultureTotal = getRecentCount(STORAGE_KEYS.input_review, true) + getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
-            const overallTotal = optTotal + learnTotal + cultureTotal;
-            const overallPercent = Math.min((overallTotal / 36) * 100, 100); // 14+8+14=36
-            doc.text(`Total Activities: ${overallTotal}`, 20, y);
-            y += 7;
-            doc.text(`Completion Rate: ${Math.round(overallPercent)}%`, 20, y);
-
-            doc.save(`bcc-report-${new Date().toISOString().split('T')[0]}.pdf`);
-            showNotification('Data exported to PDF successfully!');
-        }
-
-        // Export to Word (DOCX)
-        function exportToWord() {
-            const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType } = docx;
-            const doc = new Document({
-                sections: [{
-                    properties: {},
-                    children: [
-                        new Paragraph({
-                            alignment: AlignmentType.CENTER,
-                            children: [new TextRun({
-                                text: 'Proactive BCC System Report',
-                                size: 32,
-                                bold: true
-                            })]
-                        }),
-                        new Paragraph({
-                            children: [new TextRun({
-                                text: `Generated on: ${new Date().toLocaleDateString()}`,
-                                size: 24
-                            })]
-                        }),
-                        new Paragraph({ children: [new TextRun({ text: '', size: 24, break: 1 })] }) // Spacer
-                    ]
-                }]
-            });
-
-            const allData = getAllData();
-            const sections = Object.keys(SECTION_CONFIG);
-
-            sections.forEach(sectionKey => {
-                const config = SECTION_CONFIG[sectionKey];
-                const { name, keys } = config;
-
-                // Section heading
-                doc.addSection({
-                    children: [
-                        new Paragraph({
-                            children: [new TextRun({ text: name, size: 28, bold: true })]
-                        })
-                    ]
-                });
-
-                // Stats
-                let stat1 = 0, stat2 = 0;
-                if (sectionKey === 'operational') {
-                    stat1 = getRecentCount(STORAGE_KEYS.optFix, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.p30, true);
-                } else if (sectionKey === 'learning') {
-                    stat1 = getRecentCount(STORAGE_KEYS.kih, false, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.cross, false, true);
-                } else if (sectionKey === 'culture') {
-                    stat1 = getRecentCount(STORAGE_KEYS.input_review, true);
-                    stat2 = getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
-                }
-                doc.addSection({
-                    children: [
-                        new Paragraph({
-                            children: [new TextRun({ text: `${keys[0].replace('proactive_bcc_', '').toUpperCase()}: ${stat1}`, size: 24 })]
-                        }),
-                        new Paragraph({
-                            children: [new TextRun({ text: `${keys[1].replace('proactive_bcc_', '').toUpperCase()}: ${stat2}`, size: 24 })]
-                        }),
-                        new Paragraph({ children: [new TextRun({ text: '', size: 24, break: 1 })] })
-                    ]
-                });
-
-                // Logs tables
-                keys.forEach(key => {
-                    const logs = allData[key].sort((a, b) => new Date(b.date) - new Date(a.date));
-                    if (logs.length > 0) {
-                        const keyName = key.replace('proactive_bcc_', '').toUpperCase();
-                        doc.addSection({
-                            children: [
-                                new Paragraph({
-                                    children: [new TextRun({ text: keyName, size: 26, bold: true })]
-                                })
-                            ]
-                        });
-
-                        const tableRows = [
-                            new TableRow({
-                                children: [
-                                    new TableCell({
-                                        width: { size: 30, type: WidthType.PERCENTAGE },
-                                        children: [new Paragraph({ children: [new TextRun({ text: 'Date', bold: true })] })]
-                                    }),
-                                    new TableCell({
-                                        width: { size: 70, type: WidthType.PERCENTAGE },
-                                        children: [new Paragraph({ children: [new TextRun({ text: 'Description', bold: true })] })]
-                                    })
-                                ]
-                            })
-                        ];
-
-                        logs.forEach(log => {
-                            tableRows.push(new TableRow({
-                                children: [
-                                    new TableCell({
-                                        width: { size: 30, type: WidthType.PERCENTAGE },
-                                        children: [new Paragraph({ children: [new TextRun({ text: new Date(log.date).toLocaleDateString() })] })]
-                                    }),
-                                    new TableCell({
-                                        width: { size: 70, type: WidthType.PERCENTAGE },
-                                        children: [new Paragraph({ children: [new TextRun({ text: log.desc })] })]
-                                    })
-                                ]
-                            }));
-                        });
-
-                        const table = new Table({
-                            width: { size: 100, type: WidthType.PERCENTAGE },
-                            rows: tableRows
-                        });
-
-                        doc.addSection({
-                            children: [table, new Paragraph({ children: [new TextRun({ text: '', size: 24, break: 1 })] })]
-                        });
-                    }
-                });
-            });
-
-            // Overall
-            const optTotal = getRecentCount(STORAGE_KEYS.optFix, true) + getRecentCount(STORAGE_KEYS.p30, true);
-            const learnTotal = getRecentCount(STORAGE_KEYS.kih, false, true) + getRecentCount(STORAGE_KEYS.cross, false, true);
-            const cultureTotal = getRecentCount(STORAGE_KEYS.input_review, true) + getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
-            const overallTotal = optTotal + learnTotal + cultureTotal;
-            const overallPercent = Math.min((overallTotal / 36) * 100, 100);
-            doc.addSection({
-                children: [
-                    new Paragraph({
-                        children: [new TextRun({ text: 'Overall Summary', size: 28, bold: true })]
-                    }),
-                    new Paragraph({
-                        children: [new TextRun({ text: `Total Activities: ${overallTotal}`, size: 24 })]
-                    }),
-                    new Paragraph({
-                        children: [new TextRun({ text: `Completion Rate: ${Math.round(overallPercent)}%`, size: 24 })]
-                    })
-                ]
-            });
-
-            Packer.toBlob(doc).then(blob => {
-                saveAs(blob, `bcc-report-${new Date().toISOString().split('T')[0]}.docx`);
-                showNotification('Data exported to Word successfully!');
-            }).catch(err => {
-                console.error(err);
-                showNotification('Error exporting to Word.', true);
-            });
-        }
-
-        // Function to import data from docx/pdf
-        async function importData(fileInputId, keys, defaultDate) {
-            const fileInput = document.getElementById(fileInputId);
-            fileInput.addEventListener('change', async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const buffer = await file.arrayBuffer();
-                let fullText = '';
-
-                try {
-                    if (file.name.endsWith('.docx')) {
-                        const result = await mammoth.extractRawText({ arrayBuffer: buffer });
-                        fullText = result.value;
-                    } else if (file.name.endsWith('.pdf')) {
-                        const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i);
-                            const content = await page.getTextContent();
-                            const pageText = content.items.map(item => item.str).join(' ');
-                            fullText += pageText + '\n\n';
-                        }
-                    } else {
-                        showNotification('Unsupported file type. Please upload .docx or .pdf.', true);
-                        return;
-                    }
-
-                    // Split into paragraphs
-                    const paragraphs = fullText.split('\n\n').filter(p => p.trim().length > 0);
-
-                    // Add to logs (distribute evenly or to first key for simplicity)
-                    const targetKey = keys[0]; // Add to first key for the section
-                    const today = defaultDate || new Date().toISOString().split('T')[0];
-                    paragraphs.forEach(para => {
-                        const entry = { date: today, desc: para.trim() };
-                        saveLog(targetKey, entry);
-                    });
-
-                    // Reload logs for all keys in section
-                    keys.forEach(k => loadLogs(k));
-                    updateStats();
-                    showNotification(`${paragraphs.length} entries imported successfully!`);
-                    fileInput.value = '';
-                } catch (error) {
-                    console.error(error);
-                    showNotification('Error processing file. Please check the file format.', true);
-                }
-            });
-        }
-
-        // Function to load and display logs (recent first)
-        function loadLogs(key) {
-            let logs = JSON.parse(localStorage.getItem(key) || '[]');
-            logs.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            // Determine which container to update based on the key
-            let containerId;
-            switch(key) {
-                case STORAGE_KEYS.optFix:
-                    containerId = 'opt-logs';
-                    break;
-                case STORAGE_KEYS.p30:
-                    containerId = 'p30-logs';
-                    break;
-                case STORAGE_KEYS.kih:
-                    containerId = 'kih-logs';
-                    break;
-                case STORAGE_KEYS.cross:
-                    containerId = 'cross-logs';
-                    break;
-                case STORAGE_KEYS.input_review:
-                    containerId = 'input-review-logs';
-                    break;
-                case STORAGE_KEYS.prepare_tomorrow:
-                    containerId = 'prepare-logs';
-                    break;
-                default:
-                    return logs.length;
-            }
-            
-            const container = document.getElementById(containerId);
-            if (!container) return logs.length;
-            
-            container.innerHTML = logs.map(log => `
-                <div class="log-entry">
-                    <strong>${new Date(log.date).toLocaleDateString()}:</strong> ${log.desc}
-                </div>
-            `).join('');
-            
-            return logs.length;
-        }
-
-        // Function to update progress and stats
-        function updateStats() {
-            // Operational
-            const optCount = getRecentCount(STORAGE_KEYS.optFix, true);
-            const p30Count = getRecentCount(STORAGE_KEYS.p30, true);
-            const optTotal = optCount + p30Count;
-            const optTarget = 14;
-            const optPercent = Math.min((optTotal / optTarget) * 100, 100);
-            document.getElementById('opt-progress').style.width = `${optPercent}%`;
-            document.getElementById('opt-progress').setAttribute('data-label', `${Math.round(optPercent)}%`);
-            document.getElementById('opt-fixes').textContent = `Daily Fixes: ${optCount}`;
-            document.getElementById('opt-p30').textContent = `P-30 Sessions: ${p30Count}`;
-
-            // Learning
-            const kihCount = getRecentCount(STORAGE_KEYS.kih, false, true);
-            const crossCount = getRecentCount(STORAGE_KEYS.cross, false, true);
-            const learnTotal = kihCount + crossCount;
-            const learnTarget = 8;
-            const learnPercent = Math.min((learnTotal / learnTarget) * 100, 100);
-            document.getElementById('learn-progress').style.width = `${learnPercent}%`;
-            document.getElementById('learn-progress').setAttribute('data-label', `${Math.round(learnPercent)}%`);
-            document.getElementById('learn-kih').textContent = `KIH Sessions: ${kihCount}`;
-            document.getElementById('learn-cross').textContent = `Cross-Trainings: ${crossCount}`;
-
-            // Culture
-            const inputCount = getRecentCount(STORAGE_KEYS.input_review, true);
-            const prepareCount = getRecentCount(STORAGE_KEYS.prepare_tomorrow, true);
-            const cultureTotal = inputCount + prepareCount;
-            const cultureTarget = 14;
-            const culturePercent = Math.min((cultureTotal / cultureTarget) * 100, 100);
-            document.getElementById('culture-progress').style.width = `${culturePercent}%`;
-            document.getElementById('culture-progress').setAttribute('data-label', `${Math.round(culturePercent)}%`);
-            document.getElementById('culture-input').textContent = `Input/Output Reviews: ${inputCount}`;
-            document.getElementById('culture-prepare').textContent = `Preparations: ${prepareCount}`;
-
-            // Overall
-            const overallTotal = optTotal + learnTotal + cultureTotal;
-            const overallTarget = optTarget + learnTarget + cultureTarget;
-            const overallPercent = Math.min((overallTotal / overallTarget) * 100, 100);
-            document.getElementById('overall-progress').style.width = `${overallPercent}%`;
-            document.getElementById('overall-progress').setAttribute('data-label', `${Math.round(overallPercent)}%`);
-            document.getElementById('total-activities').textContent = `Total Activities: ${overallTotal}`;
-            document.getElementById('completion-rate').textContent = `Completion Rate: ${Math.round(overallPercent)}%`;
-
-            // Update Chart
-            updateChart(optPercent, learnPercent, culturePercent);
-        }
-
-        // Chart init
-        function initChart() {
-            const ctx = document.getElementById('progress-chart').getContext('2d');
-
-            chart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Operational', 'Learning', 'Culture'],
-                    datasets: [{
-                        data: [0, 0, 0],
-                        backgroundColor: [
-                            getComputedStyle(document.documentElement).getPropertyValue('--operational-color').trim() || '#3498db',
-                            getComputedStyle(document.documentElement).getPropertyValue('--learning-color').trim() || '#27ae60',
-                            getComputedStyle(document.documentElement).getPropertyValue('--culture-color').trim() || '#f39c12'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#ffffff',
-                        hoverBorderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true,
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#3498db',
-                            borderWidth: 1,
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.label}: ${Math.round(context.parsed)}%`;
-                                }
-                            }
-                        }
-                    },
-                    animation: {
-                        animateRotate: true,
-                        duration: 2000
-                    }
-                }
-            });
-        }
-
-        function updateChart(opt, learn, culture) {
-            if (chart) {
-                chart.data.datasets[0].data = [opt, learn, culture];
-                chart.update('none');
-            }
-        }
-
-        // Generic form handler
-        function handleFormSubmit(formId, key, descBuilder) {
-            const form = document.getElementById(formId);
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const entry = {
-                    date: formData.get(formId.replace('-form', '-date')),
-                    desc: descBuilder(formData)
-                };
-                
-                // Validate date
-                if (!entry.date) {
-                    showNotification('Please select a valid date', true);
-                    return;
-                }
-                
-                saveLog(key, entry);
-                loadLogs(key);
-                updateStats();
-                form.reset();
-                
-                // Set default dates
-                setDefaultDates();
-                
-                const btn = form.querySelector('button');
-                const originalText = btn.textContent;
-                btn.textContent = '✓ Logged!';
-                btn.style.background = 'linear-gradient(135deg, #27ae60, #229954)';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '';
-                }, 1500);
-                
-                showNotification('Entry logged successfully!');
-            });
-        }
-
-        // Set default dates
-        function setDefaultDates() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('opt-date').value = today;
-            document.getElementById('p30-date').value = today;
-            document.getElementById('input-date').value = today;
-            document.getElementById('prepare-date').value = today;
-            
-            // Calculate Monday of current week
-            const now = new Date();
-            const monday = new Date(now);
-            monday.setDate(now.getDate() - now.getDay() + 1);
-            const weekStart = monday.toISOString().split('T')[0];
-            
-            ['kih-week', 'cross-week'].forEach(id => {
-                document.getElementById(id).value = weekStart;
-            });
-        }
-
-        // Clear all data
-        function clearAllData() {
-            if (confirm('Are you sure you want to clear all logged data? This cannot be undone.')) {
-                Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
-                updateStats();
-                document.querySelectorAll('.logs-container').forEach(container => container.innerHTML = '');
-                showNotification('All data cleared successfully!');
-            }
-        }
-
-        // Initialize imports
-        function initImports() {
-            importData('import-operational', SECTION_KEYS.operational, new Date().toISOString().split('T')[0]);
-            importData('import-learning', SECTION_KEYS.learning, getWeekStart());
-            importData('import-culture', SECTION_KEYS.culture, new Date().toISOString().split('T')[0]);
-        }
-
-        function getWeekStart() {
-            const now = new Date();
-            const monday = new Date(now);
-            monday.setDate(now.getDate() - now.getDay() + 1);
-            return monday.toISOString().split('T')[0];
-        }
-
-        // Initialize form handlers
-        function initForms() {
-            handleFormSubmit('opt-fix-form', STORAGE_KEYS.optFix, (data) => `${data.get('opt-member')}: ${data.get('opt-desc')}`);
-            handleFormSubmit('p30-form', STORAGE_KEYS.p30, (data) => data.get('p30-issues'));
-            handleFormSubmit('kih-form', STORAGE_KEYS.kih, (data) => `${data.get('kih-content')} - ${data.get('kih-takeaways')}`);
-            handleFormSubmit('cross-form', STORAGE_KEYS.cross, (data) => `${data.get('cross-staff')} in ${data.get('cross-area')}`);
-            handleFormSubmit('input-review-form', STORAGE_KEYS.input_review, (data) => data.get('input-notes'));
-            handleFormSubmit('prepare-tomorrow-form', STORAGE_KEYS.prepare_tomorrow, (data) => `MITs: ${data.get('prepare-mits')}`);
-        }
-
-        // Initial load
-        document.addEventListener('DOMContentLoaded', () => {
-            initChart();
-            initImports();
-            initForms();
-            setDefaultDates();
-            
-            // Load existing logs
-            Object.keys(STORAGE_KEYS).forEach(key => loadLogs(STORAGE_KEYS[key]));
-            updateStats();
-        });
     </script>
 </body>
 </html>
+```
+
+### admin.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="checkRole('admin'); loadAllData();">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Same nav as index, with additional Logout -->
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">Old Age Home</a>
+            <!-- ... other nav items ... -->
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1>Admin Dashboard</h1>
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="residents-tab" data-bs-toggle="tab" data-bs-target="#residents" type="button" role="tab">Residents</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">Staff</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rooms-tab" data-bs-toggle="tab" data-bs-target="#rooms" type="button" role="tab">Rooms</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab">Appointments</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="feedback-tab" data-bs-toggle="tab" data-bs-target="#feedback" type="button" role="tab">Feedback</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="adminTabContent">
+            <div class="tab-pane fade show active" id="residents" role="tabpanel">
+                <h2>Manage Residents</h2>
+                <form id="residentForm">
+                    <input type="hidden" id="residentId">
+                    <div class="mb-3">
+                        <label for="residentName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="residentName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="residentAge" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="residentAge" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="residentContact" class="form-label">Contact</label>
+                        <input type="text" class="form-control" id="residentContact" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="residentMedical" class="form-label">Medical History</label>
+                        <textarea class="form-control" id="residentMedical"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="saveResident()">Save</button>
+                </form>
+                <table class="table mt-3">
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Age</th><th>Contact</th><th>Medical</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="residentsTable"></tbody>
+                </table>
+            </div>
+            <!-- Similar sections for staff, rooms, appointments, feedback -->
+            <div class="tab-pane fade" id="staff" role="tabpanel">
+                <h2>Manage Staff</h2>
+                <!-- Similar form and table for staff -->
+                <form id="staffForm">
+                    <input type="hidden" id="staffId">
+                    <div class="mb-3">
+                        <label for="staffName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="staffName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="staffRole" class="form-label">Role</label>
+                        <input type="text" class="form-control" id="staffRole" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="staffContact" class="form-label">Contact</label>
+                        <input type="text" class="form-control" id="staffContact" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="saveStaff()">Save</button>
+                </form>
+                <table class="table mt-3">
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Role</th><th>Contact</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="staffTable"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="rooms" role="tabpanel">
+                <h2>Manage Rooms</h2>
+                <form id="roomForm">
+                    <input type="hidden" id="roomId">
+                    <div class="mb-3">
+                        <label for="roomNumber" class="form-label">Room Number</label>
+                        <input type="text" class="form-control" id="roomNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="roomStatus" class="form-label">Status</label>
+                        <select class="form-control" id="roomStatus">
+                            <option>Occupied</option>
+                            <option>Vacant</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="roomResident" class="form-label">Assigned Resident ID</label>
+                        <input type="text" class="form-control" id="roomResident">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="saveRoom()">Save</button>
+                </form>
+                <table class="table mt-3">
+                    <thead>
+                        <tr><th>ID</th><th>Number</th><th>Status</th><th>Resident ID</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="roomsTable"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="appointments" role="tabpanel">
+                <h2>Manage Appointments</h2>
+                <!-- Form and table for appointments -->
+                <form id="appointmentForm">
+                    <input type="hidden" id="appointmentId">
+                    <div class="mb-3">
+                        <label for="appResident" class="form-label">Resident ID</label>
+                        <input type="text" class="form-control" id="appResident" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appDoctor" class="form-label">Doctor/Staff ID</label>
+                        <input type="text" class="form-control" id="appDoctor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="appDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appNotes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="appNotes"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="saveAppointment()">Save</button>
+                </form>
+                <table class="table mt-3">
+                    <thead>
+                        <tr><th>ID</th><th>Resident ID</th><th>Doctor ID</th><th>Date</th><th>Notes</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="appointmentsTable"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="feedback" role="tabpanel">
+                <h2>View Feedback</h2>
+                <table class="table">
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Email</th><th>Message</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="feedbackTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+### doctor.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="checkRole('doctor'); loadAllData();">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Nav with Logout -->
+    </nav>
+
+    <div class="container mt-5">
+        <h1>Doctor/Staff Dashboard</h1>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#docAppointments">Appointments</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#docResidents">Residents</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#docMedical">Medical Records</button>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="docAppointments">
+                <h2>My Appointments</h2>
+                <table class="table">
+                    <thead>
+                        <tr><th>ID</th><th>Resident ID</th><th>Date</th><th>Notes</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="docAppointmentsTable"></tbody>
+                </table>
+                <!-- Form to add/update notes -->
+            </div>
+            <div class="tab-pane fade" id="docResidents">
+                <h2>View Residents</h2>
+                <table class="table">
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Age</th><th>Contact</th><th>Medical</th></tr>
+                    </thead>
+                    <tbody id="docResidentsTable"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="docMedical">
+                <h2>Update Medical Records</h2>
+                <!-- Form to search resident and update medical -->
+                <form id="medicalForm">
+                    <div class="mb-3">
+                        <label for="medicalResidentId" class="form-label">Resident ID</label>
+                        <input type="text" class="form-control" id="medicalResidentId" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="medicalUpdate" class="form-label">Update Medical History</label>
+                        <textarea class="form-control" id="medicalUpdate"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="updateMedical()">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+### resident.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="checkRole('resident'); loadAllData();">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Nav with Logout -->
+    </nav>
+
+    <div class="container mt-5">
+        <h1>Resident/Guardian Dashboard</h1>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#resDetails">My Details</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#resAppointments">Appointments</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#resRequest">Request Service</button>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="resDetails">
+                <h2>My Details</h2>
+                <!-- Form to view/edit own details (simulate with ID input) -->
+                <div class="mb-3">
+                    <label for="resId" class="form-label">Enter Your ID</label>
+                    <input type="text" class="form-control" id="resId">
+                    <button type="button" class="btn btn-primary mt-2" onclick="viewMyDetails()">View</button>
+                </div>
+                <div id="myDetails"></div>
+            </div>
+            <div class="tab-pane fade" id="resAppointments">
+                <h2>My Appointments</h2>
+                <div class="mb-3">
+                    <label for="appResId" class="form-label">Enter Your ID</label>
+                    <input type="text" class="form-control" id="appResId">
+                    <button type="button" class="btn btn-primary mt-2" onclick="viewMyAppointments()">View</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr><th>ID</th><th>Doctor ID</th><th>Date</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody id="myAppointmentsTable"></tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="resRequest">
+                <h2>Request Appointment/Service</h2>
+                <form id="requestForm">
+                    <div class="mb-3">
+                        <label for="reqResident" class="form-label">Your ID</label>
+                        <input type="text" class="form-control" id="reqResident" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reqDoctor" class="form-label">Doctor/Staff ID</label>
+                        <input type="text" class="form-control" id="reqDoctor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reqDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="reqDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reqNotes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="reqNotes"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="requestAppointment()">Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+### about.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Nav -->
+    </nav>
+    <div class="container mt-5">
+        <h1>About Our Old Age Home</h1>
+        <p>We provide comprehensive care for the elderly, ensuring a nurturing environment with high-quality support and services.</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+```
+
+### services.html (Similar static page)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Services</title>
+    <!-- Links -->
+</head>
+<body>
+    <nav><!-- Nav --></nav>
+    <div class="container mt-5">
+        <h1>Our Services</h1>
+        <ul>
+            <li>Medical Care</li>
+            <li>Room Accommodation</li>
+            <li>Daily Activities</li>
+            <li>Counseling</li>
+        </ul>
+    </div>
+</body>
+</html>
+```
+
+### rules.html (Similar)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Rules</title>
+    <!-- Links -->
+</head>
+<body>
+    <nav><!-- Nav --></nav>
+    <div class="container mt-5">
+        <h1>Rules and Regulations</h1>
+        <p>1. Respect all residents and staff.</p>
+        <p>2. Follow meal and activity schedules.</p>
+        <!-- More rules -->
+    </div>
+</body>
+</html>
+```
+
+### eligibility.html (Similar)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Eligibility</title>
+    <!-- Links -->
+</head>
+<body>
+    <nav><!-- Nav --></nav>
+    <div class="container mt-5">
+        <h1>Eligibility Criteria</h1>
+        <p>Age 60+, No contagious diseases, etc.</p>
+    </div>
+</body>
+</html>
+```
+
+### contact.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Contact</title>
+    <!-- Links -->
+</head>
+<body onload="loadAllData();">
+    <nav><!-- Nav --></nav>
+    <div class="container mt-5">
+        <h1>Contact Us</h1>
+        <form id="contactForm">
+            <div class="mb-3">
+                <label for="contactName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="contactName" required>
+            </div>
+            <div class="mb-3">
+                <label for="contactEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="contactEmail" required>
+            </div>
+            <div class="mb-3">
+                <label for="contactMessage" class="form-label">Message</label>
+                <textarea class="form-control" id="contactMessage" required></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="saveFeedback()">Submit</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+### styles.css
+```css
+body {
+    background-color: #f8f9fa;
+}
+.navbar-brand {
+    font-weight: bold;
+}
+/* Additional custom styles if needed */
+```
+
+### script.js
+```javascript
+// Shared JS for all pages
+
+function checkRole(requiredRole) {
+    const role = localStorage.getItem('role');
+    if (role !== requiredRole) {
+        alert('Access denied. Redirecting to home.');
+        window.location.href = 'index.html';
+    }
+}
+
+function logout() {
+    localStorage.removeItem('role');
+    window.location.href = 'index.html';
+}
+
+// Data storage keys
+const keys = {
+    residents: 'residents',
+    staff: 'staff',
+    rooms: 'rooms',
+    appointments: 'appointments',
+    feedback: 'feedback'
+};
+
+// Load data
+function loadData(key) {
+    return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function saveData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+// General CRUD functions
+function addItem(key, item) {
+    const items = loadData(key);
+    item.id = items.length ? items[items.length - 1].id + 1 : 1;
+    items.push(item);
+    saveData(key, items);
+}
+
+function updateItem(key, updatedItem) {
+    const items = loadData(key);
+    const index = items.findIndex(i => i.id == updatedItem.id);
+    if (index !== -1) {
+        items[index] = updatedItem;
+        saveData(key, items);
+    }
+}
+
+function deleteItem(key, id) {
+    let items = loadData(key);
+    items = items.filter(i => i.id != id);
+    saveData(key, items);
+}
+
+// Load all tables
+function loadAllData() {
+    if (document.getElementById('residentsTable')) loadResidents();
+    if (document.getElementById('staffTable')) loadStaff();
+    if (document.getElementById('roomsTable')) loadRooms();
+    if (document.getElementById('appointmentsTable')) loadAppointments();
+    if (document.getElementById('feedbackTable')) loadFeedback();
+    // For doctor and resident pages too
+    if (document.getElementById('docResidentsTable')) loadDocResidents();
+    if (document.getElementById('docAppointmentsTable')) loadDocAppointments();
+}
+
+// Residents
+function saveResident() {
+    const id = document.getElementById('residentId').value;
+    const resident = {
+        name: document.getElementById('residentName').value,
+        age: document.getElementById('residentAge').value,
+        contact: document.getElementById('residentContact').value,
+        medical: document.getElementById('residentMedical').value
+    };
+    if (id) {
+        resident.id = id;
+        updateItem(keys.residents, resident);
+    } else {
+        addItem(keys.residents, resident);
+    }
+    clearForm('residentForm');
+    loadResidents();
+}
+
+function loadResidents() {
+    const residents = loadData(keys.residents);
+    const table = document.getElementById('residentsTable');
+    table.innerHTML = '';
+    residents.forEach(r => {
+        const row = `<tr>
+            <td>${r.id}</td>
+            <td>${r.name}</td>
+            <td>${r.age}</td>
+            <td>${r.contact}</td>
+            <td>${r.medical}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editResident(${r.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.residents}', ${r.id}); loadResidents();">Delete</button>
+            </td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+function editResident(id) {
+    const residents = loadData(keys.residents);
+    const r = residents.find(r => r.id == id);
+    document.getElementById('residentId').value = r.id;
+    document.getElementById('residentName').value = r.name;
+    document.getElementById('residentAge').value = r.age;
+    document.getElementById('residentContact').value = r.contact;
+    document.getElementById('residentMedical').value = r.medical;
+}
+
+// Similar functions for staff, rooms, appointments, feedback
+
+function saveStaff() {
+    // Similar to saveResident
+    const id = document.getElementById('staffId').value;
+    const staff = {
+        name: document.getElementById('staffName').value,
+        role: document.getElementById('staffRole').value,
+        contact: document.getElementById('staffContact').value
+    };
+    if (id) {
+        staff.id = id;
+        updateItem(keys.staff, staff);
+    } else {
+        addItem(keys.staff, staff);
+    }
+    clearForm('staffForm');
+    loadStaff();
+}
+
+function loadStaff() {
+    // Similar to loadResidents
+    const staff = loadData(keys.staff);
+    const table = document.getElementById('staffTable');
+    table.innerHTML = '';
+    staff.forEach(s => {
+        const row = `<tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${s.role}</td>
+            <td>${s.contact}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editStaff(${s.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.staff}', ${s.id}); loadStaff();">Delete</button>
+            </td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+function editStaff(id) {
+    // Similar
+}
+
+function saveRoom() {
+    const id = document.getElementById('roomId').value;
+    const room = {
+        number: document.getElementById('roomNumber').value,
+        status: document.getElementById('roomStatus').value,
+        resident: document.getElementById('roomResident').value
+    };
+    if (id) {
+        room.id = id;
+        updateItem(keys.rooms, room);
+    } else {
+        addItem(keys.rooms, room);
+    }
+    clearForm('roomForm');
+    loadRooms();
+}
+
+function loadRooms() {
+    const rooms = loadData(keys.rooms);
+    const table = document.getElementById('roomsTable');
+    table.innerHTML = '';
+    rooms.forEach(r => {
+        const row = `<tr>
+            <td>${r.id}</td>
+            <td>${r.number}</td>
+            <td>${r.status}</td>
+            <td>${r.resident || 'None'}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editRoom(${r.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.rooms}', ${r.id}); loadRooms();">Delete</button>
+            </td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+function editRoom(id) {
+    // Similar
+}
+
+function saveAppointment() {
+    const id = document.getElementById('appointmentId').value;
+    const app = {
+        resident: document.getElementById('appResident').value,
+        doctor: document.getElementById('appDoctor').value,
+        date: document.getElementById('appDate').value,
+        notes: document.getElementById('appNotes').value
+    };
+    if (id) {
+        app.id = id;
+        updateItem(keys.appointments, app);
+    } else {
+        addItem(keys.appointments, app);
+    }
+    clearForm('appointmentForm');
+    loadAppointments();
+}
+
+function loadAppointments() {
+    const apps = loadData(keys.appointments);
+    const table = document.getElementById('appointmentsTable');
+    table.innerHTML = '';
+    apps.forEach(a => {
+        const row = `<tr>
+            <td>${a.id}</td>
+            <td>${a.resident}</td>
+            <td>${a.doctor}</td>
+            <td>${a.date}</td>
+            <td>${a.notes}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editAppointment(${a.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.appointments}', ${a.id}); loadAppointments();">Delete</button>
+            </td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+function editAppointment(id) {
+    // Similar
+}
+
+function saveFeedback() {
+    const feedback = {
+        name: document.getElementById('contactName').value,
+        email: document.getElementById('contactEmail').value,
+        message: document.getElementById('contactMessage').value
+    };
+    addItem(keys.feedback, feedback);
+    alert('Feedback submitted!');
+    clearForm('contactForm');
+}
+
+function loadFeedback() {
+    const feedbacks = loadData(keys.feedback);
+    const table = document.getElementById('feedbackTable');
+    table.innerHTML = '';
+    feedbacks.forEach(f => {
+        const row = `<tr>
+            <td>${f.id}</td>
+            <td>${f.name}</td>
+            <td>${f.email}</td>
+            <td>${f.message}</td>
+            <td>
+                <button class="btn btn-sm btn-danger" onclick="deleteItem('${keys.feedback}', ${f.id}); loadFeedback();">Delete</button>
+            </td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+// For doctor page
+function loadDocAppointments() {
+    // Assume doctor ID is 1 for simulation; in real, would be logged in user
+    const doctorId = 1;
+    const apps = loadData(keys.appointments).filter(a => a.doctor == doctorId);
+    const table = document.getElementById('docAppointmentsTable');
+    table.innerHTML = '';
+    apps.forEach(a => {
+        const row = `<tr>
+            <td>${a.id}</td>
+            <td>${a.resident}</td>
+            <td>${a.date}</td>
+            <td>${a.notes}</td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editAppointment(${a.id})">Edit Notes</button>
+            </td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+function loadDocResidents() {
+    const residents = loadData(keys.residents);
+    const table = document.getElementById('docResidentsTable');
+    table.innerHTML = '';
+    residents.forEach(r => {
+        const row = `<tr>
+            <td>${r.id}</td>
+            <td>${r.name}</td>
+            <td>${r.age}</td>
+            <td>${r.contact}</td>
+            <td>${r.medical}</td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+function updateMedical() {
+    const resId = document.getElementById('medicalResidentId').value;
+    const update = document.getElementById('medicalUpdate').value;
+    const residents = loadData(keys.residents);
+    const index = residents.findIndex(r => r.id == resId);
+    if (index !== -1) {
+        residents[index].medical += '\n' + update;
+        saveData(keys.residents, residents);
+        alert('Medical history updated!');
+    } else {
+        alert('Resident not found.');
+    }
+}
+
+// For resident page
+function viewMyDetails() {
+    const resId = document.getElementById('resId').value;
+    const residents = loadData(keys.residents);
+    const r = residents.find(r => r.id == resId);
+    const details = document.getElementById('myDetails');
+    if (r) {
+        details.innerHTML = `
+            <p><strong>Name:</strong> ${r.name}</p>
+            <p><strong>Age:</strong> ${r.age}</p>
+            <p><strong>Contact:</strong> ${r.contact}</p>
+            <p><strong>Medical History:</strong> ${r.medical}</p>
+        `;
+    } else {
+        details.innerHTML = '<p>Resident not found.</p>';
+    }
+}
+
+function viewMyAppointments() {
+    const resId = document.getElementById('appResId').value;
+    const apps = loadData(keys.appointments).filter(a => a.resident == resId);
+    const table = document.getElementById('myAppointmentsTable');
+    table.innerHTML = '';
+    apps.forEach(a => {
+        const row = `<tr>
+            <td>${a.id}</td>
+            <td>${a.doctor}</td>
+            <td>${a.date}</td>
+            <td>${a.notes}</td>
+        </tr>`;
+        table.innerHTML += row;
+    });
+}
+
+function requestAppointment() {
+    const app = {
+        resident: document.getElementById('reqResident').value,
+        doctor: document.getElementById('reqDoctor').value,
+        date: document.getElementById('reqDate').value,
+        notes: document.getElementById('reqNotes').value
+    };
+    addItem(keys.appointments, app);
+    alert('Appointment requested!');
+    clearForm('requestForm');
+}
+
+// Clear form
+function clearForm(formId) {
+    document.getElementById(formId).reset();
+}
+```
+
+This is a comprehensive setup. You can extend it by adding more features or integrating with a backend for real functionality. For citations to the inspiring GitHub projects:
